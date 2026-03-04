@@ -861,10 +861,15 @@
 
         // ── Auto-login check ──
         (async () => {
-            const { data: { session } } = await sb.auth.getSession();
-            if (session) {
-                const admin = MEMBER_ACCOUNTS.find(m => m.email === session.user.email && m.isAdmin);
-                if (admin) showAdmin();
+            try {
+                if (!sb) { console.warn('Supabase client not available'); return; }
+                const { data: { session } } = await sb.auth.getSession();
+                if (session) {
+                    const admin = MEMBER_ACCOUNTS.find(m => m.email === session.user.email && m.isAdmin);
+                    if (admin) showAdmin();
+                }
+            } catch (e) {
+                console.warn('Auto-login check failed:', e.message);
             }
         })();
     </script>

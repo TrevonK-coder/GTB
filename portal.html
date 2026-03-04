@@ -692,6 +692,7 @@
 
         // ── Login ──
         async function doLogin() {
+            console.log('doLogin called');
             const email = document.getElementById('loginEmail').value.trim();
             const pass = document.getElementById('loginPass').value;
             const errEl = document.getElementById('loginError');
@@ -964,11 +965,16 @@ RULES:
 
         // ── Auto-login check ──
         (async () => {
-            const { data: { session } } = await sb.auth.getSession();
-            if (session) {
-                currentUser = session.user;
-                currentMember = MEMBER_ACCOUNTS.find(m => m.email === session.user.email);
-                if (currentMember) await loadDashboard();
+            try {
+                if (!sb) { console.warn('Supabase client not available'); return; }
+                const { data: { session } } = await sb.auth.getSession();
+                if (session) {
+                    currentUser = session.user;
+                    currentMember = MEMBER_ACCOUNTS.find(m => m.email === session.user.email);
+                    if (currentMember) await loadDashboard();
+                }
+            } catch (e) {
+                console.warn('Auto-login check failed:', e.message);
             }
         })();
     </script>
