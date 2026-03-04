@@ -1,8 +1,8 @@
 // ── Feed Content Data ──────────────────────────────
 const feedData = {
     instagram: [
-        { emoji: '🎬', title: 'Behind the lens at GTB Studios — new drop incoming', member: 'The Visionary', link: 'https://www.instagram.com/gtb.collective/' },
-        { emoji: '💊', title: '5AM workout complete. Recovery fuel breakdown 🔥', member: 'The Specialist', link: 'https://www.instagram.com/gtb.collective/' },
+        { emoji: '🎬', title: 'Behind the lens at GTB Studios — new drop incoming', member: 'The Visionary', link: 'https://www.instagram.com/gladtobe.ot/' },
+        { emoji: '💊', title: '5AM workout complete. Recovery fuel breakdown 🔥', member: 'The Specialist', link: 'https://www.instagram.com/gladtobe.ot/' },
         { emoji: '🍽️', title: 'Pre-game meal prep for the collective. High-perf fuel.', member: 'The Gastronomist (@chef_kenar)', link: 'https://www.instagram.com/chef_kenar/' },
         { emoji: '🎵', title: 'Studio session vibes — new sonic direction unlocked.', member: 'The Artist (@gtbemzee)', link: 'https://www.instagram.com/gtbemzee/' },
     ],
