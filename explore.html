@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explore — GTB Collective</title>
+    <meta name="description"
+        content="Explore all GTB Collective content — Instagram, TikTok, YouTube across all 8 dimensions.">
+    <link rel="icon" type="image/png" href="gtb-logo.png">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- NAV -->
+    <nav id="nav">
+        <a href="index.html" class="nav-logo">
+            <img src="gtb-logo.png" alt="GTB" class="nav-logo-img">
+            <span class="nav-logo-text">GTB <span class="nav-logo-muted">Collective</span></span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="index.html#members">Members</a></li>
+            <li><a href="index.html#social">Social</a></li>
+            <li><a href="explore.html" style="color:#7c6fff;">Explore</a></li>
+            <li><a href="https://trevonk-coder.github.io/vidacut/" target="_blank" class="nav-cta">VidaCut AI ↗</a></li>
+        </ul>
+        <button class="nav-burger" id="navBurger" aria-label="Menu">☰</button>
+    </nav>
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="index.html#members">Members</a>
+        <a href="index.html#social">Social</a>
+        <a href="explore.html">Explore</a>
+        <a href="https://trevonk-coder.github.io/vidacut/" target="_blank">VidaCut AI ↗</a>
+    </div>
+
+    <!-- EXPLORE HERO -->
+    <section id="explore-hero">
+        <div class="hero-bg-grid"></div>
+        <div class="hero-orb-1"></div>
+        <div class="inner">
+            <div class="section-tag">// Explore GTB</div>
+            <h1
+                style="font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(40px,7vw,80px);letter-spacing:-3px;line-height:1;margin-bottom:20px;">
+                All <span style="color:var(--accent);">Dimensions</span><br>One Feed
+            </h1>
+            <p style="color:var(--muted);font-size:13px;max-width:480px;margin-bottom:48px;">
+                Every drop from every member — art, health, tech, music, film, food. Filter by platform or dimension.
+            </p>
+
+            <!-- Filters -->
+            <div class="explore-filters">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="instagram">📸 Instagram</button>
+                <button class="filter-btn" data-filter="tiktok">🎵 TikTok</button>
+                <button class="filter-btn" data-filter="youtube">▶ YouTube</button>
+                <button class="filter-btn" data-filter="polymath">The Polymath</button>
+                <button class="filter-btn" data-filter="performer">The Performer</button>
+                <button class="filter-btn" data-filter="visionary">The Visionary</button>
+                <button class="filter-btn" data-filter="specialist">The Specialist</button>
+                <button class="filter-btn" data-filter="gastronomist">The Gastronomist</button>
+                <button class="filter-btn" data-filter="architect">The Architect</button>
+                <button class="filter-btn" data-filter="artist">The Artist</button>
+                <button class="filter-btn" data-filter="engineer">The Engineer</button>
+            </div>
+
+            <!-- Explore Grid -->
+            <div class="explore-grid" id="exploreGrid">
+
+                <a class="explore-card" data-platform="youtube" data-member="visionary" href="#" target="_blank">
+                    <div class="explore-card-platform yt">▶ YouTube</div>
+                    <div class="explore-card-thumb">🎬<div class="play-btn">▶</div>
+                    </div>
+                    <div class="explore-card-title">GTB Collective: How We Edit Cinematic Vlogs in 2026</div>
+                    <div class="explore-card-meta">Full tutorial · 28 min</div>
+                    <div class="explore-card-member">— The Visionary</div>
+                </a>
+
+                <a class="explore-card" data-platform="instagram" data-member="specialist" href="#" target="_blank">
+                    <div class="explore-card-platform ig">📸 Instagram</div>
+                    <div class="explore-card-thumb">💪<div class="play-btn">▶</div>
+                    </div>
+                    <div class="explore-card-title">5AM workout complete. Recovery breakdown 🔥</div>
+                    <div class="explore-card-meta">Post · Reel</div>
+                    <div class="explore-card-member">— The Specialist</div>
+                </a>
+
+                <a class="explore-card" data-platform="tiktok" data-member="performer" href="#" target="_blank">
+                    <div class="explore-card-platform tt">🎵 TikTok</div>
+                    <div class="explore-card-thumb">🎭<div class="play-btn">▶</div>
+                    </div>
+                    <div class="explore-card-title">POV: Acting + Coding at the same time 😂</div>
+                    <div class="explore-card-meta">Short · 42s</div>
+                    <div class="explore-card-member">— The Performer</div>
+                </a>
+
+                <a class="explore-card" data-platform="youtube" data-member="polymath" href="#" target="_blank">
+                    <div class="explore-card-platform yt">▶ YouTube</div>
+                    <div class="explore-card-thumb">🎙️<div class="play-btn">▶</div>
+                    </div>
+                    <div class="explore-card-title">Glad To Be — Documentary (Full Cut)</div>
+                    <div class="explore-card-meta">Documentary · 44 min</div>
+                    <div class="explore-card-member">— The Polymath</div>
+                </a>
+
+                <a class="explore-card" data-platform="instagram" data-member="gastronomist" href="#" target="_blank">
+                    <div class="explore-card-platform ig">📸 Instagram</div>
+                    <div class="explore-card-thumb">🍽️<div class="play-btn">▶</div>
+                    </div>
+                    <div class="explore-card-title">Pre-game meal prep for the collective. High-perf fuel.</div>
+                    <div class="explore-card-meta">Post · Carousel</div>
+                    <div class="explore-card-member">— The Gastronomist</div>
+                </a>
+
+                <a class="explore-card" data-platform="youtube" data-member="architect"
+                    href="https://trevonk-coder.github.io/vidacut/" target="_blank">
+                    <div class="explore-card-platform yt">▶ YouTube</div>
+                    <div class="explore-card-thumb">🏗️<div class="play-btn">▶</div>
+                    </div>
+                    <div class="explore-card-title">Building VidaCut AI — Full Dev Vlog</div>
+                    <div class="explore-card-meta">Dev Vlog · 55 min</div>
+                    <div class="explore-card-member">— The Architect</div>
+                </a>
+
+                <a class="explore-card" data-platform="tiktok" data-member="engineer" href="#" target="_blank">
+                    <div class="explore-card-platform tt">🎵 TikTok</div>
+                    <div class="explore-card-thumb">⚙️<div class="play-btn">▶</div>
+                    </div>
+                    <div class="explore-card-title">Deployed a full web app LIVE on TikTok. Watch me cook.</div>
+                    <div class="explore-card-meta">Short · 58s</div>
+                    <div class="explore-card-member">— The Engineer</div>
+                </a>
+
+                <a class="explore-card" data-platform="instagram" data-member="artist" href="#" target="_blank">
+                    <div class="explore-card-platform ig">📸 Instagram</div>
+                    <div class="explore-card-thumb">🎵<div class="play-btn">▶</div>
+                    </div>
+                    <div class="explore-card-title">Studio session vibes — new sonic direction unlocked.</div>
+                    <div class="explore-card-meta">Post · Reel</div>
+                    <div class="explore-card-member">— The Artist</div>
+                </a>
+
+                <a class="explore-card" data-platform="youtube" data-member="artist" href="#" target="_blank">
+                    <div class="explore-card-platform yt">▶ YouTube</div>
+                    <div class="explore-card-thumb">🎶<div class="play-btn">▶</div>
+                    </div>
+                    <div class="explore-card-title">Experimental Beat Breakdown — GTB Sound Design Vol.1</div>
+                    <div class="explore-card-meta">Music Drop · 18 min</div>
+                    <div class="explore-card-member">— The Artist</div>
+                </a>
+
+                <a class="explore-card" data-platform="tiktok" data-member="specialist" href="#" target="_blank">
+                    <div class="explore-card-platform tt">🎵 TikTok</div>
+                    <div class="explore-card-thumb">🩺<div class="play-btn">▶</div>
+                    </div>
+                    <div class="explore-card-title">Medical myth busted in 60 seconds #DoctorTok</div>
+                    <div class="explore-card-meta">Short · 60s</div>
+                    <div class="explore-card-member">— The Specialist</div>
+                </a>
+
+                <a class="explore-card" data-platform="tiktok" data-member="gastronomist" href="#" target="_blank">
+                    <div class="explore-card-platform tt">🎵 TikTok</div>
+                    <div class="explore-card-thumb">🥗<div class="play-btn">▶</div>
+                    </div>
+                    <div class="explore-card-title">60-second high-protein meal for creators on the go</div>
+                    <div class="explore-card-meta">Short · 60s</div>
+                    <div class="explore-card-member">— The Gastronomist</div>
+                </a>
+
+                <a class="explore-card" data-platform="instagram" data-member="visionary" href="#" target="_blank">
+                    <div class="explore-card-platform ig">📸 Instagram</div>
+                    <div class="explore-card-thumb">🎥<div class="play-btn">▶</div>
+                    </div>
+                    <div class="explore-card-title">Behind the lens at GTB Studios — new drop incoming</div>
+                    <div class="explore-card-meta">Post · Reel</div>
+                    <div class="explore-card-member">— The Visionary</div>
+                </a>
+
+            </div>
+
+            <!-- Back home -->
+            <div style="margin-top:60px;text-align:center;">
+                <a href="index.html" class="btn btn-ghost">← Back to GTB Home</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-inner">
+            <div class="footer-logo">
+                <img src="gtb-logo.png" alt="GTB" class="footer-logo-img">
+                <span>Glad To Be</span>
+            </div>
+            <div class="footer-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#members">Members</a>
+                <a href="https://trevonk-coder.github.io/vidacut/" target="_blank">VidaCut</a>
+            </div>
+            <div class="footer-copy">© 2026 GTB Collective · Glad To Be</div>
+        </div>
+    </footer>
+
+    <script src="main.js"></script>
+</body>
+
+</html>
