@@ -14,6 +14,7 @@ const MEMBER_ACCOUNTS = [
     { email: 'gastronomist@gtb.co.ke', password: 'GTBgastronomist2026!', role: 'gastronomist', title: 'The Gastronomist' },
     { email: 'architect@gtb.co.ke', password: 'GTBarchitect2026!', role: 'architect', title: 'The Architect', isAdmin: true },
     { email: 'artist@gtb.co.ke', password: 'GTBartist2026!', role: 'artist', title: 'The Artist', isAdmin: true },
+    { email: 'artist2@gtb.co.ke', password: 'GTBartist22026!', role: 'artist2', title: 'The Artist II' },
     { email: 'engineer@gtb.co.ke', password: 'GTBengineer2026!', role: 'engineer', title: 'The Engineer' },
 ];
 
@@ -26,5 +27,6 @@ const DEFAULT_MEMBERS = {
     gastronomist: { display_name: 'The Gastronomist', emoji: '🍽️', tags: 'Chef · Performance Nutrition', bio: 'Culinary arts for high-performance living.', instagram: 'https://www.instagram.com/chef.kenah/', tiktok: 'https://www.tiktok.com/@chef_kenah', youtube: '' },
     architect: { display_name: 'The Architect', emoji: '🏗️', tags: 'Lead Dev · Backend · APIs · Security', bio: 'The GTB foundation. Heavy-duty backend, API bridges, system security.', instagram: '', tiktok: '', youtube: '', github: 'https://github.com/TrevonK-coder', cv: 'https://trevonk-coder.github.io/myCV/' },
     artist: { display_name: 'The Artist', emoji: '🎵', tags: 'Music · Creative Direction', bio: 'The sonic pulse of GTB. Experimental soundscapes and creative purity.', instagram: 'https://www.instagram.com/gtbemzee/', tiktok: 'https://www.tiktok.com/@gtbemzee', youtube: 'https://www.youtube.com/@gtbemzee' },
+    artist2: { display_name: 'The Artist II', emoji: '🎨', tags: 'Music · Visual Art', bio: 'Creative force and co-founder of GTB. Art without limits.', instagram: 'https://www.instagram.com/lecco.man/', tiktok: '', youtube: '' },
     engineer: { display_name: 'The Engineer', emoji: '⚙️', tags: 'Full-Stack · Deployment · Scaling', bio: 'Rapid deployment and scaling. The glue for all GTB digital properties.', instagram: '', tiktok: '', youtube: '' },
 };
