@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GTB Admin — Change Approval Queue</title>
+    <link rel="icon" type="image/png" href="gtb-logo.png">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #060609;
+            --surface: #0e0e16;
+            --surface2: #161622;
+            --border: rgba(255, 255, 255, 0.07);
+            --accent: #7c6fff;
+            --accent2: #a78bfa;
+            --green: #22d47a;
+            --red: #ff5c5c;
+            --yellow: #fbbf24;
+            --muted: #666;
+            --text: #f0f0f4;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Syne', sans-serif;
+            min-height: 100vh;
+        }
+
+        .mono {
+            font-family: 'DM Mono', monospace;
+        }
+
+        /* Nav */
+        .admin-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 32px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(6, 6, 9, .9);
+            backdrop-filter: blur(12px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .admin-nav .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text);
+        }
+
+        .admin-nav .logo img {
+            height: 28px;
+        }
+
+        .admin-nav .logo span {
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        .admin-nav .logo .muted {
+            color: var(--muted);
+            font-weight: 400;
+        }
+
+        .admin-nav .logo .badge {
+            font-family: 'DM Mono', monospace;
+            font-size: 9px;
+            background: rgba(255, 92, 92, .12);
+            color: var(--red);
+            padding: 2px 8px;
+            border-radius: 10px;
+            letter-spacing: 1px;
+            margin-left: 8px;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .btn {
+            font-family: 'Syne', sans-serif;
+            font-weight: 600;
+            font-size: 13px;
+            padding: 8px 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: all .2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-accent {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+        }
+
+        .btn-accent:hover {
+            background: var(--accent2);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--text);
+        }
+
+        .btn-ghost:hover {
+            border-color: var(--accent);
+        }
+
+        .btn-green {
+            background: rgba(34, 212, 122, .12);
+            border-color: rgba(34, 212, 122, .2);
+            color: var(--green);
+        }
+
+        .btn-green:hover {
+            background: rgba(34, 212, 122, .25);
+        }
+
+        .btn-danger {
+            background: rgba(255, 92, 92, .12);
+            border-color: rgba(255, 92, 92, .2);
+            color: var(--red);
+        }
+
+        .btn-danger:hover {
+            background: rgba(255, 92, 92, .25);
+        }
+
+        .btn:disabled {
+            opacity: .3;
+            cursor: default;
+        }
+
+        /* Main */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 32px;
+        }
+
+        /* Login */
+        .login-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 70vh;
+            text-align: center;
+        }
+
+        .login-wrap h1 {
+            font-size: 40px;
+            font-weight: 800;
+            letter-spacing: -2px;
+            margin-bottom: 6px;
+        }
+
+        .login-wrap h1 span {
+            color: var(--red);
+        }
+
+        .login-wrap .sub {
+            font-family: 'DM Mono', monospace;
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 32px;
+        }
+
+        .login-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 28px;
+            width: 100%;
+            max-width: 360px;
+        }
+
+        .field {
+            margin-bottom: 14px;
+            text-align: left;
+        }
+
+        .field label {
+            font-family: 'DM Mono', monospace;
+            font-size: 11px;
+            color: var(--muted);
+            display: block;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+        }
+
+        .field input {
+            width: 100%;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-family: 'DM Mono', monospace;
+            font-size: 13px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            outline: none;
+        }
+
+        .field input:focus {
+            border-color: var(--accent);
+        }
+
+        .login-btn {
+            width: 100%;
+            justify-content: center;
+            padding: 11px;
+            margin-top: 6px;
+        }
+
+        .login-error {
+            font-family: 'DM Mono', monospace;
+            font-size: 11px;
+            color: var(--red);
+            margin-top: 10px;
+            display: none;
+        }
+
+        /* Dashboard header */
+        .dash-header {
+            margin-bottom: 28px;
+        }
+
+        .dash-header h2 {
+            font-size: 32px;
+            font-weight: 800;
+            letter-spacing: -2px;
+        }
+
+        .dash-header h2 span {
+            color: var(--accent);
+        }
+
+        .dash-header .sub {
+            font-family: 'DM Mono', monospace;
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        /* Stats row */
+        .stats {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 28px;
+        }
+
+        .stat-card {
+            flex: 1;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .stat-card .num {
+            font-size: 28px;
+            font-weight: 800;
+        }
+
+        .stat-card .lbl {
+            font-family: 'DM Mono', monospace;
+            font-size: 10px;
+            color: var(--muted);
+            letter-spacing: 1px;
+            margin-top: 4px;
+        }
+
+        .stat-pending .num {
+            color: var(--yellow);
+        }
+
+        .stat-approved .num {
+            color: var(--green);
+        }
+
+        .stat-rejected .num {
+            color: var(--red);
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            font-family: 'DM Mono', monospace;
+            font-size: 11px;
+            padding: 6px 16px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--muted);
+            cursor: pointer;
+            transition: all .2s;
+        }
+
+        .tab.active {
+            background: rgba(124, 111, 255, .12);
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        /* Request card */
+        .req-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 14px;
+            transition: border-color .2s;
+        }
+
+        .req-card:hover {
+            border-color: rgba(255, 255, 255, .12);
+        }
+
+        .req-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+
+        .req-member {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .req-member .emoji {
+            font-size: 24px;
+        }
+
+        .req-member .info .name {
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        .req-member .info .time {
+            font-family: 'DM Mono', monospace;
+            font-size: 10px;
+            color: var(--muted);
+        }
+
+        .req-status {
+            font-family: 'DM Mono', monospace;
+            font-size: 10px;
+            padding: 3px 10px;
+            border-radius: 12px;
+            letter-spacing: 1px;
+        }
+
+        .s-pending {
+            background: rgba(251, 191, 36, .12);
+            color: var(--yellow);
+        }
+
+        .s-approved {
+            background: rgba(34, 212, 122, .12);
+            color: var(--green);
+        }
+
+        .s-rejected {
+            background: rgba(255, 92, 92, .12);
+            color: var(--red);
+        }
+
+        .req-prompt {
+            font-family: 'DM Mono', monospace;
+            font-size: 12px;
+            color: var(--muted);
+            padding: 10px 14px;
+            background: var(--bg);
+            border-radius: 8px;
+            margin-bottom: 14px;
+            border-left: 3px solid var(--accent);
+            line-height: 1.6;
+        }
+
+        /* Diff table */
+        .diff-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 14px;
+        }
+
+        .diff-table th {
+            font-family: 'DM Mono', monospace;
+            font-size: 10px;
+            color: var(--muted);
+            letter-spacing: 1px;
+            text-align: left;
+            padding: 6px 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .diff-table td {
+            font-family: 'DM Mono', monospace;
+            font-size: 12px;
+            padding: 8px 10px;
+            border-bottom: 1px solid var(--border);
+            word-break: break-all;
+        }
+
+        .diff-table .field-name {
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .diff-table .old {
+            color: var(--red);
+            background: rgba(255, 92, 92, .04);
+        }
+
+        .diff-table .new {
+            color: var(--green);
+            background: rgba(34, 212, 122, .04);
+        }
+
+        .req-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Note modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .6);
+            z-index: 200;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .modal-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 28px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .modal-box h3 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 14px;
+        }
+
+        .modal-box textarea {
+            width: 100%;
+            min-height: 80px;
+            resize: vertical;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-family: 'DM Mono', monospace;
+            font-size: 12px;
+            padding: 10px;
+            border-radius: 8px;
+            outline: none;
+            margin-bottom: 14px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-family: 'DM Mono', monospace;
+            font-size: 12px;
+            padding: 12px 20px;
+            border-radius: 10px;
+            transform: translateY(80px);
+            opacity: 0;
+            transition: all .3s;
+            z-index: 300;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin .6s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--muted);
+        }
+
+        .empty-state .big {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .empty-state p {
+            font-family: 'DM Mono', monospace;
+            font-size: 12px;
+        }
+
+        #adminDash {
+            display: none;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 16px;
+            }
+
+            .stats {
+                flex-direction: column;
+            }
+
+            .diff-table {
+                font-size: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Nav -->
+    <nav class="admin-nav">
+        <a href="index.html" class="logo">
+            <img src="gtb-logo.png" alt="GTB">
+            <span>GTB <span class="muted">Admin</span></span>
+            <span class="badge">ADMIN</span>
+        </a>
+        <div class="nav-actions" id="navActions" style="display:none;">
+            <a href="portal.html" class="btn btn-ghost">← Portal</a>
+            <button class="btn btn-ghost" onclick="logout()">Sign Out</button>
+        </div>
+    </nav>
+
+    <!-- Login -->
+    <div class="container" id="adminLogin">
+        <div class="login-wrap">
+            <h1>Admin <span>Panel</span></h1>
+            <p class="sub">The Architect access only</p>
+            <div class="login-box">
+                <div class="field">
+                    <label>EMAIL</label>
+                    <input type="email" id="loginEmail" placeholder="architect@gtb.co.ke">
+                </div>
+                <div class="field">
+                    <label>PASSWORD</label>
+                    <input type="password" id="loginPass" placeholder="••••••••">
+                </div>
+                <button class="btn btn-accent login-btn" id="loginBtn" onclick="doLogin()">Sign In →</button>
+                <div class="login-error" id="loginError"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div class="container" id="adminDash">
+        <div class="dash-header">
+            <h2>Approval <span>Queue</span></h2>
+            <div class="sub">Review and approve member profile change requests</div>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card stat-pending">
+                <div class="num" id="statPending">0</div>
+                <div class="lbl">PENDING</div>
+            </div>
+            <div class="stat-card stat-approved">
+                <div class="num" id="statApproved">0</div>
+                <div class="lbl">APPROVED</div>
+            </div>
+            <div class="stat-card stat-rejected">
+                <div class="num" id="statRejected">0</div>
+                <div class="lbl">REJECTED</div>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" data-filter="pending" onclick="setFilter('pending', this)">⏳ Pending</button>
+            <button class="tab" data-filter="approved" onclick="setFilter('approved', this)">✅ Approved</button>
+            <button class="tab" data-filter="rejected" onclick="setFilter('rejected', this)">❌ Rejected</button>
+            <button class="tab" data-filter="all" onclick="setFilter('all', this)">All</button>
+        </div>
+
+        <div id="requestsList"></div>
+    </div>
+
+    <!-- Reject Note Modal -->
+    <div class="modal-overlay" id="rejectModal">
+        <div class="modal-box">
+            <h3>Reject Change Request</h3>
+            <textarea id="rejectNote" placeholder="Optional: reason for rejection..."></textarea>
+            <div class="modal-actions">
+                <button class="btn btn-ghost" onclick="closeRejectModal()">Cancel</button>
+                <button class="btn btn-danger" onclick="confirmReject()">Reject</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        let currentFilter = 'pending';
+        let allRequests = [];
+        let rejectingId = null;
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg; t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
+        }
+
+        // ── Login ──
+        async function doLogin() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const pass = document.getElementById('loginPass').value;
+            const errEl = document.getElementById('loginError');
+            const btn = document.getElementById('loginBtn');
+
+            if (!email || !pass) { errEl.textContent = 'Enter email and password.'; errEl.style.display = 'block'; return; }
+
+            // Check admin
+            const admin = MEMBER_ACCOUNTS.find(m => m.email === email && m.isAdmin);
+            if (!admin) { errEl.textContent = 'Admin access only.'; errEl.style.display = 'block'; return; }
+
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span> Signing in...';
+            errEl.style.display = 'none';
+
+            try {
+                const { data, error } = await supabase.auth.signInWithPassword({ email, password: pass });
+                if (error) {
+                    if (error.message.includes('Invalid login')) {
+                        const { error: sErr } = await supabase.auth.signUp({ email, password: pass });
+                        if (sErr) throw sErr;
+                        const { error: rErr } = await supabase.auth.signInWithPassword({ email, password: pass });
+                        if (rErr) { showToast('Account created — check email to confirm, then sign in again.'); btn.disabled = false; btn.textContent = 'Sign In →'; return; }
+                    } else { throw error; }
+                }
+                showAdmin();
+            } catch (err) {
+                errEl.textContent = err.message || 'Login failed.';
+                errEl.style.display = 'block';
+                btn.disabled = false; btn.textContent = 'Sign In →';
+            }
+        }
+
+        function showAdmin() {
+            document.getElementById('adminLogin').style.display = 'none';
+            document.getElementById('adminDash').style.display = 'block';
+            document.getElementById('navActions').style.display = 'flex';
+            loadRequests();
+        }
+
+        // ── Load Requests ──
+        async function loadRequests() {
+            const { data, error } = await supabase
+                .from('pending_changes')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            allRequests = data || [];
+            updateStats();
+            renderRequests();
+        }
+
+        function updateStats() {
+            document.getElementById('statPending').textContent = allRequests.filter(r => r.status === 'pending').length;
+            document.getElementById('statApproved').textContent = allRequests.filter(r => r.status === 'approved').length;
+            document.getElementById('statRejected').textContent = allRequests.filter(r => r.status === 'rejected').length;
+        }
+
+        function setFilter(f, btn) {
+            currentFilter = f;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            btn.classList.add('active');
+            renderRequests();
+        }
+
+        function renderRequests() {
+            const container = document.getElementById('requestsList');
+            const filtered = currentFilter === 'all' ? allRequests : allRequests.filter(r => r.status === currentFilter);
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<div class="empty-state"><div class="big">${currentFilter === 'pending' ? '✅' : '📋'}</div><p>${currentFilter === 'pending' ? 'No pending requests — all caught up!' : 'No requests in this category.'}</p></div>`;
+                return;
+            }
+
+            container.innerHTML = filtered.map(r => {
+                const memberDefault = DEFAULT_MEMBERS[r.member_id] || {};
+                const emoji = memberDefault.emoji || '👤';
+                const title = r.member_title || r.member_id;
+                const time = new Date(r.created_at).toLocaleString();
+                const sClass = r.status === 'approved' ? 's-approved' : r.status === 'rejected' ? 's-rejected' : 's-pending';
+
+                // Build diff table
+                const diffRows = Object.entries(r.proposed).map(([key, newVal]) => {
+                    const oldVal = (r.current_data && r.current_data[key]) || '(empty)';
+                    return `<tr>
+        <td class="field-name">${key}</td>
+        <td class="old">− ${oldVal}</td>
+        <td class="new">+ ${newVal}</td>
+      </tr>`;
+                }).join('');
+
+                const actions = r.status === 'pending' ? `
+      <div class="req-actions">
+        <button class="btn btn-green" onclick="approveRequest('${r.id}')">✓ Approve</button>
+        <button class="btn btn-danger" onclick="openRejectModal('${r.id}')">✗ Reject</button>
+      </div>
+    ` : '';
+
+                const noteHtml = r.note ? `<div class="mono" style="font-size:11px;color:var(--yellow);margin-bottom:14px;">Note: ${r.note}</div>` : '';
+
+                return `
+      <div class="req-card">
+        <div class="req-header">
+          <div class="req-member">
+            <span class="emoji">${emoji}</span>
+            <div class="info">
+              <div class="name">${title}</div>
+              <div class="time">${time}</div>
+            </div>
+          </div>
+          <span class="req-status ${sClass}">${r.status.toUpperCase()}</span>
+        </div>
+        ${r.prompt_text ? `<div class="req-prompt">"${r.prompt_text}"</div>` : ''}
+        <table class="diff-table">
+          <thead><tr><th>FIELD</th><th>CURRENT</th><th>PROPOSED</th></tr></thead>
+          <tbody>${diffRows}</tbody>
+        </table>
+        ${noteHtml}
+        ${actions}
+      </div>
+    `;
+            }).join('');
+        }
+
+        // ── Approve ──
+        async function approveRequest(id) {
+            const req = allRequests.find(r => r.id === id);
+            if (!req) return;
+
+            // Apply changes to members table
+            const { error: updateErr } = await supabase
+                .from('members')
+                .update(req.proposed)
+                .eq('id', req.member_id);
+
+            if (updateErr) {
+                // If member doesn't exist yet, upsert
+                await supabase.from('members').upsert({
+                    id: req.member_id,
+                    ...DEFAULT_MEMBERS[req.member_id],
+                    ...req.proposed
+                });
+            }
+
+            // Mark as approved
+            await supabase.from('pending_changes').update({ status: 'approved' }).eq('id', id);
+            showToast('✅ Approved and applied!');
+            loadRequests();
+        }
+
+        // ── Reject ──
+        function openRejectModal(id) {
+            rejectingId = id;
+            document.getElementById('rejectNote').value = '';
+            document.getElementById('rejectModal').classList.add('open');
+        }
+        function closeRejectModal() {
+            rejectingId = null;
+            document.getElementById('rejectModal').classList.remove('open');
+        }
+        async function confirmReject() {
+            if (!rejectingId) return;
+            const note = document.getElementById('rejectNote').value.trim();
+            await supabase.from('pending_changes').update({ status: 'rejected', note: note || null }).eq('id', rejectingId);
+            closeRejectModal();
+            showToast('❌ Request rejected.');
+            loadRequests();
+        }
+
+        // ── Logout ──
+        async function logout() {
+            await supabase.auth.signOut();
+            document.getElementById('adminDash').style.display = 'none';
+            document.getElementById('adminLogin').style.display = 'block';
+            document.getElementById('navActions').style.display = 'none';
+        }
+
+        // ── Auto-login check ──
+        (async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) {
+                const admin = MEMBER_ACCOUNTS.find(m => m.email === session.user.email && m.isAdmin);
+                if (admin) showAdmin();
+            }
+        })();
+    </script>
+</body>
+
+</html>
