@@ -9,7 +9,7 @@ const feedData = {
     tiktok: [
         { emoji: '🎭', title: 'POV: Acting + coding at the same time 😂', member: 'The Performer', link: 'https://www.tiktok.com/@gtbcollective' },
         { emoji: '💊', title: 'Medical myth busted in 60 seconds #DoctorTok', member: 'The Specialist', link: 'https://www.tiktok.com/@gtbcollective' },
-        { emoji: '🍽️', title: '60-second high-protein meal for creators on the go', member: 'The Gastronomist (@chef.kenah)', link: 'https://www.tiktok.com/@chef.kenah' },
+        { emoji: '🍽️', title: '60-second high-protein meal for creators on the go', member: 'The Gastronomist (@chef_kenah)', link: 'https://www.tiktok.com/@chef_kenah' },
         { emoji: '🎵', title: 'New sound drop — GTB vibes only 🔥', member: 'The Artist (@gtbemzee)', link: 'https://www.tiktok.com/@gtbemzee' },
     ],
     youtube: [
