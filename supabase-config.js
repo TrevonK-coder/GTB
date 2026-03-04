@@ -13,7 +13,7 @@ const MEMBER_ACCOUNTS = [
     { email: 'specialist@gtb.co.ke', password: 'GTBspecialist2026!', role: 'specialist', title: 'The Specialist' },
     { email: 'gastronomist@gtb.co.ke', password: 'GTBgastronomist2026!', role: 'gastronomist', title: 'The Gastronomist' },
     { email: 'architect@gtb.co.ke', password: 'GTBarchitect2026!', role: 'architect', title: 'The Architect', isAdmin: true },
-    { email: 'artist@gtb.co.ke', password: 'GTBartist2026!', role: 'artist', title: 'The Artist' },
+    { email: 'artist@gtb.co.ke', password: 'GTBartist2026!', role: 'artist', title: 'The Artist', isAdmin: true },
     { email: 'engineer@gtb.co.ke', password: 'GTBengineer2026!', role: 'engineer', title: 'The Engineer' },
 ];
 
