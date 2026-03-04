@@ -664,7 +664,13 @@
 
     <script>
         // ── Init Supabase ──
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        let sb;
+        try {
+            sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            console.log('Supabase client initialized OK');
+        } catch (e) {
+            console.error('Supabase init failed:', e);
+        }
 
         let currentUser = null;
         let currentMember = null;
@@ -698,14 +704,14 @@
             errEl.style.display = 'none';
 
             try {
-                const { data, error } = await supabase.auth.signInWithPassword({ email, password: pass });
+                const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
                 if (error) {
                     // If user doesn't exist yet, sign them up
                     if (error.message.includes('Invalid login')) {
-                        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({ email, password: pass });
+                        const { data: signUpData, error: signUpError } = await sb.auth.signUp({ email, password: pass });
                         if (signUpError) throw signUpError;
                         // Auto-confirm: try signing in again
-                        const { data: retryData, error: retryError } = await supabase.auth.signInWithPassword({ email, password: pass });
+                        const { data: retryData, error: retryError } = await sb.auth.signInWithPassword({ email, password: pass });
                         if (retryError) {
                             showToast('Account created! Check your email to confirm, then sign in again.');
                             btn.disabled = false;
@@ -741,7 +747,7 @@
             document.getElementById('dashName').textContent = currentMember.title;
 
             // Load member data from Supabase
-            const { data, error } = await supabase
+            const { data, error } = await sb
                 .from('members')
                 .select('*')
                 .eq('id', currentMember.role)
@@ -751,7 +757,7 @@
                 // Seed from defaults
                 currentData = { ...DEFAULT_MEMBERS[currentMember.role] };
                 // Try to insert into Supabase
-                await supabase.from('members').upsert({
+                await sb.from('members').upsert({
                     id: currentMember.role,
                     ...currentData,
                     user_id: currentUser.id
@@ -893,7 +899,7 @@ RULES:
             if (!proposedData) return;
 
             try {
-                const { error } = await supabase.from('pending_changes').insert({
+                const { error } = await sb.from('pending_changes').insert({
                     member_id: currentMember.role,
                     member_title: currentMember.title,
                     current_data: currentData,
@@ -917,7 +923,7 @@ RULES:
         async function loadMyRequests() {
             const container = document.getElementById('myRequests');
 
-            const { data, error } = await supabase
+            const { data, error } = await sb
                 .from('pending_changes')
                 .select('*')
                 .eq('member_id', currentMember.role)
@@ -948,7 +954,7 @@ RULES:
 
         // ── Logout ──
         async function logout() {
-            await supabase.auth.signOut();
+            await sb.auth.signOut();
             currentUser = null;
             currentMember = null;
             currentData = {};
@@ -958,7 +964,7 @@ RULES:
 
         // ── Auto-login check ──
         (async () => {
-            const { data: { session } } = await supabase.auth.getSession();
+            const { data: { session } } = await sb.auth.getSession();
             if (session) {
                 currentUser = session.user;
                 currentMember = MEMBER_ACCOUNTS.find(m => m.email === session.user.email);

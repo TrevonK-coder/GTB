@@ -663,7 +663,13 @@
     <div class="toast" id="toast"></div>
 
     <script>
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        let sb;
+        try {
+            sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            console.log('Supabase admin client initialized OK');
+        } catch (e) {
+            console.error('Supabase init failed:', e);
+        }
         let currentFilter = 'pending';
         let allRequests = [];
         let rejectingId = null;
@@ -692,12 +698,12 @@
             errEl.style.display = 'none';
 
             try {
-                const { data, error } = await supabase.auth.signInWithPassword({ email, password: pass });
+                const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
                 if (error) {
                     if (error.message.includes('Invalid login')) {
-                        const { error: sErr } = await supabase.auth.signUp({ email, password: pass });
+                        const { error: sErr } = await sb.auth.signUp({ email, password: pass });
                         if (sErr) throw sErr;
-                        const { error: rErr } = await supabase.auth.signInWithPassword({ email, password: pass });
+                        const { error: rErr } = await sb.auth.signInWithPassword({ email, password: pass });
                         if (rErr) { showToast('Account created — check email to confirm, then sign in again.'); btn.disabled = false; btn.textContent = 'Sign In →'; return; }
                     } else { throw error; }
                 }
@@ -718,7 +724,7 @@
 
         // ── Load Requests ──
         async function loadRequests() {
-            const { data, error } = await supabase
+            const { data, error } = await sb
                 .from('pending_changes')
                 .select('*')
                 .order('created_at', { ascending: false });
@@ -806,14 +812,14 @@
             if (!req) return;
 
             // Apply changes to members table
-            const { error: updateErr } = await supabase
+            const { error: updateErr } = await sb
                 .from('members')
                 .update(req.proposed)
                 .eq('id', req.member_id);
 
             if (updateErr) {
                 // If member doesn't exist yet, upsert
-                await supabase.from('members').upsert({
+                await sb.from('members').upsert({
                     id: req.member_id,
                     ...DEFAULT_MEMBERS[req.member_id],
                     ...req.proposed
@@ -821,7 +827,7 @@
             }
 
             // Mark as approved
-            await supabase.from('pending_changes').update({ status: 'approved' }).eq('id', id);
+            await sb.from('pending_changes').update({ status: 'approved' }).eq('id', id);
             showToast('✅ Approved and applied!');
             loadRequests();
         }
@@ -839,7 +845,7 @@
         async function confirmReject() {
             if (!rejectingId) return;
             const note = document.getElementById('rejectNote').value.trim();
-            await supabase.from('pending_changes').update({ status: 'rejected', note: note || null }).eq('id', rejectingId);
+            await sb.from('pending_changes').update({ status: 'rejected', note: note || null }).eq('id', rejectingId);
             closeRejectModal();
             showToast('❌ Request rejected.');
             loadRequests();
@@ -847,7 +853,7 @@
 
         // ── Logout ──
         async function logout() {
-            await supabase.auth.signOut();
+            await sb.auth.signOut();
             document.getElementById('adminDash').style.display = 'none';
             document.getElementById('adminLogin').style.display = 'block';
             document.getElementById('navActions').style.display = 'none';
@@ -855,7 +861,7 @@
 
         // ── Auto-login check ──
         (async () => {
-            const { data: { session } } = await supabase.auth.getSession();
+            const { data: { session } } = await sb.auth.getSession();
             if (session) {
                 const admin = MEMBER_ACCOUNTS.find(m => m.email === session.user.email && m.isAdmin);
                 if (admin) showAdmin();
