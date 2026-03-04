@@ -3,13 +3,13 @@ const feedData = {
     instagram: [
         { emoji: '🎬', title: 'Behind the lens at GTB Studios — new drop incoming', member: 'The Visionary', link: 'https://www.instagram.com/gladtobe.ot/' },
         { emoji: '💊', title: '5AM workout complete. Recovery fuel breakdown 🔥', member: 'The Specialist', link: 'https://www.instagram.com/gladtobe.ot/' },
-        { emoji: '🍽️', title: 'Pre-game meal prep for the collective. High-perf fuel.', member: 'The Gastronomist (@chef_kenar)', link: 'https://www.instagram.com/chef_kenar/' },
+        { emoji: '🍽️', title: 'Pre-game meal prep for the collective. High-perf fuel.', member: 'The Gastronomist (@chef.kenah)', link: 'https://www.instagram.com/chef.kenah/' },
         { emoji: '🎵', title: 'Studio session vibes — new sonic direction unlocked.', member: 'The Artist (@gtbemzee)', link: 'https://www.instagram.com/gtbemzee/' },
     ],
     tiktok: [
         { emoji: '🎭', title: 'POV: Acting + coding at the same time 😂', member: 'The Performer', link: 'https://www.tiktok.com/@gtbcollective' },
         { emoji: '💊', title: 'Medical myth busted in 60 seconds #DoctorTok', member: 'The Specialist', link: 'https://www.tiktok.com/@gtbcollective' },
-        { emoji: '🍽️', title: '60-second high-protein meal for creators on the go', member: 'The Gastronomist (@chef_kenar)', link: 'https://www.tiktok.com/@chef_kenar' },
+        { emoji: '🍽️', title: '60-second high-protein meal for creators on the go', member: 'The Gastronomist (@chef.kenah)', link: 'https://www.tiktok.com/@chef.kenah' },
         { emoji: '🎵', title: 'New sound drop — GTB vibes only 🔥', member: 'The Artist (@gtbemzee)', link: 'https://www.tiktok.com/@gtbemzee' },
     ],
     youtube: [
