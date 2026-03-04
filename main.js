@@ -3,20 +3,20 @@ const feedData = {
     instagram: [
         { emoji: '🎬', title: 'Behind the lens at GTB Studios — new drop incoming', member: 'The Visionary', link: '#' },
         { emoji: '💊', title: '5AM workout complete. Recovery fuel breakdown 🔥', member: 'The Specialist', link: '#' },
-        { emoji: '🍽️', title: 'Pre-game meal prep for the collective. High-perf fuel.', member: 'The Gastronomist', link: '#' },
-        { emoji: '🎵', title: 'Studio session vibes — new sonic direction unlocked.', member: 'The Artist', link: '#' },
+        { emoji: '🍽️', title: 'Pre-game meal prep for the collective. High-perf fuel.', member: 'The Gastronomist (@chef_kenar)', link: 'https://www.instagram.com/chef_kenar/' },
+        { emoji: '🎵', title: 'Studio session vibes — new sonic direction unlocked.', member: 'The Artist (@gtbemzee)', link: 'https://www.instagram.com/gtbemzee/' },
     ],
     tiktok: [
         { emoji: '🎭', title: 'POV: Acting + coding at the same time 😂', member: 'The Performer', link: '#' },
         { emoji: '💊', title: 'Medical myth busted in 60 seconds #DoctorTok', member: 'The Specialist', link: '#' },
-        { emoji: '🍽️', title: '60-second high-protein meal for creators on the go', member: 'The Gastronomist', link: '#' },
-        { emoji: '⚙️', title: 'Deployed a full web app LIVE on TikTok. Watch me cook.', member: 'The Engineer', link: '#' },
+        { emoji: '🍽️', title: '60-second high-protein meal for creators on the go', member: 'The Gastronomist (@chef_kenar)', link: 'https://www.tiktok.com/@chef_kenar' },
+        { emoji: '🎵', title: 'New sound drop — GTB vibes only 🔥', member: 'The Artist (@gtbemzee)', link: 'https://www.tiktok.com/@gtbemzee' },
     ],
     youtube: [
         { emoji: '🎬', title: 'GTB Collective: How We Edit Cinematic Vlogs in 2026', member: 'The Visionary', link: '#' },
         { emoji: '🎙️', title: 'Glad To Be — Documentary (Full Cut)', member: 'The Polymath', link: '#' },
         { emoji: '🏗️', title: 'Building VidaCut AI from scratch — Full Dev Vlog', member: 'The Architect', link: '#' },
-        { emoji: '🎵', title: 'Experimental Beat Breakdown — GTB Sound Design Vol.1', member: 'The Artist', link: '#' },
+        { emoji: '🎵', title: 'Experimental Beat Breakdown — GTB Sound Design Vol.1', member: 'The Artist (@gtbemzee)', link: 'https://www.youtube.com/@gtbemzee' },
     ],
 };
 
