@@ -185,121 +185,48 @@ document.addEventListener('DOMContentLoaded', () => {
      * @param {boolean} addRim    - whether to add TorusGeometry edge ring
      * @returns {THREE.Group}
      */
-    function buildMedallion(tex, faceSize = 28, layers = 40, layerStep = 0.28, faceOpacity = 1, addRim = true) {
+    function buildMedallion(tex, faceSize = 28, layers = 18, layerStep = 0.28, faceOpacity = 1) {
         const grp = new THREE.Group();
 
-        // ── FRONT FACE (full-bright) ──────────────────────────────
-        const frontMat = new THREE.MeshStandardMaterial({
+        // ── FRONT FACE ────────────────────────────────────────────
+        const frontMat = new THREE.MeshBasicMaterial({
             map: tex,
             transparent: true,
             alphaTest: 0.02,
             depthWrite: false,
-            roughness: 0.15,
-            metalness: 0.7,
             opacity: faceOpacity,
-            envMapIntensity: 1.2,
         });
         const frontMesh = new THREE.Mesh(new THREE.PlaneGeometry(faceSize, faceSize), frontMat);
-        frontMesh.position.z = layers * layerStep * 0.5; // push to front
+        frontMesh.position.z = layers * layerStep * 0.5;
         grp.add(frontMesh);
 
-        // ── DEPTH LAYERS (build up thickness) ────────────────────
+        // ── DEPTH LAYERS — neutral dark, very low opacity ─────────
         for (let d = 1; d <= layers; d++) {
-            const pct = d / layers;  // 0→1 (front→back)
-            // Fade + tint: first half stays purplish-white, back half goes dark purple
-            const layerOpacity = faceOpacity * (d < layers * 0.25 ? 0.75 : 0.18 * (1 - pct * 0.8));
-            const hexColor = d < layers * 0.4 ? 0x9988ff : 0x3322aa;
-            const mat = new THREE.MeshStandardMaterial({
+            const pct = d / layers;
+            const layerOpacity = faceOpacity * 0.04 * (1 - pct * 0.9);
+            const mat = new THREE.MeshBasicMaterial({
                 map: tex,
                 transparent: true,
                 alphaTest: 0.02,
                 depthWrite: false,
                 opacity: layerOpacity,
-                color: new THREE.Color(hexColor),
-                roughness: 0.3,
-                metalness: 0.9,
             });
             const mesh = new THREE.Mesh(new THREE.PlaneGeometry(faceSize, faceSize), mat);
-            // Layers go from near-front all the way back
             mesh.position.z = (layers * 0.5 - d) * layerStep;
             grp.add(mesh);
         }
 
-        // ── BACK FACE (mirror) ────────────────────────────────────
-        const backMat = new THREE.MeshStandardMaterial({
-            map: tex,
-            transparent: true,
-            alphaTest: 0.02,
-            depthWrite: false,
-            roughness: 0.25,
-            metalness: 0.85,
-            opacity: faceOpacity * 0.5,
-            color: new THREE.Color(0x4422bb),
-            side: THREE.BackSide,
-        });
-        const backMesh = new THREE.Mesh(new THREE.PlaneGeometry(faceSize, faceSize), backMat);
-        backMesh.position.z = -layers * layerStep * 0.5;
-        grp.add(backMesh);
-
-        // ── GLOW HALO (additive, behind) ─────────────────────────
-        const glowMat = new THREE.MeshBasicMaterial({
-            map: tex, transparent: true, opacity: 0.22, alphaTest: 0.01,
-            blending: THREE.AdditiveBlending, depthWrite: false
-        });
-        const glowMesh = new THREE.Mesh(new THREE.PlaneGeometry(faceSize * 1.35, faceSize * 1.35), glowMat);
-        glowMesh.position.z = -4;
-        grp.add(glowMesh);
-
-        // Second wider glow for bloom effect
-        const glow2Mat = new THREE.MeshBasicMaterial({
-            map: tex, transparent: true, opacity: 0.08, alphaTest: 0.01,
-            blending: THREE.AdditiveBlending, depthWrite: false,
-            color: new THREE.Color(0x7c6fff)
-        });
-        const glow2Mesh = new THREE.Mesh(new THREE.PlaneGeometry(faceSize * 1.85, faceSize * 1.85), glow2Mat);
-        glow2Mesh.position.z = -6;
-        grp.add(glow2Mesh);
-
-        // ── RIM RING (TorusGeometry coin edge) ───────────────────
-        if (addRim) {
-            const rimRadius = faceSize * 0.48;
-            const rimTube = layerStep * layers * 0.5; // match thickness
-            const rimMat = new THREE.MeshStandardMaterial({
-                color: new THREE.Color(0x7c6fff),
-                emissive: new THREE.Color(0x5533cc),
-                emissiveIntensity: 1.8,
-                roughness: 0.1,
-                metalness: 1,
-                transparent: true,
-                opacity: 0.92,
-            });
-            const rimGeo = new THREE.TorusGeometry(rimRadius, rimTube, 24, 120);
-            const rim = new THREE.Mesh(rimGeo, rimMat);
-            grp.add(rim);
-
-            // Second thin bright rim for neon edge
-            const neonRimMat = new THREE.MeshBasicMaterial({
-                color: new THREE.Color(0xb090ff),
-                transparent: true,
-                opacity: 0.55,
-                blending: THREE.AdditiveBlending,
-                depthWrite: false,
-            });
-            const neonRimGeo = new THREE.TorusGeometry(rimRadius, rimTube * 0.25, 12, 120);
-            const neonRim = new THREE.Mesh(neonRimGeo, neonRimMat);
-            grp.add(neonRim);
-        }
-
-        // ── HORIZONTAL SCAN LINE ──────────────────────────────────
-        // A thin plane that sweeps from bottom to top of the medallion
+        // ── SCAN LINE ─────────────────────────────────────────────
         const scanMat = new THREE.MeshBasicMaterial({
             color: 0xffffff, transparent: true, opacity: 0,
             blending: THREE.AdditiveBlending, depthWrite: false,
             side: THREE.DoubleSide
         });
-        const scanGeo = new THREE.PlaneGeometry(faceSize * 0.95, faceSize * 0.025);
-        const scanLine = new THREE.Mesh(scanGeo, scanMat);
-        scanLine.position.z = layers * layerStep * 0.5 + 0.1; // just in front of face
+        const scanLine = new THREE.Mesh(
+            new THREE.PlaneGeometry(faceSize * 0.95, faceSize * 0.018),
+            scanMat
+        );
+        scanLine.position.z = layers * layerStep * 0.5 + 0.1;
         scanLine.userData.isScanLine = true;
         grp.add(scanLine);
         grp.userData.scanLine = scanLine;
@@ -309,6 +236,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         return grp;
     }
+
 
     // ── GTB LOGO GROUP ────────────────────────────────────────────
     const logoGroup = new THREE.Group();
