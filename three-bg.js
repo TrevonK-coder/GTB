@@ -270,7 +270,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         dupeCfgs.forEach(cfg => {
             // Fewer layers for perf on dupes (still looks thick)
-            const dupe = buildMedallion(tex, cfg.s * 2, 18, 0.22, cfg.op, cfg.s > 5);
+            const dupe = buildMedallion(tex, cfg.s * 2, 18, 0.22, cfg.op);
             dupe.position.set(cfg.x, cfg.y, cfg.z);
             dupe.rotation.set(cfg.rx, cfg.ry, 0);
             dupe.userData.driftSpeed = cfg.ds;
@@ -289,100 +289,6 @@ document.addEventListener('DOMContentLoaded', () => {
         );
         logoGroup.add(fallback);
     });
-
-    // ══════════════════════════════════════════════════════════════
-    // ── ICED DIAMOND CHAIN — subtle, fewer gems
-    // ══════════════════════════════════════════════════════════════
-    const diamondChain = new THREE.Group();
-    const chainDiamonds = [];
-    const CHAIN_COUNT = 18;          // reduced from 36
-    const CHAIN_RADIUS = 19.5;
-
-    // Shared diamond geometries (detail=1 for less faceted look)
-    const smallDiaGeoA = new THREE.OctahedronGeometry(0.42, 1);  // smaller
-    const largeDiaGeoA = new THREE.OctahedronGeometry(0.8, 1);   // smaller pendant
-
-    // Dim, near-white — barely-there ice
-    const iceMat = new THREE.MeshStandardMaterial({
-        color: new THREE.Color(0xd0d8ee),
-        emissive: new THREE.Color(0x334466),
-        emissiveIntensity: 0.18,
-        roughness: 0.05,
-        metalness: 1.0,
-        transparent: true,
-        opacity: 0.7,
-        envMapIntensity: 2.5,
-    });
-    // Soft violet for pendants
-    const pendantMat = new THREE.MeshStandardMaterial({
-        color: new THREE.Color(0xccbbff),
-        emissive: new THREE.Color(0x553399),
-        emissiveIntensity: 0.25,
-        roughness: 0.05,
-        metalness: 1.0,
-        transparent: true,
-        opacity: 0.75,
-        envMapIntensity: 2.5,
-    });
-
-    // Link bar (very thin)
-    const linkMat = new THREE.MeshStandardMaterial({
-        color: new THREE.Color(0x8878cc),
-        emissive: new THREE.Color(0x334488), // Kept emissive for consistency, but it's muted
-        emissiveIntensity: 0.0, // Muted
-        roughness: 0.2,
-        metalness: 1.0,
-        transparent: true,
-        opacity: 0.35,
-    });
-
-    for (let i = 0; i < CHAIN_COUNT; i++) {
-        const angle = (i / CHAIN_COUNT) * Math.PI * 2;
-        const isPendant = i % 3 === 0;         // large gold pendant every 3rd
-        const geo = isPendant ? largeDiaGeoA : smallDiaGeoA;
-        const mat = isPendant ? pendantMat : iceMat;
-
-        const dia = new THREE.Mesh(geo, mat);
-        dia.position.x = Math.cos(angle) * CHAIN_RADIUS;
-        dia.position.y = Math.sin(angle) * CHAIN_RADIUS * 0.18; // slight oval for perspective
-        dia.position.z = 0;
-        // Rotate each diamond on its own axis for facet sparkle
-        dia.rotation.x = Math.random() * Math.PI;
-        dia.rotation.z = Math.random() * Math.PI;
-
-        // Very faint glow — pendant only
-        if (isPendant) {
-            const haloMat = new THREE.MeshBasicMaterial({
-                color: new THREE.Color(0x9977ff),
-                transparent: true, opacity: 0.07,
-                blending: THREE.AdditiveBlending, depthWrite: false,
-                side: THREE.DoubleSide
-            });
-            const halo = new THREE.Mesh(new THREE.PlaneGeometry(2.0, 2.0), haloMat);
-            halo.position.copy(dia.position);
-            diamondChain.add(halo);
-        }
-
-        // Link bar between this and next diamond
-        const nextAngle = ((i + 1) / CHAIN_COUNT) * Math.PI * 2;
-        const nx = Math.cos(nextAngle) * CHAIN_RADIUS;
-        const ny = Math.sin(nextAngle) * CHAIN_RADIUS * 0.18;
-        // Midpoint and distance
-        const mx2 = (dia.position.x + nx) / 2;
-        const my2 = (dia.position.y + ny) / 2;
-        const dist = Math.sqrt((nx - dia.position.x) ** 2 + (ny - dia.position.y) ** 2);
-        const linkGeo = new THREE.CylinderGeometry(0.045, 0.045, dist, 4);
-        const link = new THREE.Mesh(linkGeo, linkMat);
-        link.position.set(mx2, my2, 0);
-        link.rotation.z = Math.atan2(ny - dia.position.y, nx - dia.position.x) + Math.PI / 2;
-        diamondChain.add(link);
-
-        diamondChain.add(dia);
-        chainDiamonds.push({ mesh: dia, baseAngle: angle, isPendant });
-    }
-
-    // Add chain to logo group so it moves with the medallion
-    logoGroup.add(diamondChain);
 
     // ── NEBULA DUST ───────────────────────────────────────────────
     const nebCount = isMobile ? 300 : 700;
@@ -458,22 +364,6 @@ document.addEventListener('DOMContentLoaded', () => {
             tickScanLine(d, t + ud.floatPhase);
         });
 
-        // ── Diamond chain slow orbit ──────────────────────────────
-        // Entire chain group rotates on its Y axis slowly
-        diamondChain.rotation.y = t * 0.055;
-        diamondChain.rotation.z = Math.sin(t * 0.09) * 0.04;
-
-        // Individual diamond sparkle — very slow, subtle
-        chainDiamonds.forEach((d, i) => {
-            const spd = d.isPendant ? 0.25 : 0.45;
-            d.mesh.rotation.y += spd * 0.008;
-            d.mesh.rotation.x += spd * 0.005;
-            // Gentle emissive flicker
-            const pulse = 0.5 + Math.sin(t * 1.4 + i * 0.4) * 0.5;
-            d.mesh.material.emissiveIntensity = d.isPendant
-                ? 0.15 + pulse * 0.18
-                : 0.08 + pulse * 0.12;
-        });
 
 
         galaxies.forEach(g => {
