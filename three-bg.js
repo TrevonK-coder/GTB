@@ -24,11 +24,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // ── LIGHTS ───────────────────────────────────────────────────
     scene.add(new THREE.AmbientLight(0x080820, 2.5));
 
-    const keyLight = new THREE.PointLight(0xffffff, 8, 250); keyLight.position.set(20, 30, 45); scene.add(keyLight);
-    const purpleLight = new THREE.PointLight(0x8866ff, 14, 180); purpleLight.position.set(-22, 14, 18); scene.add(purpleLight);
-    const greenLight = new THREE.PointLight(0x00e5a0, 7, 150); greenLight.position.set(26, -18, 14); scene.add(greenLight);
-    const backLight = new THREE.PointLight(0x2244ff, 4, 120); backLight.position.set(0, 0, -40); scene.add(backLight);
-    const rimLight = new THREE.PointLight(0xaa88ff, 10, 80); rimLight.position.set(0, 0, 20); scene.add(rimLight);
+    const keyLight = new THREE.PointLight(0xffffff, 5, 200); keyLight.position.set(20, 30, 45); scene.add(keyLight);
+    const purpleLight = new THREE.PointLight(0x7755ee, 8, 160); purpleLight.position.set(-22, 14, 18); scene.add(purpleLight);
+    const greenLight = new THREE.PointLight(0x00c490, 4, 140); greenLight.position.set(26, -18, 14); scene.add(greenLight);
+    const backLight = new THREE.PointLight(0x1133cc, 2, 110); backLight.position.set(0, 0, -40); scene.add(backLight);
+    const rimLight = new THREE.PointLight(0x8866dd, 5, 70); rimLight.position.set(0, 0, 20); scene.add(rimLight);
 
     // ── STAR FIELD ───────────────────────────────────────────────
     const starCount = isMobile ? 1400 : 3200;
@@ -314,20 +314,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const logoGroup = new THREE.Group();
     scene.add(logoGroup);
 
-    // ── ORBITING ENERGY RING ──────────────────────────────────────
-    // This pulses around the hero medallion
-    const energyRingGeo = new THREE.TorusGeometry(19, 0.15, 8, 200);
+    // ── ORBITING ENERGY RING — subtle, thin
+    const energyRingGeo = new THREE.TorusGeometry(19, 0.07, 6, 200);
     const energyRingMat = new THREE.MeshBasicMaterial({
-        color: 0x00e5a0, transparent: true, opacity: 0.55,
+        color: 0x00c490, transparent: true, opacity: 0.15,
         blending: THREE.AdditiveBlending, depthWrite: false
     });
     const energyRing = new THREE.Mesh(energyRingGeo, energyRingMat);
     energyRing.rotation.x = Math.PI / 2;
     logoGroup.add(energyRing);
 
-    const energyRing2Geo = new THREE.TorusGeometry(21.5, 0.08, 8, 200);
+    const energyRing2Geo = new THREE.TorusGeometry(21, 0.05, 6, 200);
     const energyRing2Mat = new THREE.MeshBasicMaterial({
-        color: 0x9966ff, transparent: true, opacity: 0.4,
+        color: 0x7755ee, transparent: true, opacity: 0.1,
         blending: THREE.AdditiveBlending, depthWrite: false
     });
     const energyRing2 = new THREE.Mesh(energyRing2Geo, energyRing2Mat);
@@ -381,81 +380,56 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // ══════════════════════════════════════════════════════════════
-    // ── ICED DIAMOND CHAIN ────────────────────────────────────────
+    // ── ICED DIAMOND CHAIN — subtle, fewer gems
     // ══════════════════════════════════════════════════════════════
-    // 36 faceted diamonds orbit the hero medallion in a halo ring,
-    // every 4th is a larger "pendant" with additive glow halos.
     const diamondChain = new THREE.Group();
     const chainDiamonds = [];
-    const CHAIN_COUNT = 36;
-    const CHAIN_RADIUS = 19.5; // matches just outside the energy ring
+    const CHAIN_COUNT = 18;          // reduced from 36
+    const CHAIN_RADIUS = 19.5;
 
-    // Shared diamond geometries (detail=2 for faceted look)
-    const smallDiaGeoA = new THREE.OctahedronGeometry(0.55, 2);
-    const largeDiaGeoA = new THREE.OctahedronGeometry(1.15, 2);
+    // Shared diamond geometries (detail=1 for less faceted look)
+    const smallDiaGeoA = new THREE.OctahedronGeometry(0.42, 1);  // smaller
+    const largeDiaGeoA = new THREE.OctahedronGeometry(0.8, 1);   // smaller pendant
 
-    // Ice blue / white diamond material — ultra-metallic
+    // Dim, near-white — barely-there ice
     const iceMat = new THREE.MeshStandardMaterial({
-        color: new THREE.Color(0xddeeff),
-        emissive: new THREE.Color(0x4499ff),
-        emissiveIntensity: 0.55,
-        roughness: 0.0,
+        color: new THREE.Color(0xd0d8ee),
+        emissive: new THREE.Color(0x334466),
+        emissiveIntensity: 0.18,
+        roughness: 0.05,
         metalness: 1.0,
         transparent: true,
-        opacity: 0.88,
+        opacity: 0.7,
         envMapIntensity: 2.5,
     });
-    // Accent cyan-gold material for pendant diamonds
+    // Soft violet for pendants
     const pendantMat = new THREE.MeshStandardMaterial({
-        color: new THREE.Color(0xffeedd),
-        emissive: new THREE.Color(0xffaa22),
-        emissiveIntensity: 0.8,
-        roughness: 0.0,
+        color: new THREE.Color(0xccbbff),
+        emissive: new THREE.Color(0x553399),
+        emissiveIntensity: 0.25,
+        roughness: 0.05,
         metalness: 1.0,
         transparent: true,
-        opacity: 0.92,
-        envMapIntensity: 2.5,
-    });
-    // Magenta sparkle material (every 3rd small diamond)
-    const magentaMat = new THREE.MeshStandardMaterial({
-        color: new THREE.Color(0xffccff),
-        emissive: new THREE.Color(0xff22cc),
-        emissiveIntensity: 0.7,
-        roughness: 0.0,
-        metalness: 1.0,
-        transparent: true,
-        opacity: 0.85,
+        opacity: 0.75,
         envMapIntensity: 2.5,
     });
 
-    // Glow halo material (additive, soft)
-    function makeGlowHalo(color, radius) {
-        const mat = new THREE.MeshBasicMaterial({
-            color: new THREE.Color(color),
-            transparent: true, opacity: 0.22,
-            blending: THREE.AdditiveBlending, depthWrite: false,
-            side: THREE.DoubleSide
-        });
-        return new THREE.Mesh(new THREE.PlaneGeometry(radius * 2, radius * 2), mat);
-    }
-
-    // Link bar (thin cylinder connecting adjacent diamonds)
+    // Link bar (very thin)
     const linkMat = new THREE.MeshStandardMaterial({
-        color: new THREE.Color(0xaaccff),
-        emissive: new THREE.Color(0x334488),
-        emissiveIntensity: 0.4,
-        roughness: 0.1,
+        color: new THREE.Color(0x8878cc),
+        emissive: new THREE.Color(0x334488), // Kept emissive for consistency, but it's muted
+        emissiveIntensity: 0.0, // Muted
+        roughness: 0.2,
         metalness: 1.0,
         transparent: true,
-        opacity: 0.65,
+        opacity: 0.35,
     });
 
     for (let i = 0; i < CHAIN_COUNT; i++) {
         const angle = (i / CHAIN_COUNT) * Math.PI * 2;
-        const isPendant = i % 4 === 0;         // large gold pendant every 4th
-        const isMagenta = !isPendant && i % 3 === 2; // magenta sparkle
+        const isPendant = i % 3 === 0;         // large gold pendant every 3rd
         const geo = isPendant ? largeDiaGeoA : smallDiaGeoA;
-        const mat = isPendant ? pendantMat : (isMagenta ? magentaMat : iceMat);
+        const mat = isPendant ? pendantMat : iceMat;
 
         const dia = new THREE.Mesh(geo, mat);
         dia.position.x = Math.cos(angle) * CHAIN_RADIUS;
@@ -465,23 +439,15 @@ document.addEventListener('DOMContentLoaded', () => {
         dia.rotation.x = Math.random() * Math.PI;
         dia.rotation.z = Math.random() * Math.PI;
 
-        // Glow halo on pendant diamonds
+        // Very faint glow — pendant only
         if (isPendant) {
-            const haloColor = 0xffbb44;
-            const halo = makeGlowHalo(haloColor, 2.4);
-            halo.position.copy(dia.position);
-            diamondChain.add(halo);
-            // Second tighter glow
-            const halo2 = makeGlowHalo(0xffffff, 1.2);
-            halo2.position.copy(dia.position);
-            diamondChain.add(halo2);
-        } else if (isMagenta) {
-            const halo = makeGlowHalo(0xff22cc, 1.6);
-            halo.position.copy(dia.position);
-            diamondChain.add(halo);
-        } else {
-            // Subtle ice blue glow on regular diamonds
-            const halo = makeGlowHalo(0x88ccff, 1.1);
+            const haloMat = new THREE.MeshBasicMaterial({
+                color: new THREE.Color(0x9977ff),
+                transparent: true, opacity: 0.07,
+                blending: THREE.AdditiveBlending, depthWrite: false,
+                side: THREE.DoubleSide
+            });
+            const halo = new THREE.Mesh(new THREE.PlaneGeometry(2.0, 2.0), haloMat);
             halo.position.copy(dia.position);
             diamondChain.add(halo);
         }
@@ -494,14 +460,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const mx2 = (dia.position.x + nx) / 2;
         const my2 = (dia.position.y + ny) / 2;
         const dist = Math.sqrt((nx - dia.position.x) ** 2 + (ny - dia.position.y) ** 2);
-        const linkGeo = new THREE.CylinderGeometry(0.07, 0.07, dist, 5);
+        const linkGeo = new THREE.CylinderGeometry(0.045, 0.045, dist, 4);
         const link = new THREE.Mesh(linkGeo, linkMat);
         link.position.set(mx2, my2, 0);
         link.rotation.z = Math.atan2(ny - dia.position.y, nx - dia.position.x) + Math.PI / 2;
         diamondChain.add(link);
 
         diamondChain.add(dia);
-        chainDiamonds.push({ mesh: dia, baseAngle: angle, isPendant, isMagenta });
+        chainDiamonds.push({ mesh: dia, baseAngle: angle, isPendant });
     }
 
     // Add chain to logo group so it moves with the medallion
@@ -569,8 +535,8 @@ document.addEventListener('DOMContentLoaded', () => {
         energyRing2.rotation.z = t * 0.15;
 
         // Pulse energy ring opacity
-        energyRing.material.opacity = 0.4 + Math.sin(t * 2.1) * 0.2;
-        energyRing2.material.opacity = 0.25 + Math.sin(t * 1.6 + 1) * 0.15;
+        energyRing.material.opacity = 0.15 + Math.sin(t * 2.1) * 0.08;
+        energyRing2.material.opacity = 0.1 + Math.sin(t * 1.6 + 1) * 0.06;
 
         // ── Scan line on hero medallion ───────────────────────────
         if (logoGroup.userData.medallion) {
@@ -589,19 +555,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // ── Diamond chain slow orbit ──────────────────────────────
         // Entire chain group rotates on its Y axis slowly
-        diamondChain.rotation.y = t * 0.07;
-        diamondChain.rotation.z = Math.sin(t * 0.11) * 0.06;
+        diamondChain.rotation.y = t * 0.055;
+        diamondChain.rotation.z = Math.sin(t * 0.09) * 0.04;
 
-        // Individual diamond sparkle self-rotation + glow pulse
+        // Individual diamond sparkle — very slow, subtle
         chainDiamonds.forEach((d, i) => {
-            const spd = d.isPendant ? 0.4 : (d.isMagenta ? 0.9 : 0.6);
-            d.mesh.rotation.y += spd * 0.012;
-            d.mesh.rotation.x += spd * 0.008;
-            // Emissive pulse
-            const pulse = 0.5 + Math.sin(t * 2.2 + i * 0.35) * 0.5;
-            if (d.isPendant) d.mesh.material.emissiveIntensity = 0.6 + pulse * 0.7;
-            else if (d.isMagenta) d.mesh.material.emissiveIntensity = 0.5 + pulse * 0.5;
-            else d.mesh.material.emissiveIntensity = 0.3 + pulse * 0.35;
+            const spd = d.isPendant ? 0.25 : 0.45;
+            d.mesh.rotation.y += spd * 0.008;
+            d.mesh.rotation.x += spd * 0.005;
+            // Gentle emissive flicker
+            const pulse = 0.5 + Math.sin(t * 1.4 + i * 0.4) * 0.5;
+            d.mesh.material.emissiveIntensity = d.isPendant
+                ? 0.15 + pulse * 0.18
+                : 0.08 + pulse * 0.12;
         });
 
 
@@ -616,10 +582,10 @@ document.addEventListener('DOMContentLoaded', () => {
             c.position.y += Math.sin(t * 0.12 + i * 1.2) * 0.003;
         });
 
-        // ── Pulsing lights ────────────────────────────────────────
-        purpleLight.intensity = 12 + Math.sin(t * 1.4) * 3.5;
-        greenLight.intensity = 6 + Math.sin(t * 1.1 + 1) * 2;
-        rimLight.intensity = 8 + Math.sin(t * 2.2 + 0.5) * 3;
+        // ── Pulsing lights — softer
+        purpleLight.intensity = 7 + Math.sin(t * 1.4) * 2;
+        greenLight.intensity = 3.5 + Math.sin(t * 1.1 + 1) * 1.2;
+        rimLight.intensity = 4 + Math.sin(t * 2.2 + 0.5) * 1.5;
 
         // ── Stars drift ───────────────────────────────────────────
         starField.rotation.y = t * 0.004;

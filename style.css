@@ -3,31 +3,29 @@
     --bg: #040408;
     --surface: rgba(12, 12, 22, 0.45);
     --card: rgba(14, 14, 28, 0.5);
-    --border: rgba(120, 100, 255, 0.18);
+    --border: rgba(110, 90, 200, 0.16);
 
-    /* Cinematic brand palette */
-    --accent: #9066ff;
+    /* Refined brand palette — restrained, premium */
+    --accent: #8055ff;
     /* deep violet */
-    --accent-glow: rgba(144, 102, 255, 0.45);
-    --accent2: #00e8b5;
-    /* electric teal */
-    --accent3: #ff3cac;
-    /* magenta */
-    --accent4: #ffd166;
-    /* gold */
-    --accent5: #38c9ff;
-    /* ice cyan */
+    --accent-glow: rgba(128, 85, 255, 0.35);
+    --accent2: #00d4a0;
+    /* soft teal */
+    --accent3: #8055ff;
+    /* same as accent to avoid magenta bleed */
+    --accent4: #8055ff;
+    --accent5: #00d4a0;
 
-    --text: #f0eeff;
-    --muted: #7a7a96;
+    --text: #ece8ff;
+    --muted: #6e6e8a;
     --ig: #e1306c;
-    --tt: #f0f0f0;
+    --tt: #e0e0f0;
     --yt: #ff4040;
-    --gh: #e0e0f0;
+    --gh: #d0d0e8;
 
-    /* Shimmer & glow helpers */
+    /* Shimmer — very subtle */
     --shimmer-start: rgba(255, 255, 255, 0);
-    --shimmer-mid: rgba(255, 255, 255, 0.10);
+    --shimmer-mid: rgba(255, 255, 255, 0.055);
     --shimmer-end: rgba(255, 255, 255, 0);
 }
 
@@ -683,7 +681,7 @@ h2 {
     left: 0;
     right: 0;
     height: 2px;
-    background: linear-gradient(90deg, var(--accent), var(--accent3), var(--accent2));
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
     opacity: 0;
     transition: opacity 0.3s;
     z-index: 1;
@@ -705,11 +703,10 @@ h2 {
 }
 
 .member-card:hover {
-    border-color: rgba(144, 102, 255, 0.5);
+    border-color: rgba(128, 85, 255, 0.4);
     box-shadow:
-        0 12px 40px rgba(0, 0, 0, 0.5),
-        0 0 0 1px rgba(144, 102, 255, 0.25),
-        inset 0 0 30px rgba(144, 102, 255, 0.04);
+        0 10px 32px rgba(0, 0, 0, 0.45),
+        0 0 0 1px rgba(128, 85, 255, 0.18);
 }
 
 .member-card:hover::before {
@@ -1008,8 +1005,8 @@ h2 {
 }
 
 .prop-card:not(.prop-coming):hover {
-    border-color: rgba(0, 232, 181, 0.45);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(0, 232, 181, 0.2);
+    border-color: rgba(128, 85, 255, 0.4);
+    box-shadow: 0 10px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(128, 85, 255, 0.18);
 }
 
 .prop-card:not(.prop-coming):hover::after {
@@ -1111,8 +1108,8 @@ h2 {
 }
 
 .career-card:hover {
-    border-color: rgba(255, 60, 172, 0.45);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 60, 172, 0.2);
+    border-color: rgba(128, 85, 255, 0.4);
+    box-shadow: 0 10px 32px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(128, 85, 255, 0.18);
 }
 
 .career-card:hover::after {
