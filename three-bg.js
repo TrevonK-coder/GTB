@@ -314,24 +314,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const logoGroup = new THREE.Group();
     scene.add(logoGroup);
 
-    // ── ORBITING ENERGY RING — subtle, thin
-    const energyRingGeo = new THREE.TorusGeometry(19, 0.07, 6, 200);
-    const energyRingMat = new THREE.MeshBasicMaterial({
-        color: 0x00c490, transparent: true, opacity: 0.15,
-        blending: THREE.AdditiveBlending, depthWrite: false
-    });
-    const energyRing = new THREE.Mesh(energyRingGeo, energyRingMat);
-    energyRing.rotation.x = Math.PI / 2;
-    logoGroup.add(energyRing);
 
-    const energyRing2Geo = new THREE.TorusGeometry(21, 0.05, 6, 200);
-    const energyRing2Mat = new THREE.MeshBasicMaterial({
-        color: 0x7755ee, transparent: true, opacity: 0.1,
-        blending: THREE.AdditiveBlending, depthWrite: false
-    });
-    const energyRing2 = new THREE.Mesh(energyRing2Geo, energyRing2Mat);
-    energyRing2.rotation.x = Math.PI / 3;
-    logoGroup.add(energyRing2);
 
     // Floating duplicates populated after texture loads
     const floatingDupes = [];
@@ -530,13 +513,7 @@ document.addEventListener('DOMContentLoaded', () => {
         logoGroup.rotation.x = Math.sin(t * 0.12) * 0.10;
 
         // ── Energy rings orbit ────────────────────────────────────
-        energyRing.rotation.z = t * 0.28;
-        energyRing2.rotation.y = t * 0.40;
-        energyRing2.rotation.z = t * 0.15;
 
-        // Pulse energy ring opacity
-        energyRing.material.opacity = 0.15 + Math.sin(t * 2.1) * 0.08;
-        energyRing2.material.opacity = 0.1 + Math.sin(t * 1.6 + 1) * 0.06;
 
         // ── Scan line on hero medallion ───────────────────────────
         if (logoGroup.userData.medallion) {
