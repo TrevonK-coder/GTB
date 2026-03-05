@@ -1,302 +1,293 @@
-// ── GTB 3D LOGO SCENE — "3" as centerpiece ─────────────────────
+// ── GTB LOGO — 3D MEDALLION CENTERPIECE ─────────────────────────
+// Loads gtb-logo.png as a glowing 3D disc / medallion with orbit rings,
+// space star field and shooting stars.
 document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.querySelector('#bg-canvas');
     if (!canvas || typeof THREE === 'undefined') return;
 
     // ── SCENE ────────────────────────────────────────────────────
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x01010a, 0.007);
+    scene.fog = new THREE.FogExp2(0x01010a, 0.005);
 
     // ── CAMERA ───────────────────────────────────────────────────
     const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 2000);
-    camera.position.z = 60;
+    camera.position.z = 55;
 
     // ── RENDERER ─────────────────────────────────────────────────
-    const renderer = new THREE.WebGLRenderer({
-        canvas,
-        alpha: true,
-        antialias: true,
-        powerPreference: 'high-performance'
-    });
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: 'high-performance' });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
     // ── LIGHTS ───────────────────────────────────────────────────
-    scene.add(new THREE.AmbientLight(0x080820, 1.5));
+    scene.add(new THREE.AmbientLight(0x060620, 2));
 
-    const keyLight = new THREE.PointLight(0x7c6fff, 8, 200);
-    keyLight.position.set(15, 20, 30);
+    const keyLight = new THREE.PointLight(0xffffff, 6, 200);
+    keyLight.position.set(10, 15, 30);
     scene.add(keyLight);
 
-    const fillLight = new THREE.PointLight(0x00e5a0, 4, 150);
-    fillLight.position.set(-20, -15, 20);
-    scene.add(fillLight);
+    const purpleLight = new THREE.PointLight(0x7c6fff, 8, 150);
+    purpleLight.position.set(-20, 10, 10);
+    scene.add(purpleLight);
 
-    const rimLight = new THREE.PointLight(0x1a6aff, 3, 120);
-    rimLight.position.set(0, 0, -40);
-    scene.add(rimLight);
+    const greenLight = new THREE.PointLight(0x00e5a0, 5, 120);
+    greenLight.position.set(20, -15, 10);
+    scene.add(greenLight);
+
+    const backLight = new THREE.PointLight(0x4466ff, 3, 100);
+    backLight.position.set(0, 0, -30);
+    scene.add(backLight);
 
     // ── STAR FIELD ───────────────────────────────────────────────
     const isMobile = window.innerWidth < 768;
-    const starCount = isMobile ? 1000 : 2500;
+    const starCount = isMobile ? 1200 : 2800;
     const starPos = new Float32Array(starCount * 3);
     for (let i = 0; i < starCount; i++) {
-        const i3 = i * 3;
-        const r = 120 + Math.random() * 350;
-        const theta = Math.random() * Math.PI * 2;
-        const phi = Math.acos(2 * Math.random() - 1);
-        starPos[i3] = r * Math.sin(phi) * Math.cos(theta);
-        starPos[i3 + 1] = r * Math.sin(phi) * Math.sin(theta);
-        starPos[i3 + 2] = r * Math.cos(phi);
+        const i3 = i * 3, r = 120 + Math.random() * 380,
+            t = Math.random() * Math.PI * 2, p = Math.acos(2 * Math.random() - 1);
+        starPos[i3] = r * Math.sin(p) * Math.cos(t);
+        starPos[i3 + 1] = r * Math.sin(p) * Math.sin(t);
+        starPos[i3 + 2] = r * Math.cos(p);
     }
     const starGeo = new THREE.BufferGeometry();
     starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
-    scene.add(new THREE.Points(starGeo, new THREE.PointsMaterial({
-        color: 0xdde0ff,
-        size: 0.3,
-        transparent: true,
-        opacity: 0.65,
-        blending: THREE.AdditiveBlending,
-        depthWrite: false,
-        sizeAttenuation: true
-    })));
+    const starField = new THREE.Points(starGeo, new THREE.PointsMaterial({
+        color: 0xdde4ff, size: 0.3, transparent: true, opacity: 0.7,
+        blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true
+    }));
+    scene.add(starField);
 
     // ── SHOOTING STARS ───────────────────────────────────────────
     const shooters = [];
-    const SHOOTER_COUNT = isMobile ? 4 : 8;
-
     function spawnShooter() {
+        const angle = -Math.PI / 4 + (Math.random() - 0.5) * 0.7;
         const geo = new THREE.BufferGeometry().setFromPoints([
             new THREE.Vector3(0, 0, 0),
-            new THREE.Vector3(8 + Math.random() * 14, 0, 0)
+            new THREE.Vector3(8 + Math.random() * 16, 0, 0)
         ]);
-        const mat = new THREE.LineBasicMaterial({
-            color: 0xffffff,
-            transparent: true,
-            opacity: 0,
-            blending: THREE.AdditiveBlending,
-            depthWrite: false
-        });
-        const line = new THREE.Line(geo, mat);
-        const angle = -Math.PI / 4 + (Math.random() - 0.5) * 0.6;
+        const line = new THREE.Line(geo, new THREE.LineBasicMaterial({
+            color: 0xffffff, transparent: true, opacity: 0,
+            blending: THREE.AdditiveBlending, depthWrite: false
+        }));
         line.rotation.z = angle;
-        line.position.set(
-            (Math.random() - 0.5) * 180,
-            20 + Math.random() * 50,
-            (Math.random() - 0.5) * 60
-        );
+        line.position.set((Math.random() - 0.5) * 180, 25 + Math.random() * 55, (Math.random() - 0.5) * 60);
         line.userData = {
-            speed: 0.7 + Math.random() * 1.3,
-            opacity: 0,
-            phase: 'wait',
-            wait: Math.random() * 10,
-            traveled: 0,
-            maxDist: 25 + Math.random() * 50,
-            dx: Math.cos(angle) * -0.9,
-            dy: Math.sin(angle) * -0.9
+            speed: 0.8 + Math.random() * 1.4, opacity: 0, phase: 'wait',
+            wait: Math.random() * 9, traveled: 0, maxDist: 30 + Math.random() * 55,
+            dx: Math.cos(angle) * -0.85, dy: Math.sin(angle) * -0.85
         };
-        scene.add(line);
-        return line;
+        scene.add(line); return line;
     }
-
-    for (let i = 0; i < SHOOTER_COUNT; i++) shooters.push(spawnShooter());
+    for (let i = 0; i < (isMobile ? 4 : 9); i++) shooters.push(spawnShooter());
 
     function tickShooter(s) {
         const d = s.userData;
-        if (d.phase === 'wait') {
-            d.wait -= 0.016;
-            if (d.wait <= 0) d.phase = 'appear';
-        } else if (d.phase === 'appear') {
-            d.opacity = Math.min(d.opacity + 0.08, 1);
-            s.material.opacity = d.opacity;
-            if (d.opacity >= 1) d.phase = 'travel';
-        } else if (d.phase === 'travel') {
-            s.position.x += d.dx * d.speed;
-            s.position.y += d.dy * d.speed;
-            d.traveled += d.speed;
-            if (d.traveled >= d.maxDist) d.phase = 'fade';
-        } else {
-            d.opacity = Math.max(d.opacity - 0.12, 0);
-            s.material.opacity = d.opacity;
-            if (d.opacity <= 0) {
-                // Reset
-                const angle = -Math.PI / 4 + (Math.random() - 0.5) * 0.6;
-                s.rotation.z = angle;
-                s.position.set((Math.random() - 0.5) * 180, 20 + Math.random() * 50, (Math.random() - 0.5) * 60);
-                Object.assign(d, {
-                    speed: 0.7 + Math.random() * 1.3, opacity: 0, phase: 'wait',
-                    wait: 2 + Math.random() * 8, traveled: 0, maxDist: 25 + Math.random() * 50,
-                    dx: Math.cos(angle) * -0.9, dy: Math.sin(angle) * -0.9
-                });
-            }
+        if (d.phase === 'wait') { d.wait -= 0.016; if (d.wait <= 0) d.phase = 'appear'; }
+        else if (d.phase === 'appear') { d.opacity = Math.min(d.opacity + 0.09, 1); s.material.opacity = d.opacity; if (d.opacity >= 1) d.phase = 'travel'; }
+        else if (d.phase === 'travel') { s.position.x += d.dx * d.speed; s.position.y += d.dy * d.speed; d.traveled += d.speed; if (d.traveled >= d.maxDist) d.phase = 'fade'; }
+        else {
+            d.opacity = Math.max(d.opacity - 0.13, 0); s.material.opacity = d.opacity;
+            if (d.opacity <= 0) { const a = -Math.PI / 4 + (Math.random() - 0.5) * 0.7; s.rotation.z = a; s.position.set((Math.random() - 0.5) * 180, 25 + Math.random() * 55, (Math.random() - 0.5) * 60); Object.assign(d, { speed: 0.8 + Math.random() * 1.4, opacity: 0, phase: 'wait', wait: 2 + Math.random() * 8, traveled: 0, maxDist: 30 + Math.random() * 55, dx: Math.cos(a) * -0.85, dy: Math.sin(a) * -0.85 }); }
         }
     }
 
-    // ── 3D "3" — THE MAIN OBJECT ─────────────────────────────────
-    // We hold the group here and populate once font loads
-    const threeGroup = new THREE.Group();
-    scene.add(threeGroup);
+    // ── GTB LOGO MEDALLION ───────────────────────────────────────
+    const logoGroup = new THREE.Group();
+    scene.add(logoGroup);
 
-    // Orbit rings around the "3" (visible immediately while font loads)
-    const ringMats = [
-        new THREE.MeshStandardMaterial({ color: 0x7c6fff, emissive: 0x7c6fff, emissiveIntensity: 0.7, metalness: 0.6, roughness: 0.2, transparent: true, opacity: 0.85 }),
-        new THREE.MeshStandardMaterial({ color: 0x00e5a0, emissive: 0x00e5a0, emissiveIntensity: 0.5, metalness: 0.6, roughness: 0.3, transparent: true, opacity: 0.7 })
-    ];
-    const outerRing = new THREE.Mesh(new THREE.TorusGeometry(18, 0.45, 16, 100), ringMats[0]);
-    const innerRing = new THREE.Mesh(new THREE.TorusGeometry(13, 0.25, 16, 80), ringMats[1]);
-    innerRing.rotation.x = Math.PI / 2;
-    threeGroup.add(outerRing);
-    threeGroup.add(innerRing);
+    // Load the logo texture
+    const texLoader = new THREE.TextureLoader();
+    texLoader.load(
+        // Try relative path (works when served via GitHub Pages or local server)
+        'gtb-logo.png',
+        (logoTex) => {
+            logoTex.anisotropy = renderer.capabilities.getMaxAnisotropy();
 
-    // Satellite orbs
-    const satellites = [
-        { radius: 22, speed: 0.5, color: 0x7c6fff, phase: 0 },
-        { radius: 26, speed: 0.3, color: 0x00e5a0, phase: 2.1 },
-        { radius: 20, speed: 0.7, color: 0xffffff, phase: 4.2 }
-    ].map(cfg => {
-        const m = new THREE.Mesh(
-            new THREE.SphereGeometry(0.5, 12, 12),
-            new THREE.MeshStandardMaterial({ color: cfg.color, emissive: cfg.color, emissiveIntensity: 1.2, metalness: 0.4, roughness: 0.3 })
-        );
-        m.userData = cfg;
-        threeGroup.add(m);
-        return m;
-    });
-
-    // Load font and build 3D "3"
-    let textMesh = null;
-    let wireText = null;
-
-    const loader = new THREE.FontLoader();
-    loader.load(
-        'https://unpkg.com/three@0.128.0/examples/fonts/helvetiker_bold.typeface.json',
-        (font) => {
-            const textGeo = new THREE.TextGeometry('3', {
-                font,
-                size: 18,
-                height: 5,
-                curveSegments: 20,
-                bevelEnabled: true,
-                bevelThickness: 1.2,
-                bevelSize: 0.6,
-                bevelOffset: 0,
-                bevelSegments: 10
+            // ── FRONT FACE (logo) ─────────────────────────────
+            const frontGeo = new THREE.CircleGeometry(12, 64);
+            const frontMat = new THREE.MeshStandardMaterial({
+                map: logoTex,
+                metalness: 0.5,
+                roughness: 0.25,
+                emissiveMap: logoTex,
+                emissive: new THREE.Color(0xffffff),
+                emissiveIntensity: 0.4,
+                transparent: true,
+                alphaTest: 0.05,
+                side: THREE.FrontSide
             });
+            const frontFace = new THREE.Mesh(frontGeo, frontMat);
+            frontFace.position.z = 1.6;
+            logoGroup.add(frontFace);
 
-            // Center it
-            textGeo.computeBoundingBox();
-            const centerOffset = -(textGeo.boundingBox.max.x - textGeo.boundingBox.min.x) / 2;
-            const centerOffsetY = -(textGeo.boundingBox.max.y - textGeo.boundingBox.min.y) / 2;
+            // ── BACK FACE (mirrored) ─────────────────────────
+            const backFace = frontFace.clone();
+            backFace.position.z = -1.6;
+            backFace.rotation.y = Math.PI;
+            logoGroup.add(backFace);
 
-            // Main metallic material
-            const textMat = new THREE.MeshStandardMaterial({
-                color: 0x0a0a18,
+            // ── MEDALLION BODY (cylinder for thickness) ───────
+            const bodyGeo = new THREE.CylinderGeometry(12, 12, 3.2, 64, 1, true);
+            const bodyMat = new THREE.MeshStandardMaterial({
+                color: 0x08081a,
                 metalness: 1.0,
                 roughness: 0.08,
-                emissive: 0x1a0844,
-                emissiveIntensity: 0.4
+                emissive: 0x180840,
+                emissiveIntensity: 0.3,
+                side: THREE.BackSide
             });
+            const body = new THREE.Mesh(bodyGeo, bodyMat);
+            body.rotation.x = Math.PI / 2;
+            logoGroup.add(body);
 
-            textMesh = new THREE.Mesh(textGeo, textMat);
-            textMesh.position.x = centerOffset;
-            textMesh.position.y = centerOffsetY;
-            textMesh.position.z = 0;
-            threeGroup.add(textMesh);
+            // EDGE TRIM — thin bright ring on the medallion edge
+            const edgeTrimGeo = new THREE.TorusGeometry(12, 0.18, 12, 80);
+            const edgeTrimMat = new THREE.MeshStandardMaterial({
+                color: 0x7c6fff, emissive: 0x7c6fff, emissiveIntensity: 1.2,
+                metalness: 0.6, roughness: 0.15
+            });
+            const edgeFront = new THREE.Mesh(edgeTrimGeo, edgeTrimMat);
+            edgeFront.position.z = 1.6;
+            logoGroup.add(edgeFront);
+            const edgeBack = edgeFront.clone();
+            edgeBack.position.z = -1.6;
+            logoGroup.add(edgeBack);
 
-            // Glowing wireframe overlay
-            const wireMat = new THREE.MeshBasicMaterial({
+            // ── GLOW DISC (soft halo behind front face) ────────
+            const glowGeo = new THREE.CircleGeometry(15, 64);
+            const glowMat = new THREE.MeshBasicMaterial({
                 color: 0x7c6fff,
-                wireframe: true,
                 transparent: true,
-                opacity: 0.12
+                opacity: 0.08,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
             });
-            wireText = new THREE.Mesh(textGeo, wireMat);
-            wireText.position.copy(textMesh.position);
-            wireText.scale.set(1.02, 1.02, 1.02);
-            threeGroup.add(wireText);
+            const glowDisc = new THREE.Mesh(glowGeo, glowMat);
+            glowDisc.position.z = -0.5;
+            logoGroup.add(glowDisc);
         },
         undefined,
-        (err) => {
-            // Fallback if font fails: show icosahedron
-            const geo = new THREE.IcosahedronGeometry(10, 1);
-            const mat = new THREE.MeshStandardMaterial({ color: 0x0a0a18, metalness: 1.0, roughness: 0.1 });
-            textMesh = new THREE.Mesh(geo, mat);
-            threeGroup.add(textMesh);
+        () => {
+            // Fallback — plain disc if image fails to load
+            const disc = new THREE.Mesh(
+                new THREE.CylinderGeometry(12, 12, 3.2, 64),
+                new THREE.MeshStandardMaterial({ color: 0x0a0a28, metalness: 1.0, roughness: 0.1 })
+            );
+            disc.rotation.x = Math.PI / 2;
+            logoGroup.add(disc);
         }
     );
 
-    // Nebula dust behind
-    const nebPos = new Float32Array((isMobile ? 200 : 600) * 3);
-    for (let i = 0; i < nebPos.length / 3; i++) {
+    // ── ORBIT RINGS ───────────────────────────────────────────────
+    const ring1 = new THREE.Mesh(
+        new THREE.TorusGeometry(20, 0.4, 16, 100),
+        new THREE.MeshStandardMaterial({ color: 0x7c6fff, emissive: 0x7c6fff, emissiveIntensity: 0.8, metalness: 0.5, roughness: 0.2, transparent: true, opacity: 0.9 })
+    );
+    scene.add(ring1);
+
+    const ring2 = new THREE.Mesh(
+        new THREE.TorusGeometry(26, 0.25, 16, 120),
+        new THREE.MeshStandardMaterial({ color: 0x00e5a0, emissive: 0x00e5a0, emissiveIntensity: 0.6, metalness: 0.4, roughness: 0.3, transparent: true, opacity: 0.7 })
+    );
+    ring2.rotation.x = Math.PI / 3;
+    scene.add(ring2);
+
+    const ring3 = new THREE.Mesh(
+        new THREE.TorusGeometry(16, 0.2, 12, 80),
+        new THREE.MeshStandardMaterial({ color: 0x4466ff, emissive: 0x4466ff, emissiveIntensity: 0.5, metalness: 0.5, roughness: 0.3, transparent: true, opacity: 0.6 })
+    );
+    ring3.rotation.y = Math.PI / 4;
+    ring3.rotation.x = Math.PI / 6;
+    scene.add(ring3);
+
+    // ── SATELLITES ────────────────────────────────────────────────
+    const satConfigs = [
+        { radius: 22, speed: 0.5, color: 0x7c6fff, phase: 0, size: 0.6 },
+        { radius: 27, speed: 0.3, color: 0x00e5a0, phase: 2.1, size: 0.5 },
+        { radius: 17, speed: 0.8, color: 0xffffff, phase: 4.2, size: 0.35 },
+        { radius: 24, speed: 0.4, color: 0x4488ff, phase: 1.0, size: 0.45 }
+    ];
+    const satellites = satConfigs.map(cfg => {
+        const mesh = new THREE.Mesh(
+            new THREE.SphereGeometry(cfg.size, 12, 12),
+            new THREE.MeshStandardMaterial({ color: cfg.color, emissive: cfg.color, emissiveIntensity: 1.5 })
+        );
+        mesh.userData = cfg;
+        scene.add(mesh);
+        return mesh;
+    });
+
+    // ── NEBULA ────────────────────────────────────────────────────
+    const nebCount = isMobile ? 300 : 700;
+    const nebPos = new Float32Array(nebCount * 3);
+    for (let i = 0; i < nebCount; i++) {
         const i3 = i * 3;
-        nebPos[i3] = (Math.random() - 0.5) * 100;
-        nebPos[i3 + 1] = (Math.random() - 0.5) * 80;
-        nebPos[i3 + 2] = -40 + Math.random() * -80;
+        nebPos[i3] = (Math.random() - 0.5) * 120;
+        nebPos[i3 + 1] = (Math.random() - 0.5) * 100;
+        nebPos[i3 + 2] = -50 + Math.random() * -100;
     }
     const nebGeo = new THREE.BufferGeometry();
     nebGeo.setAttribute('position', new THREE.BufferAttribute(nebPos, 3));
     scene.add(new THREE.Points(nebGeo, new THREE.PointsMaterial({
-        color: 0x7c6fff, size: 0.55, transparent: true, opacity: 0.07,
+        color: 0x7c6fff, size: 0.5, transparent: true, opacity: 0.06,
         blending: THREE.AdditiveBlending, depthWrite: false
     })));
 
-    // ── MOUSE PARALLAX ───────────────────────────────────────────
+    // ── MOUSE & SCROLL ────────────────────────────────────────────
     let mx = 0, my = 0;
     document.addEventListener('mousemove', e => {
         mx = (e.clientX / window.innerWidth - 0.5) * 2;
         my = (e.clientY / window.innerHeight - 0.5) * 2;
     });
-
     let scrollY = window.scrollY;
     window.addEventListener('scroll', () => { scrollY = window.scrollY; });
 
-    // ── ANIMATION LOOP ───────────────────────────────────────────
+    // ── ANIMATION LOOP ────────────────────────────────────────────
     const clock = new THREE.Clock();
     function animate() {
         requestAnimationFrame(animate);
         const t = clock.getElapsedTime();
 
-        // Rotate the whole group (the "3" and its rings)
-        threeGroup.rotation.y = Math.sin(t * 0.2) * 0.6;  // gentle sway
-        threeGroup.rotation.x = Math.sin(t * 0.1) * 0.15;
+        // Logo medallion: gentle tilt/sway, always facing camera mostly
+        logoGroup.rotation.y = Math.sin(t * 0.25) * 0.7;
+        logoGroup.rotation.x = Math.sin(t * 0.15) * 0.15;
 
-        // Rings orbit
-        outerRing.rotation.y = t * 0.15;
-        outerRing.rotation.x = Math.sin(t * 0.08) * 0.4;
-        innerRing.rotation.z = t * 0.2;
+        // Orbit rings spin
+        ring1.rotation.y = t * 0.18;
+        ring1.rotation.x = Math.sin(t * 0.1) * 0.3;
+        ring2.rotation.z = t * 0.12;
+        ring3.rotation.y = -t * 0.22;
+        ring3.rotation.z = t * 0.08;
 
-        // Satellites orbit in 3D
+        // Satellites orbit
         satellites.forEach(s => {
             const cfg = s.userData;
             const a = t * cfg.speed + cfg.phase;
             s.position.x = Math.cos(a) * cfg.radius;
-            s.position.y = Math.sin(a * 0.6) * cfg.radius * 0.5;
+            s.position.y = Math.sin(a * 0.65) * cfg.radius * 0.45;
             s.position.z = Math.sin(a) * cfg.radius * 0.3;
         });
 
         // Pulsing lights
-        keyLight.intensity = 7 + Math.sin(t * 1.4) * 2;
-        fillLight.intensity = 3.5 + Math.sin(t * 1.1 + 1) * 1;
+        purpleLight.intensity = 7 + Math.sin(t * 1.3) * 2;
+        greenLight.intensity = 4 + Math.sin(t * 1.1 + 1) * 1.5;
 
-        // Stars slow drift
-        scene.children[1] && (scene.children[1].rotation.y = t * 0.006);
+        // Star field slow rotation
+        starField.rotation.y = t * 0.005;
 
         // Shooting stars
         shooters.forEach(tickShooter);
 
         // Mouse parallax
-        camera.position.x += (mx * 5 - camera.position.x) * 0.02;
-        camera.position.y += (-my * 4 - camera.position.y) * 0.02;
-
-        // Scroll drift
+        camera.position.x += (mx * 4 - camera.position.x) * 0.02;
+        camera.position.y += (-my * 3 - camera.position.y) * 0.02;
         scene.position.y = -scrollY * 0.01;
-
         camera.lookAt(0, 0, 0);
+
         renderer.render(scene, camera);
     }
     animate();
 
-    // ── RESIZE ───────────────────────────────────────────────────
+    // ── RESIZE ────────────────────────────────────────────────────
     window.addEventListener('resize', () => {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
