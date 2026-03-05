@@ -52,6 +52,81 @@ body {
     background: radial-gradient(circle at 50% 50%, #0a0a10 0%, #030304 100%);
 }
 
+/* ── CUSTOM CURSOR ── */
+@media (pointer: fine) {
+
+    /* Only show custom cursor on devices with a precise pointer (mouse/trackpad) */
+    body {
+        cursor: none;
+    }
+
+    a,
+    button,
+    [role="button"],
+    .btn,
+    .prop-card,
+    .member-card,
+    .career-card,
+    .feed-card,
+    .ptab,
+    .nav-cta {
+        cursor: none;
+    }
+}
+
+#cursor-dot {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 6px;
+    height: 6px;
+    background: #ffffff;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 99999;
+    transform: translate(-50%, -50%);
+    transition: width 0.15s, height 0.15s, background 0.15s, opacity 0.15s;
+    mix-blend-mode: difference;
+    will-change: transform;
+}
+
+#cursor-ring {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 36px;
+    height: 36px;
+    border: 1.5px solid rgba(124, 111, 255, 0.8);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 99998;
+    transform: translate(-50%, -50%);
+    transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+        height 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+        border-color 0.3s,
+        opacity 0.2s;
+    will-change: transform;
+}
+
+/* Cursor states */
+body.cursor-hover #cursor-dot {
+    width: 10px;
+    height: 10px;
+    background: var(--accent);
+}
+
+body.cursor-hover #cursor-ring {
+    width: 56px;
+    height: 56px;
+    border-color: rgba(0, 229, 160, 0.7);
+}
+
+body.cursor-click #cursor-ring {
+    width: 20px;
+    height: 20px;
+    border-color: rgba(255, 255, 255, 0.9);
+}
+
 /* ── NAV ── */
 nav {
     position: fixed;

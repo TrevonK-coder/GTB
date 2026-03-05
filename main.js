@@ -1,4 +1,49 @@
+// ── Custom Cursor ─────────────────────────────────────────────
+(function initCursor() {
+    const dot = document.getElementById('cursor-dot');
+    const ring = document.getElementById('cursor-ring');
+    if (!dot || !ring) return;
+
+    // Only activate on non-touch devices
+    if (!window.matchMedia('(pointer: fine)').matches) {
+        dot.style.display = 'none';
+        ring.style.display = 'none';
+        return;
+    }
+
+    let rx = window.innerWidth / 2, ry = window.innerHeight / 2; // ring follows with lag
+    let mx = rx, my = ry;                                          // dot follows exactly
+
+    document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+
+    // Hover state: expand ring + change color on interactive elements
+    const interactives = 'a, button, [role="button"], .btn, .prop-card, .member-card, .career-card, .feed-card, .ptab, .nav-cta, .social-chip';
+    document.querySelectorAll(interactives).forEach(el => {
+        el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+        el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+    });
+
+    // Click ripple
+    document.addEventListener('mousedown', () => { document.body.classList.add('cursor-click'); setTimeout(() => document.body.classList.remove('cursor-click'), 200); });
+
+    function loop() {
+        // Dot snaps to cursor instantly
+        dot.style.left = mx + 'px';
+        dot.style.top = my + 'px';
+
+        // Ring lags behind with lerp for "trailing" feel
+        rx += (mx - rx) * 0.12;
+        ry += (my - ry) * 0.12;
+        ring.style.left = rx + 'px';
+        ring.style.top = ry + 'px';
+
+        requestAnimationFrame(loop);
+    }
+    loop();
+})();
+
 // ── Feed Content Data ──────────────────────────────
+
 const feedData = {
     instagram: [
         { emoji: '🎬', title: 'Behind the lens at GTB Studios — new drop incoming', member: 'The Visionary', link: 'https://www.instagram.com/gladtobe.ot/' },
