@@ -94,6 +94,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const logoGroup = new THREE.Group();
     scene.add(logoGroup);
 
+    // Floating duplicate logo instances (populated after texture loads)
+    const floatingDupes = [];
+
     // Load the logo texture
     const texLoader = new THREE.TextureLoader();
     texLoader.load(
@@ -164,6 +167,66 @@ document.addEventListener('DOMContentLoaded', () => {
             const glowDisc = new THREE.Mesh(glowGeo, glowMat);
             glowDisc.position.z = -0.5;
             logoGroup.add(glowDisc);
+
+            // ── FLOATING DUPLICATES ─────────────────────────
+            // Config: [scale, x, y, z, rotX, rotY, driftSpeed, driftAmp, floatPhase]
+            const dupeConfigs = [
+                { s: 0.22, x: -55, y: 28, z: -30, rx: 0.3, ry: 0.8, ds: 0.6, da: 3.5, fp: 0.0, op: 0.55 },
+                { s: 0.14, x: 58, y: -22, z: -20, rx: -0.2, ry: -0.5, ds: 0.9, da: 2.5, fp: 1.2, op: 0.45 },
+                { s: 0.30, x: 40, y: 35, z: -50, rx: 0.5, ry: 0.2, ds: 0.4, da: 4.0, fp: 2.1, op: 0.35 },
+                { s: 0.10, x: -38, y: -32, z: -15, rx: 0.1, ry: 1.2, ds: 1.2, da: 2.0, fp: 3.5, op: 0.5 },
+                { s: 0.18, x: 12, y: 48, z: -35, rx: -0.4, ry: 0.6, ds: 0.7, da: 3.0, fp: 0.8, op: 0.4 },
+                { s: 0.25, x: -60, y: -10, z: -55, rx: 0.6, ry: -0.3, ds: 0.5, da: 4.5, fp: 4.2, op: 0.3 },
+                { s: 0.12, x: 65, y: 15, z: -25, rx: -0.1, ry: 0.9, ds: 1.0, da: 2.2, fp: 1.8, op: 0.5 },
+            ];
+
+            dupeConfigs.forEach(cfg => {
+                const dupe = new THREE.Group();
+
+                // Front face
+                const dFront = new THREE.Mesh(
+                    new THREE.CircleGeometry(12, 48),
+                    new THREE.MeshStandardMaterial({
+                        map: logoTex,
+                        metalness: 0.4,
+                        roughness: 0.3,
+                        emissiveMap: logoTex,
+                        emissive: new THREE.Color(0xffffff),
+                        emissiveIntensity: 0.35,
+                        transparent: true,
+                        alphaTest: 0.05,
+                        opacity: cfg.op
+                    })
+                );
+                dFront.position.z = 1.2;
+                dupe.add(dFront);
+
+                // Back face
+                const dBack = dFront.clone();
+                dBack.position.z = -1.2;
+                dBack.rotation.y = Math.PI;
+                dupe.add(dBack);
+
+                // Thin edge ring
+                const dEdge = new THREE.Mesh(
+                    new THREE.TorusGeometry(12, 0.15, 8, 60),
+                    new THREE.MeshStandardMaterial({
+                        color: 0x7c6fff, emissive: 0x7c6fff,
+                        emissiveIntensity: 0.9, transparent: true, opacity: cfg.op * 0.9
+                    })
+                );
+                dEdge.position.z = 1.2;
+                dupe.add(dEdge);
+
+                dupe.scale.setScalar(cfg.s);
+                dupe.position.set(cfg.x, cfg.y, cfg.z);
+                dupe.rotation.set(cfg.rx, cfg.ry, 0);
+
+                // Store drift metadata for animation
+                dupe.userData = { driftSpeed: cfg.ds, driftAmp: cfg.da, floatPhase: cfg.fp, baseY: cfg.y };
+                scene.add(dupe);
+                floatingDupes.push(dupe);
+            });
         },
         undefined,
         () => {
@@ -265,6 +328,14 @@ document.addEventListener('DOMContentLoaded', () => {
             s.position.x = Math.cos(a) * cfg.radius;
             s.position.y = Math.sin(a * 0.65) * cfg.radius * 0.45;
             s.position.z = Math.sin(a) * cfg.radius * 0.3;
+        });
+
+        // Floating duplicates — independent sine-wave drift
+        floatingDupes.forEach(d => {
+            const ud = d.userData;
+            d.position.y = ud.baseY + Math.sin(t * ud.driftSpeed + ud.floatPhase) * ud.driftAmp;
+            d.rotation.y += 0.003 * ud.driftSpeed;
+            d.rotation.x = Math.sin(t * 0.3 + ud.floatPhase) * 0.1;
         });
 
         // Pulsing lights
