@@ -4,43 +4,101 @@
     const ring = document.getElementById('cursor-ring');
     if (!dot || !ring) return;
 
-    // Only activate on non-touch devices
     if (!window.matchMedia('(pointer: fine)').matches) {
         dot.style.display = 'none';
         ring.style.display = 'none';
         return;
     }
 
-    let rx = window.innerWidth / 2, ry = window.innerHeight / 2; // ring follows with lag
-    let mx = rx, my = ry;                                          // dot follows exactly
+    let rx = window.innerWidth / 2, ry = window.innerHeight / 2;
+    let mx = rx, my = ry;
 
     document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
 
-    // Hover state: expand ring + change color on interactive elements
     const interactives = 'a, button, [role="button"], .btn, .prop-card, .member-card, .career-card, .feed-card, .ptab, .nav-cta, .social-chip';
     document.querySelectorAll(interactives).forEach(el => {
         el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
         el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
     });
 
-    // Click ripple
-    document.addEventListener('mousedown', () => { document.body.classList.add('cursor-click'); setTimeout(() => document.body.classList.remove('cursor-click'), 200); });
+    document.addEventListener('mousedown', () => {
+        document.body.classList.add('cursor-click');
+        setTimeout(() => document.body.classList.remove('cursor-click'), 200);
+    });
 
     function loop() {
-        // Dot snaps to cursor instantly
         dot.style.left = mx + 'px';
         dot.style.top = my + 'px';
-
-        // Ring lags behind with lerp for "trailing" feel
         rx += (mx - rx) * 0.12;
         ry += (my - ry) * 0.12;
         ring.style.left = rx + 'px';
         ring.style.top = ry + 'px';
-
         requestAnimationFrame(loop);
     }
     loop();
 })();
+
+// ── Card 3D Magnetic Tilt ───────────────────────────────────────
+(function initCardTilt() {
+    const tiltTargets = '.member-card, .career-card, .prop-card, .feed-card';
+    document.querySelectorAll(tiltTargets).forEach(card => {
+        card.style.transition = 'box-shadow 0.3s, border-color 0.3s';
+        card.addEventListener('mousemove', e => {
+            const rect = card.getBoundingClientRect();
+            const cx = rect.left + rect.width / 2;
+            const cy = rect.top + rect.height / 2;
+            const dx = (e.clientX - cx) / (rect.width / 2);
+            const dy = (e.clientY - cy) / (rect.height / 2);
+            card.style.transform = `perspective(800px) rotateX(${-dy * 7}deg) rotateY(${dx * 7}deg) scale(1.025)`;
+        });
+        card.addEventListener('mouseleave', () => {
+            card.style.transition = 'transform 0.5s cubic-bezier(0.16,1,0.3,1), box-shadow 0.3s, border-color 0.3s';
+            card.style.transform = 'perspective(800px) rotateX(0deg) rotateY(0deg) scale(1)';
+            setTimeout(() => { card.style.transition = 'box-shadow 0.3s, border-color 0.3s'; }, 500);
+        });
+    });
+})();
+
+// ── Button Ripple Effect ────────────────────────────────────────
+(function initRipple() {
+    document.addEventListener('click', e => {
+        const btn = e.target.closest('.btn');
+        if (!btn) return;
+        const rect = btn.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height) * 1.2;
+        const ripple = document.createElement('span');
+        ripple.className = 'ripple';
+        ripple.style.width = ripple.style.height = size + 'px';
+        ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+        ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
+        btn.appendChild(ripple);
+        ripple.addEventListener('animationend', () => ripple.remove());
+    });
+})();
+
+// ── Theme Toggle ───────────────────────────────────────────────
+(function initTheme() {
+    const btn = document.getElementById('themeToggle');
+    const html = document.documentElement;
+    const icon = btn ? btn.querySelector('.toggle-icon') : null;
+    const label = btn ? btn.querySelector('.toggle-label') : null;
+
+    const saved = localStorage.getItem('gtb_theme') || 'dark';
+    html.setAttribute('data-theme', saved);
+    if (icon) icon.textContent = saved === 'light' ? '🌙' : '☀️';
+    if (label) label.textContent = saved === 'light' ? 'Dark' : 'Light';
+
+    if (!btn) return;
+    btn.addEventListener('click', () => {
+        const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', next);
+        localStorage.setItem('gtb_theme', next);
+        if (icon) icon.textContent = next === 'light' ? '🌙' : '☀️';
+        if (label) label.textContent = next === 'light' ? 'Dark' : 'Light';
+    });
+})();
+
+
 
 // ── Feed Content Data ──────────────────────────────
 

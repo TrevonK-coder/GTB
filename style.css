@@ -1,20 +1,89 @@
 :root {
-    --bg: #060609;
-    --surface: rgba(14, 14, 22, 0.4);
-    /* Glassmorphism surface */
-    --card: rgba(17, 17, 32, 0.45);
-    /* Glass card */
-    --border: rgba(124, 111, 255, 0.15);
-    /* Sleek purple-tinted borders */
-    --accent: #7c6fff;
-    --accent-glow: rgba(124, 111, 255, 0.4);
-    --accent2: #00e5a0;
-    --text: #ffffff;
-    --muted: #8b8b9f;
+    /* ── Dark Mode (default) ── */
+    --bg: #040408;
+    --surface: rgba(12, 12, 22, 0.45);
+    --card: rgba(14, 14, 28, 0.5);
+    --border: rgba(120, 100, 255, 0.18);
+
+    /* Cinematic brand palette */
+    --accent: #9066ff;
+    /* deep violet */
+    --accent-glow: rgba(144, 102, 255, 0.45);
+    --accent2: #00e8b5;
+    /* electric teal */
+    --accent3: #ff3cac;
+    /* magenta */
+    --accent4: #ffd166;
+    /* gold */
+    --accent5: #38c9ff;
+    /* ice cyan */
+
+    --text: #f0eeff;
+    --muted: #7a7a96;
     --ig: #e1306c;
-    --tt: #ffffff;
-    --yt: #ff0000;
-    --gh: #ffffff;
+    --tt: #f0f0f0;
+    --yt: #ff4040;
+    --gh: #e0e0f0;
+
+    /* Shimmer & glow helpers */
+    --shimmer-start: rgba(255, 255, 255, 0);
+    --shimmer-mid: rgba(255, 255, 255, 0.10);
+    --shimmer-end: rgba(255, 255, 255, 0);
+}
+
+/* ── LIGHT MODE ── */
+[data-theme="light"] {
+    --bg: #f0f0f8;
+    --surface: rgba(255, 255, 255, 0.65);
+    --card: rgba(255, 255, 255, 0.7);
+    --border: rgba(120, 100, 255, 0.22);
+
+    --accent: #6644dd;
+    --accent-glow: rgba(100, 68, 221, 0.35);
+    --accent2: #00b88a;
+    --accent3: #d4006a;
+    --accent4: #e6a800;
+    --accent5: #0099cc;
+
+    --text: #14121e;
+    --muted: #6060808;
+    --ig: #c2185b;
+    --tt: #111;
+    --yt: #cc0000;
+    --gh: #333;
+
+    --shimmer-mid: rgba(144, 102, 255, 0.12);
+}
+
+[data-theme="light"] body {
+    background: #eeeef8;
+}
+
+[data-theme="light"] #bg-canvas {
+    filter: brightness(1.8) saturate(0.5);
+    opacity: 0.35;
+}
+
+[data-theme="light"] nav {
+    background: rgba(245, 244, 255, 0.82);
+    border-bottom-color: rgba(120, 100, 255, 0.18);
+}
+
+[data-theme="light"] .member-card,
+[data-theme="light"] .career-card,
+[data-theme="light"] .feed-card,
+[data-theme="light"] .prop-card {
+    background: rgba(255, 255, 255, 0.75);
+    box-shadow: 0 2px 20px rgba(100, 80, 200, 0.08);
+}
+
+[data-theme="light"] .nav-links a,
+[data-theme="light"] .mobile-menu a {
+    color: #555;
+}
+
+[data-theme="light"] .section-tag {
+    text-shadow: none;
 }
 
 *,
@@ -197,6 +266,7 @@ nav {
 .nav-cta {
     background: linear-gradient(135deg, var(--accent), var(--accent2));
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     font-weight: 700 !important;
 }
@@ -210,6 +280,40 @@ nav {
     border-radius: 6px;
     cursor: pointer;
     font-size: 16px;
+}
+
+/* ── THEME TOGGLE BUTTON ── */
+#themeToggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 7px 14px;
+    border-radius: 100px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: all 0.25s;
+    white-space: nowrap;
+}
+
+#themeToggle:hover {
+    border-color: var(--accent);
+    background: rgba(144, 102, 255, 0.1);
+    color: var(--accent);
+    box-shadow: 0 0 14px var(--accent-glow);
+}
+
+#themeToggle .toggle-icon {
+    font-size: 14px;
+    transition: transform 0.4s;
+}
+
+[data-theme="light"] #themeToggle .toggle-icon {
+    transform: rotate(180deg);
 }
 
 /* ── MOBILE MENU ── */
@@ -444,20 +548,23 @@ h1 {
     text-transform: uppercase;
     text-decoration: none;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.22s;
     border: none;
     font-weight: 500;
+    position: relative;
+    overflow: hidden;
 }
 
 .btn-primary {
     background: linear-gradient(135deg, var(--accent), var(--accent2));
     color: #fff;
-    box-shadow: 0 4px 20px rgba(124, 111, 255, 0.35);
+    box-shadow: 0 4px 24px var(--accent-glow);
 }
 
 .btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 30px rgba(124, 111, 255, 0.5);
+    box-shadow: 0 8px 36px var(--accent-glow);
+    filter: brightness(1.1);
 }
 
 .btn-ghost {
@@ -470,6 +577,24 @@ h1 {
     border-color: var(--accent);
     color: var(--accent);
     transform: translateY(-2px);
+    box-shadow: 0 0 16px var(--accent-glow);
+}
+
+/* Button Ripple */
+.btn .ripple {
+    position: absolute;
+    border-radius: 50%;
+    transform: scale(0);
+    background: rgba(255, 255, 255, 0.3);
+    pointer-events: none;
+    animation: btn-ripple 0.55s ease-out forwards;
+}
+
+@keyframes btn-ripple {
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
 }
 
 /* ── SECTION COMMON ── */
@@ -506,6 +631,7 @@ h2 {
 .accent {
     background: linear-gradient(135deg, var(--accent), var(--accent2));
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     display: inline-block;
 }
@@ -536,19 +662,20 @@ h2 {
 
 .member-card {
     background: var(--card);
-    /* Glass background */
     border: 1px solid var(--border);
-    border-radius: 12px;
-    /* Luxury rounded corners */
+    border-radius: 14px;
     padding: 28px 24px;
     position: relative;
     overflow: hidden;
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    transition: border-color 0.25s, transform 0.2s, box-shadow 0.2s;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    transition: border-color 0.3s, box-shadow 0.3s;
     cursor: default;
+    transform-style: preserve-3d;
+    will-change: transform;
 }
 
+/* Top accent bar */
 .member-card::before {
     content: '';
     position: absolute;
@@ -556,18 +683,42 @@ h2 {
     left: 0;
     right: 0;
     height: 2px;
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    background: linear-gradient(90deg, var(--accent), var(--accent3), var(--accent2));
     opacity: 0;
-    transition: opacity 0.2s;
+    transition: opacity 0.3s;
+    z-index: 1;
+}
+
+/* Holographic shimmer sweep */
+.member-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg,
+            var(--shimmer-start) 30%,
+            var(--shimmer-mid) 50%,
+            var(--shimmer-end) 70%);
+    transform: translateX(-100%);
+    transition: transform 0s;
+    pointer-events: none;
+    z-index: 2;
 }
 
 .member-card:hover {
-    border-color: rgba(124, 111, 255, 0.4);
-    transform: translateY(-3px);
+    border-color: rgba(144, 102, 255, 0.5);
+    box-shadow:
+        0 12px 40px rgba(0, 0, 0, 0.5),
+        0 0 0 1px rgba(144, 102, 255, 0.25),
+        inset 0 0 30px rgba(144, 102, 255, 0.04);
 }
 
 .member-card:hover::before {
     opacity: 1;
+}
+
+.member-card:hover::after {
+    transform: translateX(100%);
+    transition: transform 0.65s ease;
 }
 
 .member-num {
@@ -827,9 +978,9 @@ h2 {
 
 .prop-card {
     background: var(--card);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-radius: 12px;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-radius: 14px;
     border: 1px solid var(--border);
     padding: 36px 28px;
     text-decoration: none;
@@ -837,15 +988,33 @@ h2 {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+    transition: border-color 0.3s, box-shadow 0.3s;
     position: relative;
     overflow: hidden;
+    transform-style: preserve-3d;
+    will-change: transform;
+}
+
+.prop-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg,
+            var(--shimmer-start) 30%,
+            var(--shimmer-mid) 50%,
+            var(--shimmer-end) 70%);
+    transform: translateX(-100%);
+    pointer-events: none;
 }
 
 .prop-card:not(.prop-coming):hover {
-    border-color: rgba(124, 111, 255, 0.5);
-    transform: translateY(-4px);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+    border-color: rgba(0, 232, 181, 0.45);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(0, 232, 181, 0.2);
+}
+
+.prop-card:not(.prop-coming):hover::after {
+    transform: translateX(100%);
+    transition: transform 0.65s ease;
 }
 
 .prop-coming {
@@ -914,21 +1083,41 @@ h2 {
 
 .career-card {
     background: var(--card);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
     border: 1px solid var(--border);
     padding: 32px;
-    border-radius: 12px;
+    border-radius: 14px;
     display: flex;
     flex-direction: column;
     gap: 16px;
-    transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    position: relative;
+    overflow: hidden;
+    transform-style: preserve-3d;
+    will-change: transform;
+}
+
+.career-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg,
+            var(--shimmer-start) 30%,
+            var(--shimmer-mid) 50%,
+            var(--shimmer-end) 70%);
+    transform: translateX(-100%);
+    pointer-events: none;
 }
 
 .career-card:hover {
-    transform: translateY(-4px);
-    border-color: rgba(124, 111, 255, 0.4);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    border-color: rgba(255, 60, 172, 0.45);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 60, 172, 0.2);
+}
+
+.career-card:hover::after {
+    transform: translateX(100%);
+    transition: transform 0.65s ease;
 }
 
 .c-icon {
