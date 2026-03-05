@@ -798,6 +798,177 @@ h2 {
     border-color: var(--border);
 }
 
+.premier-prop {
+    background: linear-gradient(145deg, var(--card), rgba(124, 111, 255, 0.05));
+    border-color: rgba(124, 111, 255, 0.3);
+}
+
+.premier-prop:hover {
+    border-color: var(--accent);
+    box-shadow: 0 4px 20px rgba(124, 111, 255, 0.15);
+}
+
+/* ── CAREERS GRID ── */
+#careers {
+    background: var(--bg);
+}
+
+.careers-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.career-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 32px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.career-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(124, 111, 255, 0.4);
+}
+
+.c-icon {
+    font-size: 2rem;
+}
+
+.career-card h3 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    letter-spacing: -0.5px;
+}
+
+.career-card p {
+    color: var(--muted);
+    font-size: 13px;
+    flex: 1;
+}
+
+.career-card .btn {
+    align-self: flex-start;
+    padding: 10px 20px;
+}
+
+/* ── APP TOUR OVERLAY ── */
+.tour-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.tour-overlay.hidden {
+    opacity: 0;
+}
+
+.tour-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(6, 6, 9, 0.85);
+    backdrop-filter: blur(4px);
+    pointer-events: all;
+}
+
+.tour-box {
+    position: absolute;
+    background: var(--surface);
+    border: 1px solid var(--accent);
+    box-shadow: 0 10px 40px rgba(124, 111, 255, 0.2);
+    border-radius: 12px;
+    padding: 24px;
+    width: 320px;
+    pointer-events: all;
+    transition: top 0.4s cubic-bezier(0.16, 1, 0.3, 1), left 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 10001;
+}
+
+/* Active Highlight Class */
+.tour-highlight {
+    position: relative;
+    z-index: 10000 !important;
+    pointer-events: all;
+    box-shadow: 0 0 0 4px rgba(124, 111, 255, 0.2);
+    border-radius: 4px;
+    background: var(--surface);
+}
+
+.tour-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.tour-tag {
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
+.tour-close {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 20px;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.tour-close:hover {
+    color: var(--text);
+}
+
+.tour-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.tour-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 24px;
+}
+
+.tour-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.tour-progress {
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.tour-progress span {
+    color: var(--text);
+    font-weight: 600;
+}
+
+.tour-nav {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 10px;
+}
+
 /* ── FOOTER ── */
 footer {
     padding: 40px 48px;

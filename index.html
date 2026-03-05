@@ -25,6 +25,7 @@
         <ul class="nav-links">
             <li><a href="#members">Members</a></li>
             <li><a href="#social">Social</a></li>
+            <li><a href="#careers">Careers</a></li>
             <li><a href="explore.html">Explore</a></li>
             <li><a href="portal.html">Portal 🔐</a></li>
             <li><a href="admin.html">Admin ⚡</a></li>
@@ -38,6 +39,7 @@
     <div class="mobile-menu" id="mobileMenu">
         <a href="#members">Members</a>
         <a href="#social">Social</a>
+        <a href="#careers">Careers</a>
         <a href="explore.html">Explore</a>
         <a href="portal.html">Portal 🔐</a>
         <a href="admin.html">Admin ⚡</a>
@@ -302,12 +304,53 @@
         </div>
     </section>
 
+    <!-- CAREERS & COLLABORATIONS -->
+    <section id="careers">
+        <div class="section-wrap">
+            <div class="section-tag">// Join The Dimension</div>
+            <h2>Careers & <span class="accent">Collaborations</span></h2>
+            <p class="section-desc">Operate above the ordinary. We are always looking for elite talent to collaborate
+                with the collective or join our digital infrastructure team.</p>
+
+            <div class="careers-grid">
+                <div class="career-card">
+                    <div class="c-icon">🤝</div>
+                    <h3>Brand Collaborations</h3>
+                    <p>Partner with GTB Collective for visionary media, design, or performance campaigns.</p>
+                    <a href="mailto:collaborations@gtb.co.ke" class="btn btn-ghost">Pitch Us →</a>
+                </div>
+                <div class="career-card">
+                    <div class="c-icon">⚡</div>
+                    <h3>Technical Infrastructure</h3>
+                    <p>Join The Architect in building scalable, high-performance systems and AI products.</p>
+                    <a href="mailto:careers@gtb.co.ke" class="btn btn-ghost">Apply Now →</a>
+                </div>
+                <div class="career-card">
+                    <div class="c-icon">🎨</div>
+                    <h3>Creative Roster</h3>
+                    <p>Are you an undeniable multi-hyphenate? The collective is expanding its creative dimensions.</p>
+                    <a href="mailto:roster@gtb.co.ke" class="btn btn-ghost">Submit Portfolio →</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- GTB PROPERTIES -->
     <section id="properties">
         <div class="section-wrap">
             <div class="section-tag">// GTB Digital Properties</div>
             <h2>The <span class="accent">Ecosystem</span></h2>
             <div class="props-grid">
+                <!-- PREMIER PROPERTY: PRODUCTION HOUSE -->
+                <a href="https://www.instagram.com/gladtobe.productions/" target="_blank"
+                    class="prop-card premier-prop">
+                    <div class="prop-icon">🎥</div>
+                    <div class="prop-name">Glad To Be Productions</div>
+                    <div class="prop-desc">The official digital production house and creative agency of GTB Collective.
+                        Unmatched visual storytelling.</div>
+                    <div class="prop-badge live">Live ↗</div>
+                </a>
+
                 <a href="https://trevonk-coder.github.io/vidacut/" target="_blank" class="prop-card">
                     <div class="prop-icon">🎬</div>
                     <div class="prop-name">VidaCut AI</div>
@@ -346,6 +389,7 @@
             <div class="footer-links">
                 <a href="#members">Members</a>
                 <a href="explore.html">Explore</a>
+                <a href="#careers">Careers</a>
                 <a href="https://gladtobe.co.ke" target="_blank">Merch</a>
                 <a href="https://trevonk-coder.github.io/vidacut/" target="_blank">VidaCut</a>
                 <a href="https://trevonk-coder.github.io/myCV/" target="_blank">Dev CV</a>
@@ -353,6 +397,26 @@
             <div class="footer-copy">© 2026 GTB Collective · Glad To Be</div>
         </div>
     </footer>
+
+    <!-- APP TOUR OVERLAY -->
+    <div id="tourOverlay" class="tour-overlay hidden">
+        <div class="tour-backdrop"></div>
+        <div id="tourBox" class="tour-box">
+            <div class="tour-header">
+                <span class="tour-tag">// System Guide</span>
+                <button id="tourClose" class="tour-close">×</button>
+            </div>
+            <h3 id="tourTitle" class="tour-title">Welcome</h3>
+            <p id="tourDesc" class="tour-desc">Tour initialized.</p>
+            <div class="tour-footer">
+                <div class="tour-progress"><span id="tourStep">1</span> / <span id="tourTotal">4</span></div>
+                <div class="tour-nav">
+                    <button id="tourPrev" class="btn btn-ghost btn-sm" disabled>Prev</button>
+                    <button id="tourNext" class="btn btn-primary btn-sm">Next</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script async src="https://www.tiktok.com/embed.js"></script>
     <script src="main.js"></script>

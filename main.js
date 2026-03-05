@@ -112,3 +112,109 @@ filterBtns.forEach(btn => {
         });
     });
 });
+
+// ── APP TOUR LOGIC ────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+    // Check if tour already seen
+    if (localStorage.getItem('gtb_tour_seen')) return;
+
+    const tourSteps = [
+        {
+            sel: null,
+            title: "Welcome to GTB",
+            desc: "Eight elite, multi-hyphenate creatives operating in one unified dimension. Let's take a quick look around."
+        },
+        {
+            sel: '#members',
+            title: "The Collective",
+            desc: "Explore the 8 dimensions. From The Polymath to The Architect, discover the minds behind GTB."
+        },
+        {
+            sel: '#social',
+            title: "Live Feed",
+            desc: "Real-time updates across Instagram, TikTok, and YouTube. One central hub for all GTB content."
+        },
+        {
+            sel: '#properties',
+            title: "The Ecosystem",
+            desc: "Our digital businesses, including VidaCut AI and GTB Productions. Built and scaled by the collective."
+        }
+    ];
+
+    let currentStepIndex = 0;
+    const overlayOrig = document.getElementById('tourOverlay');
+    const box = document.getElementById('tourBox');
+    if (!overlayOrig || !box) return;
+
+    // Small delay to let initial animations finish
+    setTimeout(() => {
+        overlayOrig.classList.remove('hidden');
+        renderTourStep();
+    }, 1500);
+
+    function renderTourStep() {
+        // Clear previous highlight
+        document.querySelectorAll('.tour-highlight').forEach(el => el.classList.remove('tour-highlight'));
+
+        const step = tourSteps[currentStepIndex];
+
+        document.getElementById('tourTitle').textContent = step.title;
+        document.getElementById('tourDesc').textContent = step.desc;
+        document.getElementById('tourStep').textContent = currentStepIndex + 1;
+        document.getElementById('tourTotal').textContent = tourSteps.length;
+
+        document.getElementById('tourPrev').disabled = currentStepIndex === 0;
+        document.getElementById('tourNext').textContent = currentStepIndex === tourSteps.length - 1 ? 'Finish' : 'Next';
+
+        // Highlight element
+        if (step.sel) {
+            const targetEl = document.querySelector(step.sel);
+            if (targetEl) {
+                targetEl.classList.add('tour-highlight');
+                // Scroll target into view
+                const rect = targetEl.getBoundingClientRect();
+                const absoluteTop = window.scrollY + rect.top;
+
+                // Position box near target
+                window.scrollTo({ top: absoluteTop - 100, behavior: 'smooth' });
+
+                // Set box position (center screen for now to avoid complex collision math)
+                box.style.top = '50%';
+                box.style.left = '50%';
+                box.style.transform = 'translate(-50%, -50%)';
+                box.style.position = 'fixed';
+            }
+        } else {
+            // Intro step - center screen
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            box.style.top = '50%';
+            box.style.left = '50%';
+            box.style.transform = 'translate(-50%, -50%)';
+            box.style.position = 'fixed';
+        }
+    }
+
+    function closeTour() {
+        overlayOrig.classList.add('hidden');
+        document.querySelectorAll('.tour-highlight').forEach(el => el.classList.remove('tour-highlight'));
+        localStorage.setItem('gtb_tour_seen', 'true');
+    }
+
+    document.getElementById('tourNext').addEventListener('click', () => {
+        if (currentStepIndex < tourSteps.length - 1) {
+            currentStepIndex++;
+            renderTourStep();
+        } else {
+            closeTour();
+        }
+    });
+
+    document.getElementById('tourPrev').addEventListener('click', () => {
+        if (currentStepIndex > 0) {
+            currentStepIndex--;
+            renderTourStep();
+        }
+    });
+
+    document.getElementById('tourClose').addEventListener('click', closeTour);
+});
