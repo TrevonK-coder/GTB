@@ -1,16 +1,20 @@
 :root {
     --bg: #060609;
-    --surface: #0e0e16;
-    --card: #111120;
-    --border: #1a1a2e;
+    --surface: rgba(14, 14, 22, 0.4);
+    /* Glassmorphism surface */
+    --card: rgba(17, 17, 32, 0.45);
+    /* Glass card */
+    --border: rgba(124, 111, 255, 0.15);
+    /* Sleek purple-tinted borders */
     --accent: #7c6fff;
+    --accent-glow: rgba(124, 111, 255, 0.4);
     --accent2: #00e5a0;
-    --text: #e8e8f0;
-    --muted: #6b6b88;
+    --text: #ffffff;
+    --muted: #8b8b9f;
     --ig: #e1306c;
-    --tt: #010101;
+    --tt: #ffffff;
     --yt: #ff0000;
-    --gh: #333;
+    --gh: #ffffff;
 }
 
 *,
@@ -34,6 +38,19 @@ body {
     overflow-x: hidden;
 }
 
+/* ── 3D CANVAS & BODY ── */
+#bg-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    pointer-events: none;
+    /* Extra deep background color just in case WebGL is disabled */
+    background: radial-gradient(circle at 50% 50%, #0a0a10 0%, #030304 100%);
+}
+
 /* ── NAV ── */
 nav {
     position: fixed;
@@ -45,8 +62,11 @@ nav {
     align-items: center;
     justify-content: space-between;
     padding: 18px 48px;
-    background: rgba(6, 6, 9, 0.85);
-    backdrop-filter: blur(16px);
+    background: rgba(6, 6, 9, 0.5);
+    /* More transparent */
+    backdrop-filter: blur(24px);
+    /* Stronger blur for glass effect */
+    -webkit-backdrop-filter: blur(24px);
     border-bottom: 1px solid var(--border);
     transition: padding 0.3s;
 }
@@ -161,52 +181,16 @@ nav {
     padding: 100px 48px 80px;
 }
 
+/* Removed old CSS orb background - keeping a subtle grid for depth overlay */
 .hero-bg-grid {
     position: absolute;
     inset: 0;
     background-image:
-        linear-gradient(var(--border) 1px, transparent 1px),
-        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
     background-size: 64px 64px;
-    opacity: 0.3;
+    opacity: 0.5;
     pointer-events: none;
-}
-
-.hero-orb {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(80px);
-    pointer-events: none;
-}
-
-.hero-orb-1 {
-    width: 600px;
-    height: 600px;
-    background: radial-gradient(circle, rgba(124, 111, 255, 0.18), transparent 70%);
-    top: -100px;
-    left: -100px;
-    animation: orb-float 12s ease-in-out infinite;
-}
-
-.hero-orb-2 {
-    width: 500px;
-    height: 500px;
-    background: radial-gradient(circle, rgba(0, 229, 160, 0.12), transparent 70%);
-    bottom: -80px;
-    right: -80px;
-    animation: orb-float 15s ease-in-out infinite reverse;
-}
-
-@keyframes orb-float {
-
-    0%,
-    100% {
-        transform: translateY(0) scale(1);
-    }
-
-    50% {
-        transform: translateY(-40px) scale(1.05);
-    }
 }
 
 .hero-inner {
@@ -415,6 +399,9 @@ h1 {
     max-width: 1200px;
     margin: 0 auto;
     padding: 100px 48px;
+    position: relative;
+    /* For stacking over 3D background */
+    z-index: 10;
 }
 
 .section-tag {
@@ -425,6 +412,8 @@ h1 {
     color: var(--accent);
     margin-bottom: 16px;
     font-family: 'DM Mono', monospace;
+    text-shadow: 0 0 20px var(--accent-glow);
+    /* Luxury glow */
 }
 
 h2 {
@@ -437,7 +426,10 @@ h2 {
 }
 
 .accent {
-    color: var(--accent);
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
 }
 
 .section-desc {
@@ -449,7 +441,10 @@ h2 {
 
 /* ── MEMBERS GRID ── */
 #members {
-    background: var(--surface);
+    /* Glassmorphic Section */
+    background: rgba(14, 14, 22, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     border-top: 1px solid var(--border);
     border-bottom: 1px solid var(--border);
 }
@@ -457,16 +452,22 @@ h2 {
 .members-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 2px;
+    gap: 16px;
+    /* Increased gap instead of 2px grid */
 }
 
 .member-card {
     background: var(--card);
+    /* Glass background */
     border: 1px solid var(--border);
+    border-radius: 12px;
+    /* Luxury rounded corners */
     padding: 28px 24px;
     position: relative;
     overflow: hidden;
-    transition: border-color 0.25s, transform 0.2s;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transition: border-color 0.25s, transform 0.2s, box-shadow 0.2s;
     cursor: default;
 }
 
@@ -612,7 +613,8 @@ h2 {
 
 /* ── SOCIAL FEED SECTION ── */
 #social {
-    background: var(--bg);
+    background: transparent;
+    /* Let 3D through entirely */
 }
 
 .platform-tabs {
@@ -631,6 +633,8 @@ h2 {
     letter-spacing: 0.06em;
     text-transform: uppercase;
     background: var(--card);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     border: 1px solid var(--border);
     color: var(--muted);
     cursor: pointer;
@@ -646,23 +650,27 @@ h2 {
     background: linear-gradient(135deg, var(--accent), rgba(0, 229, 160, 0.8));
     border-color: transparent;
     color: #fff;
+    box-shadow: 0 4px 15px rgba(124, 111, 255, 0.3);
 }
 
 .feed-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 2px;
+    gap: 16px;
     min-height: 280px;
 }
 
 .feed-card {
     background: var(--card);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border: 1px solid var(--border);
+    border-radius: 12px;
     padding: 24px;
     display: flex;
     flex-direction: column;
     gap: 12px;
-    transition: border-color 0.2s, transform 0.2s;
+    transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
     text-decoration: none;
     color: inherit;
     cursor: pointer;
@@ -671,6 +679,7 @@ h2 {
 .feed-card:hover {
     border-color: rgba(124, 111, 255, 0.4);
     transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
 }
 
 .feed-card-platform {
@@ -725,7 +734,9 @@ h2 {
 
 /* ── PROPERTIES GRID ── */
 #properties {
-    background: var(--surface);
+    background: rgba(14, 14, 22, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     border-top: 1px solid var(--border);
     border-bottom: 1px solid var(--border);
 }
@@ -733,11 +744,14 @@ h2 {
 .props-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 2px;
+    gap: 16px;
 }
 
 .prop-card {
     background: var(--card);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 12px;
     border: 1px solid var(--border);
     padding: 36px 28px;
     text-decoration: none;
@@ -745,7 +759,7 @@ h2 {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    transition: border-color 0.2s, transform 0.2s;
+    transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
     position: relative;
     overflow: hidden;
 }
@@ -753,6 +767,7 @@ h2 {
 .prop-card:not(.prop-coming):hover {
     border-color: rgba(124, 111, 255, 0.5);
     transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
 }
 
 .prop-coming {
@@ -810,7 +825,7 @@ h2 {
 
 /* ── CAREERS GRID ── */
 #careers {
-    background: var(--bg);
+    background: transparent;
 }
 
 .careers-grid {
@@ -821,18 +836,21 @@ h2 {
 
 .career-card {
     background: var(--card);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border: 1px solid var(--border);
     padding: 32px;
     border-radius: 12px;
     display: flex;
     flex-direction: column;
     gap: 16px;
-    transition: transform 0.2s, border-color 0.2s;
+    transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
 }
 
 .career-card:hover {
     transform: translateY(-4px);
     border-color: rgba(124, 111, 255, 0.4);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
 }
 
 .c-icon {
@@ -1171,12 +1189,6 @@ footer {
 
 .explore-card:hover .play-btn {
     opacity: 1;
-}
-
-.explore-card-title {
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    font-size: 15px;
     letter-spacing: -0.3px;
 }
 
