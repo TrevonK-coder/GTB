@@ -30,7 +30,8 @@ html {
 }
 
 body {
-    background: var(--bg);
+    background: #01010a;
+    /* Deep space black */
     color: var(--text);
     font-family: 'DM Mono', monospace;
     font-size: 14px;
@@ -886,6 +887,9 @@ h2 {
 
 .tour-overlay.hidden {
     opacity: 0;
+    pointer-events: none;
+    /* Fix: hidden overlay must not block clicks */
+    visibility: hidden;
 }
 
 .tour-backdrop {
