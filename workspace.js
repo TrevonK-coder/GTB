@@ -45,6 +45,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const cmdNav = document.getElementById('commandNavItem');
             if (cmdNav) cmdNav.style.display = 'flex';
             loadCommandCenter();
+            loadPerformanceRankings();
         }
     } else {
         document.getElementById('userName').textContent = "Unknown User";
@@ -1161,4 +1162,173 @@ function initAssistant() {
         const t = document.getElementById('toast');
         if (t) { t.textContent = '⏰ Snoozed 2 hours. I\'ll remind you again soon.'; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); }
     });
+}
+
+// ════════════════════════════════════
+// PERFORMANCE RANKINGS & FAN FUND
+// (Called in Architect Command Center)
+// ════════════════════════════════════
+
+// Fallback mock data used when backend server is not running
+const PERF_MOCK = [
+    { rank:1, name:'The Engineer',    emoji:'⚙️',  totalScore:962, tier:{label:'ELITE',color:'#fbbf24'},      breakdown:{contributionConsistency:{score:100},kpiAchievement:{score:96},taskCompletionRate:{score:94},engagement:{score:85}} },
+    { rank:2, name:'The Architect',   emoji:'🏗️', totalScore:940, tier:{label:'ELITE',color:'#fbbf24'},      breakdown:{contributionConsistency:{score:100},kpiAchievement:{score:95},taskCompletionRate:{score:90},engagement:{score:88}} },
+    { rank:3, name:'The Specialist',  emoji:'💊',  totalScore:895, tier:{label:'COMMITTED',color:'#22d47a'}, breakdown:{contributionConsistency:{score:100},kpiAchievement:{score:91},taskCompletionRate:{score:88},engagement:{score:82}} },
+    { rank:4, name:'The Performer',   emoji:'🎭',  totalScore:875, tier:{label:'COMMITTED',color:'#22d47a'}, breakdown:{contributionConsistency:{score:100},kpiAchievement:{score:88},taskCompletionRate:{score:85},engagement:{score:92}} },
+    { rank:5, name:'The Artist',      emoji:'🎵',  totalScore:862, tier:{label:'COMMITTED',color:'#22d47a'}, breakdown:{contributionConsistency:{score:100},kpiAchievement:{score:84},taskCompletionRate:{score:82},engagement:{score:86}} },
+    { rank:6, name:'The Polymath',    emoji:'🎙️', totalScore:720, tier:{label:'ACTIVE',color:'#7c6fff'},    breakdown:{contributionConsistency:{score:67}, kpiAchievement:{score:72},taskCompletionRate:{score:68},engagement:{score:78}} },
+    { rank:7, name:'The Visionary',   emoji:'🎬',  totalScore:698, tier:{label:'ACTIVE',color:'#7c6fff'},    breakdown:{contributionConsistency:{score:67}, kpiAchievement:{score:78},taskCompletionRate:{score:70},engagement:{score:75}} },
+    { rank:8, name:'The Gastronomist',emoji:'🍽️', totalScore:492, tier:{label:'AT RISK',color:'#ff5c5c'},   breakdown:{contributionConsistency:{score:33}, kpiAchievement:{score:55},taskCompletionRate:{score:50},engagement:{score:60}} },
+];
+
+async function loadPerformanceRankings() {
+    let rankings = PERF_MOCK;
+    try {
+        const res = await fetch('/api/performance');
+        if (res.ok) { const j = await res.json(); if (j.rankings) rankings = j.rankings; }
+    } catch (_) { /* backend not running, use mock */ }
+
+    renderPerfTable(rankings);
+    loadFanFund(rankings[0]);
+
+    const refreshBtn = document.getElementById('refreshPerfBtn');
+    if (refreshBtn) {
+        refreshBtn.addEventListener('click', () => {
+            renderPerfTable(rankings);
+            loadFanFund(rankings[0]);
+        });
+    }
+}
+
+function renderPerfTable(rankings) {
+    const tbody = document.getElementById('perfTableBody');
+    if (!tbody) return;
+    const medals = ['🥇','🥈','🥉'];
+    tbody.innerHTML = rankings.map(m => {
+        const b = m.breakdown;
+        return `<tr>
+            <td><span class="rank-medal">${medals[m.rank - 1] || m.rank}</span></td>
+            <td><span style="font-size:18px;margin-right:8px;">${m.emoji}</span><strong>${m.name}</strong></td>
+            <td><span class="perf-score" style="color:${m.tier.color};">${m.totalScore}</span><span class="perf-sub">/1000</span></td>
+            <td><span class="tx-status" style="color:${m.tier.color};background:${m.tier.color}18;border-color:${m.tier.color}44;">${m.tier.label}</span></td>
+            <td class="perf-sub">${b.contributionConsistency.score}%</td>
+            <td class="perf-sub">${b.kpiAchievement.score}%</td>
+            <td class="perf-sub">${b.taskCompletionRate.score}%</td>
+            <td class="perf-sub">${b.engagement.score}%</td>
+        </tr>`;
+    }).join('');
+}
+
+async function loadFanFund(topPerformer) {
+    let fundData = {
+        balance: 47500, totalReceived: 72000, totalAwarded: 24500, donorCount: 14,
+        recentDonors: [
+            { name:'GlobalFan',   country:'Canada',  amount:5000,  message:'For the hardest worker.',  date:'2026-03-10' },
+            { name:'Anonymous',   country:'Germany', amount:8000,  message:'Inspiring work.',           date:'2026-03-09' },
+            { name:'SupporterX',  country:'Kenya',   amount:3000,  message:'🔥 GTB forever!',           date:'2026-03-07' },
+            { name:'Anonymous',   country:'UK',      amount:10000, message:'For the most dedicated.',  date:'2026-03-05' },
+            { name:'Fan #002',    country:'Uganda',  amount:2500,  message:'GTB are legends!',          date:'2026-03-03' },
+        ],
+        rewardHistory: [
+            { recipient:'The Engineer',  amount:12000, month:'Jan 2026', reason:'Top scorer 3 months running — 962/1000' },
+            { recipient:'The Architect', amount:12500, month:'Feb 2026', reason:'Highest KPI + contribution consistency' },
+        ]
+    };
+
+    try {
+        const res = await fetch('/api/fanfund/balance');
+        if (res.ok) { const j = await res.json(); if (j.balance) fundData = j; }
+    } catch (_) { /* use mock */ }
+
+    // Stats
+    const statsEl = document.getElementById('fanFundStats');
+    if (statsEl) {
+        statsEl.innerHTML = [
+            { label: 'Current Balance', val: `KES ${fundData.balance.toLocaleString()}`, color: 'var(--green)' },
+            { label: 'Total Received',  val: `KES ${fundData.totalReceived.toLocaleString()}`, color: 'var(--text)' },
+            { label: 'Total Awarded',   val: `KES ${fundData.totalAwarded.toLocaleString()}`, color: 'var(--accent)' },
+        ].map(s => `<div class="ffs-box"><div class="ffs-label">${s.label}</div><div class="ffs-val" style="color:${s.color};">${s.val}</div></div>`).join('');
+    }
+
+    // Recent Donors
+    const donorEl = document.getElementById('fanDonorList');
+    if (donorEl && fundData.recentDonors) {
+        donorEl.innerHTML = fundData.recentDonors.map(d => `
+            <div class="doc-item">
+                <div class="doc-info">
+                    <span style="font-size:20px;">🌍</span>
+                    <div class="doc-meta">
+                        <span class="doc-title">${d.name} <span class="mono" style="font-size:10px;color:var(--muted);">${d.country}</span></span>
+                        <span class="doc-date">"${d.message}" — KES ${d.amount.toLocaleString()}</span>
+                    </div>
+                </div>
+                <span class="tx-status confirmed">KES ${d.amount.toLocaleString()}</span>
+            </div>
+        `).join('');
+    }
+
+    // Reward History
+    const histEl = document.getElementById('fanRewardHistory');
+    if (histEl && fundData.rewardHistory) {
+        histEl.innerHTML = fundData.rewardHistory.map(r => `
+            <div class="doc-item">
+                <div class="doc-info">
+                    <span style="font-size:20px;">🏆</span>
+                    <div class="doc-meta">
+                        <span class="doc-title">${r.recipient} <span class="mono" style="font-size:10px;color:var(--muted);">${r.month}</span></span>
+                        <span class="doc-date">${r.reason}</span>
+                    </div>
+                </div>
+                <span class="tx-status confirmed">KES ${r.amount.toLocaleString()}</span>
+            </div>
+        `).join('');
+    }
+
+    // Next winner preview
+    if (topPerformer) {
+        const nwEl = document.getElementById('nextRewardPreview');
+        if (nwEl) {
+            const reward = Math.floor(fundData.balance * 0.70);
+            nwEl.innerHTML = `
+                <span class="fnw-emoji">${topPerformer.emoji}</span>
+                <div class="fnw-info">
+                    <strong>${topPerformer.name}</strong>
+                    <span class="fnw-score">${topPerformer.totalScore}/1000 pts — If distributed now: <strong style="color:var(--yellow);">KES ${reward.toLocaleString()}</strong></span>
+                    <span class="fnw-reason">Based on current weighted algorithm across all 6 performance dimensions.</span>
+                </div>
+                <span class="fnw-tier">${topPerformer.tier.label}</span>
+            `;
+        }
+    }
+
+    // Distribute button
+    const distBtn = document.getElementById('distributeFundBtn');
+    if (distBtn) {
+        distBtn.addEventListener('click', async () => {
+            if (!confirm(`Are you sure you want to distribute ~KES ${Math.floor(fundData.balance * 0.70).toLocaleString()} to ${topPerformer?.name || 'top performer'}?`)) return;
+            try {
+                const res = await fetch('/api/fanfund/distribute', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ requestedBy: 'architect' }),
+                });
+                const data = await res.json();
+                if (data.success) {
+                    const t = document.getElementById('toast');
+                    if (t) {
+                        t.textContent = `🏆 KES ${data.result.rewardAmount.toLocaleString()} secretly awarded to ${data.result.recipient}!`;
+                        t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 4500);
+                    }
+                    loadFanFund(topPerformer); // Refresh
+                }
+            } catch (_) {
+                // Simulate for demo
+                const t = document.getElementById('toast');
+                if (t) {
+                    t.textContent = `🏆 KES ${Math.floor(fundData.balance * 0.70).toLocaleString()} reward triggered — check M-Pesa! (Demo mode)`;
+                    t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 4500);
+                }
+            }
+        });
+    }
 }

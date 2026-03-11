@@ -472,6 +472,71 @@
                         </div>
                     </div>
 
+                    <!-- PERFORMANCE LEADERBOARD -->
+                    <div class="card" style="margin-top:24px;">
+                        <div class="card-header">
+                            <h3>📊 Member Performance Rankings</h3>
+                            <button class="btn btn-ghost btn-sm" id="refreshPerfBtn">↻ Refresh Scores</button>
+                        </div>
+                        <div class="card-body" style="padding:0;">
+                            <div class="tx-table-wrap">
+                                <table class="tx-table">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Member</th>
+                                            <th>Total Score</th>
+                                            <th>Tier</th>
+                                            <th>Contribution</th>
+                                            <th>KPI</th>
+                                            <th>Tasks</th>
+                                            <th>Engagement</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="perfTableBody">
+                                        <!-- Injected by JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECRET FAN FUND — ARCHITECT ONLY -->
+                    <div class="card fan-fund-card" style="margin-top:24px;">
+                        <div class="card-header">
+                            <div>
+                                <h3>🌍 Secret Fan Fund <span class="mono" style="font-size:11px;background:rgba(251,191,36,0.15);color:var(--yellow);padding:3px 10px;border-radius:8px;border:1px solid rgba(251,191,36,0.3);">ARCHITECT EYES ONLY</span></h3>
+                                <span style="font-size:12px;color:var(--muted);">Anonymous contributions from fans and friends worldwide.</span>
+                            </div>
+                            <button class="btn btn-primary btn-sm" id="distributeFundBtn">🏆 Distribute Reward</button>
+                        </div>
+                        <div class="card-body">
+                            <div class="fan-fund-split">
+                                <!-- Left: Stats + Donor Feed -->
+                                <div>
+                                    <div class="fan-fund-stats" id="fanFundStats">
+                                        <!-- Injected by JS -->
+                                    </div>
+                                    <div class="ws-col-title mono" style="margin:20px 0 10px;">RECENT DONORS</div>
+                                    <div class="doc-list" id="fanDonorList">
+                                        <!-- Injected by JS -->
+                                    </div>
+                                </div>
+                                <!-- Right: Reward History -->
+                                <div>
+                                    <div class="ws-col-title mono" style="margin-bottom:10px;">🏆 REWARD HISTORY</div>
+                                    <div class="doc-list" id="fanRewardHistory">
+                                        <!-- Injected by JS -->
+                                    </div>
+                                    <div class="ws-col-title mono" style="margin:20px 0 10px;">NEXT REWARD RECIPIENT (ALGORITHM)</div>
+                                    <div id="nextRewardPreview" class="fan-next-winner">
+                                        <!-- Injected by JS -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
 
                 <!-- ══ ROLES MARKETPLACE ══ -->
@@ -621,6 +686,83 @@
                         </div>
                     </div>
 
+                    <!-- M-PESA PAYMENT PANEL -->
+                    <div class="card" style="margin-top:24px;">
+                        <div class="card-header">
+                            <h3>📱 M-Pesa Payments</h3>
+                            <span class="mono" style="font-size:11px;color:var(--green);">LIVE • Safaricom</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="mpesa-panel">
+                                <!-- Paybill Card -->
+                                <div class="mpesa-paybill-card">
+                                    <div class="mpb-logo">📳 M-Pesa</div>
+                                    <div class="mpb-label">GTB COLLECTIVE PAYBILL</div>
+                                    <div class="mpb-number">522522</div>
+                                    <div class="mpb-account-hint">Account No: <strong>GTB-[Your Name]</strong></div>
+                                    <div class="mpb-divider"></div>
+                                    <div class="mpb-label">OR TILL NUMBER (BUY GOODS)</div>
+                                    <div class="mpb-number" style="font-size:28px;">5312847</div>
+                                </div>
+
+                                <!-- Quick-Pay Tiles -->
+                                <div class="mpesa-quick">
+                                    <div class="mpq-title mono">QUICK PAY</div>
+                                    <div class="mpq-grid">
+                                        <button class="mpq-tile" onclick="openMpesa('Monthly Contribution','3000','GTB-Monthly')">
+                                            <span>💳</span>
+                                            <strong>Monthly Contribution</strong>
+                                            <span class="mpq-amount">KES 3,000</span>
+                                        </button>
+                                        <button class="mpq-tile" onclick="openMpesa('Annual Meetup Fund','2000','GTB-Meetup')">
+                                            <span>🎉</span>
+                                            <strong>Annual Meetup Fund</strong>
+                                            <span class="mpq-amount">KES 2,000</span>
+                                        </button>
+                                        <button class="mpq-tile" onclick="openMpesa('Equipment Fund','1000','GTB-Equipment')">
+                                            <span>📷</span>
+                                            <strong>Equipment Fund</strong>
+                                            <span class="mpq-amount">KES 1,000</span>
+                                        </button>
+                                        <button class="mpq-tile" onclick="openMpesa('Custom Amount','','GTB-General')">
+                                            <span>➕</span>
+                                            <strong>Custom Amount</strong>
+                                            <span class="mpq-amount">Enter amount</span>
+                                        </button>
+                                    </div>
+                                    <button class="btn btn-primary w-full" style="margin-top:16px;" onclick="openMpesa('','','')">📱 Send M-Pesa STK Push</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TRANSACTION HISTORY -->
+                    <div class="card" style="margin-top:24px;">
+                        <div class="card-header">
+                            <h3>📜 Transaction History</h3>
+                            <button class="btn btn-ghost btn-sm" id="refreshTxBtn">↻ Refresh</button>
+                        </div>
+                        <div class="card-body" style="padding:0;">
+                            <div class="tx-table-wrap">
+                                <table class="tx-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Member</th>
+                                            <th>Reference</th>
+                                            <th>Purpose</th>
+                                            <th>Amount</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="txTableBody">
+                                        <!-- Injected by JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
 
                 <!-- Fundraiser / Invest Modals -->
@@ -652,6 +794,67 @@
                         <div class="modal-actions">
                             <button class="btn btn-ghost" onclick="document.getElementById('investModal').classList.add('hidden')">Cancel</button>
                             <button class="btn btn-primary" id="saveInvestBtn">Submit Proposal</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- M-PESA STK PUSH MODAL -->
+                <div id="mpesaModal" class="modal hidden">
+                    <div class="modal-content" style="max-width:440px;">
+                        <!-- Step 1: Form -->
+                        <div id="mpStep1">
+                            <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+                                <span style="font-size:32px;">📱</span>
+                                <div>
+                                    <h3 style="margin-bottom:4px;">M-Pesa Payment</h3>
+                                    <p class="mono" style="font-size:11px;color:var(--muted);">Paybill: <strong style="color:var(--green);">522522</strong></p>
+                                </div>
+                            </div>
+                            <div class="styled-form">
+                                <div class="field">
+                                    <label>SAFARICOM PHONE NUMBER</label>
+                                    <input type="tel" id="mpPhone" placeholder="e.g. 0712345678" maxlength="10">
+                                </div>
+                                <div class="field">
+                                    <label>AMOUNT (KES)</label>
+                                    <input type="number" id="mpAmount" placeholder="e.g. 3000" min="1">
+                                </div>
+                                <div class="field">
+                                    <label>ACCOUNT NUMBER / REFERENCE</label>
+                                    <input type="text" id="mpAccount" placeholder="e.g. GTB-Architect">
+                                </div>
+                                <div class="field">
+                                    <label>PURPOSE</label>
+                                    <select id="mpPurpose">
+                                        <option value="Monthly Contribution">Monthly Contribution</option>
+                                        <option value="Fundraiser">Fundraiser Contribution</option>
+                                        <option value="Investment">Investment Pool</option>
+                                        <option value="Site Costs">Site Costs</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="modal-actions">
+                                <button class="btn btn-ghost" onclick="document.getElementById('mpesaModal').classList.add('hidden')">Cancel</button>
+                                <button class="btn btn-primary" id="sendStkBtn">📱 Send STK Push</button>
+                            </div>
+                        </div>
+
+                        <!-- Step 2: Waiting for payment -->
+                        <div id="mpStep2" style="display:none;text-align:center;padding:20px 0;">
+                            <div class="stk-spinner">⧗</div>
+                            <h3 style="margin:16px 0 8px;">STK Push Sent!</h3>
+                            <p style="color:var(--muted);font-size:13px;line-height:1.6;">Check your phone <strong id="mpPhoneDisplay"></strong> for the M-Pesa prompt. Enter your M-Pesa PIN to complete the payment.</p>
+                            <div class="stk-timer" id="stkTimer">Waiting... 60s</div>
+                            <button class="btn btn-ghost btn-sm" style="margin-top:16px;" id="stkCancelWait">Cancel</button>
+                        </div>
+
+                        <!-- Step 3: Success -->
+                        <div id="mpStep3" style="display:none;text-align:center;padding:20px 0;">
+                            <div style="font-size:48px;margin-bottom:16px;">✅</div>
+                            <h3 style="margin-bottom:8px;">Payment Confirmed!</h3>
+                            <p class="mono" style="font-size:12px;color:var(--green);" id="mpConfirmMsg"></p>
+                            <button class="btn btn-primary" style="margin-top:20px;" onclick="document.getElementById('mpesaModal').classList.add('hidden');resetMpesa();">Done</button>
                         </div>
                     </div>
                 </div>

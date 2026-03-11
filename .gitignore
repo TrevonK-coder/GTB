@@ -1,1 +1,4 @@
 passwords.txt
+node_modules/
+.env
+*.log
