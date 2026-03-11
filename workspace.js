@@ -35,6 +35,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         loadChatMock();
         loadDocsMock();
         loadDocumentSystem();
+        loadSharesModule();
+        loadTemplatesModule();
         loadLeadershipView();
         loadMarketplace();
         loadTreasury();
@@ -1856,6 +1858,368 @@ function initAIDocAssistant() {
         btn.addEventListener('click', () => sendMessage(btn.getAttribute('data-q')));
     });
 }
+
+}
+
+// ════════════════════════════════════
+// SHARES, EQUITY & INVESTMENT STRATEGY
+// ════════════════════════════════════
+
+const CAP_TABLE = [
+    { role: 'architect',  title: 'The Architect',  type: 'Founder', shares: 200000, percentage: 20, invested: 15000, voting: 'Full' },
+    { role: 'visionary',  title: 'The Visionary',  type: 'Founder', shares: 200000, percentage: 20, invested: 15000, voting: 'Full' },
+    { role: 'director',   title: 'The Director',   type: 'Founder', shares: 200000, percentage: 20, invested: 15000, voting: 'Full' },
+    { role: 'connector',  title: 'The Connector',  type: 'Member',  shares: 80000,  percentage: 8,  invested: 3000,  voting: 'Standard' },
+    { role: 'performer',  title: 'The Performer',  type: 'Member',  shares: 80000,  percentage: 8,  invested: 3000,  voting: 'Standard' },
+    { role: 'fixer',      title: 'The Fixer',      type: 'Member',  shares: 80000,  percentage: 8,  invested: 3000,  voting: 'Standard' },
+    { role: 'analyst',    title: 'The Analyst',    type: 'Member',  shares: 80000,  percentage: 8,  invested: 3000,  voting: 'Standard' },
+    { role: 'specialist', title: 'The Specialist', type: 'Member',  shares: 80000,  percentage: 8,  invested: 3000,  voting: 'Standard' },
+];
+
+const STRATEGIES = [
+    { id: 1, title: 'Treasury Bills — 91 Day', vehicle: 'Kenya T-Bills', target: 120000, horizon: '91 days', return: '14.5%', status: 'Active Vote', votes: { 'yes': 3, 'no': 0 } },
+    { id: 2, title: 'Money Market Fund Reserve', vehicle: 'MMF', target: 50000, horizon: 'Ongoing', return: '11.0%', status: 'Approved', votes: { 'yes': 8, 'no': 0 } },
+];
+
+function loadSharesModule() {
+    renderRegTimeline();
+    renderEquityChart();
+    renderCapTable();
+    renderMyShareholding();
+    renderPersonalPortfolio();
+    renderStrategyBuilder();
+
+    document.getElementById('viewCapTableBtn')?.addEventListener('click', () => {
+        showToast('Full Capitalization Table is displayed below.');
+        document.getElementById('capTable').scrollIntoView({ behavior: 'smooth' });
+    });
+
+    document.getElementById('submitStrategyBtn')?.addEventListener('click', () => {
+        const title = document.getElementById('stratName').value || 'New Collective Strategy';
+        const vehicle = document.getElementById('stratVehicle').value;
+        const target = document.getElementById('stratAmount').value || '0';
+        const horizon = document.getElementById('stratHorizon').value;
+        const ret = document.getElementById('stratReturn').value || '0';
+        
+        STRATEGIES.push({
+            id: Date.now(), title, vehicle, target: parseInt(target), horizon, return: ret + '%',
+            status: 'Pending Vote', votes: { 'yes': 1, 'no': 0 } // Submitter auto-votes yes
+        });
+        
+        renderStrategyBuilder();
+        showToast('🚀 Strategy submitted for collective voting!');
+        
+        // Reset form
+        document.getElementById('stratName').value = '';
+        document.getElementById('stratAmount').value = '';
+        document.getElementById('stratReturn').value = '';
+        document.getElementById('stratRationale').value = '';
+    });
+}
+
+function renderRegTimeline() {
+    const tl = document.getElementById('regTimeline');
+    if (!tl) return;
+    const steps = [
+        { label: 'Founders Agrmt', status: 'done' },
+        { label: 'Name Search', status: 'done' },
+        { label: 'CR12 & Cert', status: 'active' },
+        { label: 'KRA PIN & Bank', status: 'pending' }
+    ];
+    tl.innerHTML = steps.map(s => `
+        <div class="reg-step ${s.status}">
+            <div class="reg-dot">${s.status === 'done' ? '✓' : (s.status === 'active' ? '●' : '')}</div>
+            <div class="reg-step-label">${s.label}</div>
+        </div>
+    `).join('');
+}
+
+function renderEquityChart() {
+    const canvas = document.getElementById('equityCanvas');
+    const legend = document.getElementById('equityLegend');
+    if (!canvas || !legend) return;
+
+    const ctx = canvas.getContext('2d');
+    const x = canvas.width / 2;
+    const y = canvas.height / 2;
+    const radius = 90;
+    const colors = {
+        'founder1': '#7c6fff',   // Architect
+        'founder2': '#a457ff',   // Visionary
+        'founder3': '#4d9eff',   // Director
+        'members': '#22d47a'     // Remaining 5 members aggregated
+    };
+
+    // Calculate angles
+    const aggregated = [
+        { label: 'The Architect (Founder)', pct: 20, color: colors.founder1 },
+        { label: 'The Visionary (Founder)', pct: 20, color: colors.founder2 },
+        { label: 'The Director (Founder)', pct: 20, color: colors.founder3 },
+        { label: 'Other Members (5x 8%)', pct: 40, color: colors.members }
+    ];
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    let startAngle = -0.5 * Math.PI;
+
+    aggregated.forEach(item => {
+        const sliceAngle = (item.pct / 100) * 2 * Math.PI;
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.arc(x, y, radius, startAngle, startAngle + sliceAngle);
+        ctx.closePath();
+        ctx.fillStyle = item.color;
+        ctx.fill();
+        
+        // Stroke to separate slices
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = '#060609';
+        ctx.stroke();
+
+        startAngle += sliceAngle;
+    });
+
+    // Donut hole
+    ctx.beginPath();
+    ctx.arc(x, y, 55, 0, 2 * Math.PI);
+    ctx.fillStyle = '#111';
+    ctx.fill();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = '#060609';
+    ctx.stroke();
+
+    // Center text
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 20px Syne, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('1M', x, y - 8);
+    ctx.fillStyle = '#a0a0b4';
+    ctx.font = '11px "DM Mono", monospace';
+    ctx.fillText('SHARES', x, y + 12);
+
+    // Legend
+    legend.innerHTML = aggregated.map(item => `
+        <div class="legend-item">
+            <div style="display:flex;align-items:center;">
+                <span class="legend-color" style="background:${item.color};"></span>
+                <span>${item.label}</span>
+            </div>
+            <span class="legend-val">${item.pct}%</span>
+        </div>
+    `).join('');
+}
+
+function renderCapTable() {
+    const tbody = document.getElementById('capTableBody');
+    if (!tbody) return;
+    tbody.innerHTML = CAP_TABLE.sort((a,b) => b.shares - a.shares).map(m => `
+        <tr>
+            <td style="font-weight:600;">${m.title}</td>
+            <td><span class="mono" style="font-size:10px;padding:3px 6px;border-radius:4px;background:var(--surface2);">${m.type}</span></td>
+            <td class="mono">${m.shares.toLocaleString()}</td>
+            <td class="mono">${m.percentage}%</td>
+            <td class="mono">KES ${m.invested.toLocaleString()}</td>
+            <td>${m.voting}</td>
+            <td><span style="color:var(--green);">Verified</span></td>
+        </tr>
+    `).join('');
+}
+
+function renderMyShareholding() {
+    const card = document.getElementById('myShareCard');
+    const roleSpan = document.getElementById('myShareRole');
+    if (!card || !roleSpan || !currentMember) return;
+
+    roleSpan.textContent = currentMember.title;
+    const myCap = CAP_TABLE.find(m => m.role === currentMember.role) || CAP_TABLE[3]; // Fallback to a standard member
+
+    card.innerHTML = `
+        <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:16px;">
+            <span style="font-size:32px;font-weight:800;color:var(--text);letter-spacing:-1px;">${myCap.shares.toLocaleString()}</span>
+            <span class="mono" style="color:var(--muted);font-size:11px;">SHARES</span>
+        </div>
+        <div style="display:flex;gap:40px;margin-bottom:20px;">
+            <div>
+                <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Ownership</div>
+                <div style="font-size:18px;font-weight:700;color:var(--accent);">${myCap.percentage}%</div>
+            </div>
+            <div>
+                <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Voting Class</div>
+                <div style="font-size:16px;font-weight:600;">${myCap.voting}</div>
+            </div>
+        </div>
+        <div class="progress-wrap" style="height:6px;margin-bottom:8px;">
+            <div class="progress-bar" style="width:${myCap.percentage}%;background:var(--accent);"></div>
+        </div>
+        <div style="font-size:11px;color:var(--muted);display:flex;justify-content:space-between;">
+            <span>Vesting Schedule</span>
+            <span>0% Cliff (Fully vested)</span>
+        </div>
+    `;
+
+    document.getElementById('sharesStats').innerHTML = `
+        <div class="stat-box"><div class="stat-label mono">Total Auth Shares</div><div class="stat-value">1,000,000</div></div>
+        <div class="stat-box"><div class="stat-label mono">My Value (Est)</div><div class="stat-value accent">KES ${myCap.invested.toLocaleString()}</div></div>
+    `;
+}
+
+function renderPersonalPortfolio() {
+    const port = document.getElementById('portfolioStats');
+    const grid = document.getElementById('personalInvestGrid');
+    if (!port || !grid || !currentMember) return;
+
+    const myCap = CAP_TABLE.find(m => m.role === currentMember.role) || CAP_TABLE[3];
+
+    port.innerHTML = `
+        <div style="display:flex;gap:24px;align-items:center;background:var(--surface2);padding:16px;border-radius:12px;border:1px solid var(--border);">
+            <div>
+                <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">TOTAL APPLIED FUNDS</div>
+                <div style="font-size:24px;font-weight:800;letter-spacing:-0.5px;">KES ${myCap.invested.toLocaleString()}</div>
+            </div>
+            <div style="height:40px;width:1px;background:var(--border);"></div>
+            <div>
+                <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">PROJECTED YIELD</div>
+                <div style="font-size:20px;font-weight:700;color:var(--green);">+11.5%</div>
+            </div>
+        </div>
+    `;
+
+    grid.innerHTML = `
+        <div class="strategy-card">
+            <div class="strat-header">
+                <span class="strat-title">Monthly Contributions (Shares)</span>
+                <span class="strat-badge" style="color:#fff;background:var(--accent);">ACTIVE</span>
+            </div>
+            <div class="strat-metric"><span>Paid In</span><span>KES ${myCap.invested - 1000}</span></div>
+            <div class="strat-metric"><span>Next Due</span><span>Apr 5, 2026</span></div>
+        </div>
+        <div class="strategy-card">
+            <div class="strat-header">
+                <span class="strat-title">Collective MMF Allocation</span>
+                <span class="strat-badge" style="color:var(--green);border-color:var(--green);">POSTED</span>
+            </div>
+            <div class="strat-metric"><span>My Principal</span><span>KES 1,000</span></div>
+            <div class="strat-metric"><span>Current APY</span><span>11.0%</span></div>
+        </div>
+    `;
+}
+
+function renderStrategyBuilder() {
+    const grid = document.getElementById('strategyGrid');
+    if (!grid) return;
+    grid.innerHTML = STRATEGIES.map(s => `
+        <div class="strategy-card">
+            <div class="strat-header">
+                <span class="strat-title">${s.title}</span>
+                <span class="strat-badge" style="${s.status === 'Approved' ? 'color:var(--green);border-color:var(--green);' : 'color:var(--yellow);border-color:var(--yellow);'}">${s.status.toUpperCase()}</span>
+            </div>
+            <div class="strat-metric"><span>Vehicle</span><span>${s.vehicle}</span></div>
+            <div class="strat-metric"><span>Target Pool</span><span>KES ${s.target.toLocaleString()}</span></div>
+            <div class="strat-metric"><span>Expected Yield</span><span style="color:var(--green);">${s.return}</span></div>
+            <div class="strat-metric"><span>Horizon</span><span>${s.horizon}</span></div>
+            
+            <div style="margin-top:12px;padding-top:12px;border-top:1px dashed var(--border);display:flex;justify-content:space-between;align-items:center;">
+                <div style="font-size:10px;font-family:'DM Mono',monospace;color:var(--muted);">VOTES: ✅${s.votes.yes} ❌${s.votes.no}</div>
+                ${s.status !== 'Approved' ? `
+                    <div style="display:flex;gap:4px;">
+                        <button class="btn btn-ghost btn-sm" style="padding:4px 8px;font-size:11px;" onclick="voteStrategy(${s.id},'yes')">👍</button>
+                        <button class="btn btn-ghost btn-sm" style="padding:4px 8px;font-size:11px;" onclick="voteStrategy(${s.id},'no')">👎</button>
+                    </div>
+                ` : '<span style="font-size:10px;color:var(--green);">LOCKED</span>'}
+            </div>
+        </div>
+    `).join('');
+}
+
+window.voteStrategy = function(id, type) {
+    const s = STRATEGIES.find(x => x.id === id);
+    if(s) {
+        s.votes[type]++;
+        if (s.votes.yes >= 5) s.status = 'Approved';
+        renderStrategyBuilder();
+        showToast('Vote recorded!');
+    }
+};
+
+// ════════════════════════════════════
+// DOCUMENT TEMPLATES LIBRARY
+// ════════════════════════════════════
+
+const TEMPLATES = [
+    { id: 't1', title: 'Non-Disclosure Agreement', category: 'universal', role: 'all', icon: '🔒', desc: 'Standard 3-year mutual NDA for external partners and contractors.' },
+    { id: 't2', title: 'Contractor Service Agreement', category: 'legal', role: 'all', icon: '📝', desc: 'Baseline legal contract for hiring freelancers or external agencies.' },
+    { id: 't3', title: 'Monthly Expense Claim Form', category: 'finance', role: 'all', icon: '💵', desc: 'Template for submitting out-of-pocket expenses to the treasury.' },
+    { id: 't4', title: 'Weekly KPI Report Tracker', category: 'operations', role: 'all', icon: '📊', desc: 'Standard spreadsheet template for Friday KPI submissions.' },
+    
+    // Role-specific templates
+    { id: 't5', title: 'Technical Architecture Brief', category: 'operations', role: 'architect', icon: '🏗️', desc: 'Template for proposing new system integrations or IT infrastructure.' },
+    { id: 't6', title: 'Brand Identity Guidelines', category: 'operations', role: 'visionary', icon: '🎨', desc: 'Master template for GTB visual identity, colors, and typography.' },
+    { id: 't7', title: 'Meeting Minutes & Agenda', category: 'operations', role: 'director', icon: '📋', desc: 'Official template for conducting and recording GTB monthly sit-downs.' },
+    { id: 't8', title: 'Partnership MoU', category: 'legal', role: 'connector', icon: '🤝', desc: 'Memorandum of Understanding for initial partnership discussions.' },
+    { id: 't9', title: 'Media Release Form', category: 'legal', role: 'performer', icon: '📸', desc: 'Consent form for individuals appearing in GTB digital content.' },
+    { id: 't10', title: 'Incident Resolution Log', category: 'operations', role: 'fixer', icon: '🔧', desc: 'Form for documenting crisis interventions and technical bug fixes.' },
+    { id: 't11', title: 'Data Analytics Dashboard Spec', category: 'operations', role: 'analyst', icon: '📈', desc: 'Requirement documentation template for custom analytics views.' },
+    { id: 't12', title: 'Specialized Consulting Proposal', category: 'operations', role: 'specialist', icon: '🧠', desc: 'Client-facing proposal format outlining specific domain expertise.' },
+];
+
+function loadTemplatesModule() {
+    renderTemplates('all');
+    document.getElementById('tmplCount').textContent = TEMPLATES.length;
+    
+    const myRole = currentMember ? currentMember.role : 'member';
+    const myCount = TEMPLATES.filter(t => t.role === myRole || t.role === 'all').length;
+    document.getElementById('myTmplCount').textContent = myCount;
+
+    document.querySelectorAll('#tmplTabs .doc-tab').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            document.querySelectorAll('#tmplTabs .doc-tab').forEach(t => t.classList.remove('active'));
+            btn.classList.add('active');
+            renderTemplates(btn.getAttribute('data-tmpl-cat'));
+        });
+    });
+}
+
+function renderTemplates(filter) {
+    const grid = document.getElementById('tmplGrid');
+    if (!grid) return;
+    
+    const myRole = currentMember ? currentMember.role : 'member';
+    
+    let filtered = TEMPLATES;
+    if (filter === 'myrole') {
+        filtered = TEMPLATES.filter(t => t.role === myRole || t.role === 'all');
+    } else if (filter !== 'all') {
+        filtered = TEMPLATES.filter(t => t.category === filter);
+    }
+
+    if (filtered.length === 0) {
+        grid.innerHTML = `<div class="empty-state mono" style="grid-column:1/-1;">No templates found for this filter.</div>`;
+        return;
+    }
+
+    grid.innerHTML = filtered.map(t => `
+        <div class="tmpl-card">
+            <div style="display:flex;gap:12px;align-items:flex-start;">
+                <div class="tmpl-icon">${t.icon}</div>
+                <div>
+                    <div class="tmpl-title">${t.title}</div>
+                    <div style="margin-top:6px;">
+                        ${t.role !== 'all' ? `<span class="tmpl-role-tag">Only for ${t.role.toUpperCase()}</span>` : '<span class="tmpl-role-tag" style="background:var(--surface2);border-color:var(--border);color:var(--text);">UNIVERSAL</span>'}
+                    </div>
+                </div>
+            </div>
+            <div class="tmpl-desc">${t.desc}</div>
+            <div class="tmpl-actions">
+                <button class="btn btn-ghost btn-sm" onclick="showToast('Opening template preview...')">👁️ Preview</button>
+                <button class="btn btn-primary btn-sm" onclick="showToast('Downloading Word Doc template...')">⬇️ Download</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+// ════════════════════════════════════
+// GLOBAL UTILS
+// ════════════════════════════════════
 
 function showToast(msg) {
     const t = document.getElementById('toast');

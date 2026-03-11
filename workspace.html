@@ -68,6 +68,14 @@
                     <span class="label">Roles Marketplace</span>
                     <span class="badge" style="background:var(--green);" id="mktBadge">7</span>
                 </a>
+                <a href="#" class="nav-item" data-target="shares">
+                    <span class="icon">📊</span>
+                    <span class="label">Shares &amp; Equity</span>
+                </a>
+                <a href="#" class="nav-item" data-target="templates">
+                    <span class="icon">📁</span>
+                    <span class="label">Doc Templates</span>
+                </a>
                 <a href="#" class="nav-item" data-target="treasury">
                     <span class="icon">🏦</span>
                     <span class="label">Treasury & Invest</span>
@@ -1009,6 +1017,188 @@
                             <p class="mono" style="font-size:12px;color:var(--green);" id="mpConfirmMsg"></p>
                             <button class="btn btn-primary" style="margin-top:20px;" onclick="document.getElementById('mpesaModal').classList.add('hidden');resetMpesa();">Done</button>
                         </div>
+                    </div>
+                </div>
+
+                <!-- ══ SHARES & EQUITY VIEW ══ -->
+                <div id="view-shares" class="view">
+                    <div class="welcome-banner" style="background: linear-gradient(135deg, rgba(251,191,36,0.10) 0%, rgba(124,111,255,0.05) 100%);">
+                        <div class="wb-content">
+                            <h3>📊 Shares &amp; <span class="accent">Equity</span></h3>
+                            <p>Company ownership structure, personal investment portfolios, and strategy tools.</p>
+                        </div>
+                        <div class="wb-stats" id="sharesStats">
+                            <!-- Injected by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Company Registration Status -->
+                    <div class="card" style="margin-bottom:24px;">
+                        <div class="card-header">
+                            <h3>🏛️ Company Registration</h3>
+                            <span class="mono" style="font-size:11px;background:rgba(251,191,36,0.12);color:var(--yellow);padding:3px 10px;border-radius:8px;border:1px solid rgba(251,191,36,0.25);">IN PROGRESS</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="reg-timeline" id="regTimeline">
+                                <!-- Injected by JS -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid-2" style="margin-bottom:24px;">
+                        <!-- Equity Breakdown -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>🥧 Equity Distribution</h3>
+                                <button class="btn btn-ghost btn-sm" id="viewCapTableBtn">📋 Full Cap Table</button>
+                            </div>
+                            <div class="card-body">
+                                <div class="equity-chart-wrap">
+                                    <canvas id="equityCanvas" width="220" height="220"></canvas>
+                                    <div class="equity-legend" id="equityLegend">
+                                        <!-- Injected by JS -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- My Share Summary -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>💼 My Shareholding</h3>
+                                <span class="mono" style="font-size:11px;color:var(--muted);" id="myShareRole">Loading...</span>
+                            </div>
+                            <div class="card-body">
+                                <div id="myShareCard">
+                                    <!-- Injected by JS -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Full Capitalization Table -->
+                    <div class="card" style="margin-bottom:24px;">
+                        <div class="card-header">
+                            <h3>📋 Capitalization Table</h3>
+                            <button class="btn btn-ghost btn-sm" id="exportCapTableBtn">⬇️ Export PDF</button>
+                        </div>
+                        <div class="card-body" style="padding:0;">
+                            <div class="tx-table-wrap">
+                                <table class="tx-table" id="capTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Member</th>
+                                            <th>Type</th>
+                                            <th>Shares</th>
+                                            <th>% Ownership</th>
+                                            <th>Investment Value</th>
+                                            <th>Voting Rights</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="capTableBody">
+                                        <!-- Injected by JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Personal Investment Portfolio -->
+                    <div class="card" style="margin-bottom:24px;">
+                        <div class="card-header">
+                            <h3>📈 Personal Investment Portfolio</h3>
+                            <button class="btn btn-primary btn-sm" id="addPersonalInvestBtn">+ Add Investment</button>
+                        </div>
+                        <div class="card-body">
+                            <div class="portfolio-stats" id="portfolioStats">
+                                <!-- Injected by JS -->
+                            </div>
+                            <div class="invest-grid" id="personalInvestGrid" style="margin-top:20px;">
+                                <!-- Injected by JS -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Investment Strategy Builder -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>🧠 Investment Strategy Builder</h3>
+                            <span class="mono" style="font-size:11px;color:var(--accent);">COLLECTIVE</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="strategy-grid" id="strategyGrid">
+                                <!-- Injected by JS -->
+                            </div>
+                            <div class="card" style="margin-top:24px;background:rgba(124,111,255,0.04);border-color:rgba(124,111,255,0.2);">
+                                <div class="card-header">
+                                    <h3 style="font-size:13px;">➕ Propose New Strategy</h3>
+                                </div>
+                                <div class="card-body">
+                                    <div class="styled-form">
+                                        <div class="field"><label>STRATEGY NAME</label><input type="text" id="stratName" placeholder="e.g. Treasury Bills — 91 Day"></div>
+                                        <div class="grid-2" style="gap:12px;">
+                                            <div class="field"><label>VEHICLE</label>
+                                                <select id="stratVehicle">
+                                                    <option>Kenya T-Bills</option>
+                                                    <option>Money Market Fund</option>
+                                                    <option>Real Estate (REIT)</option>
+                                                    <option>Nairobi Stock Exchange</option>
+                                                    <option>SACCO Savings</option>
+                                                    <option>Forex Trading</option>
+                                                    <option>Crypto (BTC/ETH)</option>
+                                                    <option>Business Venture</option>
+                                                    <option>Other</option>
+                                                </select>
+                                            </div>
+                                            <div class="field"><label>TARGET AMOUNT (KES)</label><input type="number" id="stratAmount" placeholder="120000"></div>
+                                        </div>
+                                        <div class="grid-2" style="gap:12px;">
+                                            <div class="field"><label>HORIZON</label>
+                                                <select id="stratHorizon">
+                                                    <option>30 days</option>
+                                                    <option>91 days</option>
+                                                    <option>6 months</option>
+                                                    <option>1 year</option>
+                                                    <option>3+ years</option>
+                                                </select>
+                                            </div>
+                                            <div class="field"><label>EXPECTED RETURN %</label><input type="number" id="stratReturn" placeholder="14.5"></div>
+                                        </div>
+                                        <div class="field"><label>RATIONALE</label><textarea id="stratRationale" rows="2" placeholder="Why should the collective consider this investment?"></textarea></div>
+                                        <button class="btn btn-primary" id="submitStrategyBtn">🚀 Submit for Vote</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ══ DOC TEMPLATES VIEW ══ -->
+                <div id="view-templates" class="view">
+                    <div class="welcome-banner" style="background: linear-gradient(135deg, rgba(34,212,122,0.08) 0%, rgba(124,111,255,0.05) 100%);">
+                        <div class="wb-content">
+                            <h3>📁 Document <span class="accent">Templates</span></h3>
+                            <p>Official GTB templates for all roles. Download, customize, sign, and file.</p>
+                        </div>
+                        <div class="wb-stats">
+                            <div class="stat-box"><div class="stat-label mono">Total Templates</div><div class="stat-value accent" id="tmplCount">—</div></div>
+                            <div class="stat-box"><div class="stat-label mono">Your Role Templates</div><div class="stat-value" style="color:var(--green);" id="myTmplCount">—</div></div>
+                        </div>
+                    </div>
+
+                    <!-- Filter Tabs -->
+                    <div class="doc-tabs" id="tmplTabs" style="margin-bottom:20px;">
+                        <button class="doc-tab active" data-tmpl-cat="all">All Templates</button>
+                        <button class="doc-tab" data-tmpl-cat="universal">🌐 Universal</button>
+                        <button class="doc-tab" data-tmpl-cat="legal">⚖️ Legal</button>
+                        <button class="doc-tab" data-tmpl-cat="finance">💳 Finance</button>
+                        <button class="doc-tab" data-tmpl-cat="operations">⚙️ Operations</button>
+                        <button class="doc-tab" data-tmpl-cat="myrole">⭐ My Role</button>
+                    </div>
+
+                    <div class="tmpl-grid" id="tmplGrid">
+                        <!-- Injected by JS -->
                     </div>
                 </div>
 
