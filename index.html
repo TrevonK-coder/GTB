@@ -1,21 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GTB Collective — Glad To Be</title>
-    <meta name="description"
-        content="GTB Collective — 8 elite, multi-hyphenate creatives. Artists, developers, doctors, chefs, musicians. One unified dimension.">
+    <title>GTB Intranet | Secure Login</title>
     <link rel="icon" type="image/png" href="gtb-logo.png">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <style>
+        /* Specific overrides for login portal */
+        body { overflow: hidden; }
+        .login-wrapper {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            width: 100vw;
+        }
+        .login-box {
+            background: rgba(14, 14, 22, 0.85);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            padding: 48px;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+        }
+        .login-logo { width: 50px; margin-bottom: 24px; }
+        .login-box h1 { font-size: 32px; font-weight: 800; letter-spacing: -1px; margin-bottom: 8px; }
+        .login-box .sub { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--muted); margin-bottom: 32px; }
+        
+        .field { text-align: left; margin-bottom: 20px; }
+        .field label { display: block; font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); margin-bottom: 8px; letter-spacing: 1px; }
+        .field input { width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 14px; border-radius: 10px; font-family: 'Syne', sans-serif; font-size: 14px; outline: none; transition: all 0.2s; }
+        .field input:focus { border-color: var(--accent); }
+        
+        .login-btn { width: 100%; font-size: 14px; padding: 14px; margin-top: 8px; }
+        .login-error { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--red); margin-top: 16px; display: none; }
+    </style>
 </head>
-
 <body>
-
     <!-- 3D LUXURY BACKGROUND -->
     <canvas id="bg-canvas"></canvas>
 
@@ -23,415 +53,84 @@
     <div id="cursor-dot"></div>
     <div id="cursor-ring"></div>
 
-    <!-- NAV -->
-    <nav id="nav">
-        <a href="index.html" class="nav-logo">
-            <img src="gtb-logo.png" alt="GTB" class="nav-logo-img">
-            <span class="nav-logo-text">GTB <span class="nav-logo-muted">Collective</span></span>
-        </a>
-        <ul class="nav-links">
-            <li><a href="#members">Members</a></li>
-            <li><a href="#social">Social</a></li>
-            <li><a href="#careers">Careers</a></li>
-            <li><a href="explore.html">Explore</a></li>
-            <li><a href="portal.html">Portal 🔐</a></li>
-            <li><a href="admin.html">Admin ⚡</a></li>
-            <li><a href="https://gladtobe.co.ke" target="_blank">Merch 🛍️</a></li>
-            <li><a href="https://trevonk-coder.github.io/vidacut/" target="_blank" class="nav-cta">VidaCut AI ↗</a></li>
-        </ul>
-        <button class="nav-burger" id="navBurger" aria-label="Menu">☰</button>
-        <button id="themeToggle" aria-label="Toggle theme">
-            <span class="toggle-icon">☀️</span>
-            <span class="toggle-label">Light</span>
-        </button>
-    </nav>
-
-    <!-- MOBILE MENU -->
-    <div class="mobile-menu" id="mobileMenu">
-        <a href="#members">Members</a>
-        <a href="#social">Social</a>
-        <a href="#careers">Careers</a>
-        <a href="explore.html">Explore</a>
-        <a href="portal.html">Portal 🔐</a>
-        <a href="admin.html">Admin ⚡</a>
-        <a href="https://gladtobe.co.ke" target="_blank">Merch 🛍️</a>
-        <a href="https://trevonk-coder.github.io/vidacut/" target="_blank">VidaCut AI ↗</a>
-    </div>
-
-    <!-- HERO -->
-    <section id="hero">
-        <div class="hero-bg-grid"></div>
-
-        <div class="hero-inner">
-            <div class="hero-badge">
-                <span class="badge-dot"></span>
-                Eight Dimensions · One Collective
+    <div class="login-wrapper">
+        <div class="login-box">
+            <img src="gtb-logo.png" alt="GTB" class="login-logo">
+            <h1>GTB <span class="accent">Intranet</span></h1>
+            <p class="sub">Secure portal for the collective.</p>
+            
+            <div class="field">
+                <label>EMAIL</label>
+                <input type="email" id="loginEmail" placeholder="member@gtb.co.ke" autocomplete="email">
             </div>
-
-            <img src="gtb-logo.png" alt="GTB Collective" class="hero-logo" id="heroLogo">
-
-            <h1>
-                <span class="h1-outline">Glad</span>
-                <span class="h1-solid"> To Be</span>
-            </h1>
-            <p class="hero-sub">
-                Eight elite, multi-hyphenate creatives. Artists, developers, doctors, chefs, filmmakers, musicians — one
-                unified field operating above the ordinary.
-            </p>
-            <div class="hero-ctas">
-                <a href="explore.html" class="btn btn-primary">Explore the Collective</a>
-                <a href="https://gladtobe.co.ke" target="_blank" class="btn btn-ghost">Shop Merch 🛍️</a>
+            <div class="field">
+                <label>PASSWORD</label>
+                <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password">
             </div>
-
-            <!-- Scroll hint -->
-            <div class="scroll-hint">
-                <span class="scroll-line"></span>
-                <span class="scroll-label">Scroll</span>
-            </div>
-        </div>
-    </section>
-
-    <!-- MEMBERS -->
-    <section id="members">
-        <div class="section-wrap">
-            <div class="section-tag">// 8 Dimensions</div>
-            <h2>The <span class="accent">Collective</span></h2>
-            <p class="section-desc">8 elite individuals. Every domain covered. No gravity, no limits.</p>
-
-            <div class="members-grid">
-
-                <div class="member-card" data-index="01">
-                    <div class="member-num">01</div>
-                    <div class="member-emoji">🎙️</div>
-                    <div class="member-title">The Polymath</div>
-                    <div class="member-tags">Artist · Journalist · Producer</div>
-                    <p class="member-desc">Narrates the GTB story with rhythmic precision and journalistic integrity.
-                        The voice, the pen, the beat.</p>
-                    <div class="member-socials">
-                        <a href="#" class="social-chip ig" data-platform="instagram" target="_blank">
-                            <svg viewBox="0 0 24 24" fill="currentColor">
-                                <path
-                                    d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
-                            </svg>
-                            Instagram
-                        </a>
-                        <a href="#" class="social-chip tt" data-platform="tiktok" target="_blank">
-                            <svg viewBox="0 0 24 24" fill="currentColor">
-                                <path
-                                    d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.14 8.14 0 004.77 1.52V6.76a4.85 4.85 0 01-1-.07z" />
-                            </svg>
-                            TikTok
-                        </a>
-                        <a href="#" class="social-chip yt" data-platform="youtube" target="_blank">
-                            <svg viewBox="0 0 24 24" fill="currentColor">
-                                <path
-                                    d="M23.495 6.205a3.007 3.007 0 00-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 00.527 6.205a31.247 31.247 0 00-.522 5.805 31.247 31.247 0 00.522 5.783 3.007 3.007 0 002.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 002.088-2.088 31.247 31.247 0 00.5-5.783 31.247 31.247 0 00-.5-5.805zM9.609 15.601V8.408l6.264 3.602z" />
-                            </svg>
-                            YouTube
-                        </a>
-                    </div>
-                </div>
-
-                <div class="member-card" data-index="02">
-                    <div class="member-num">02</div>
-                    <div class="member-emoji">🎭</div>
-                    <div class="member-title">The Performer</div>
-                    <div class="member-tags">Actor · Front-End Developer</div>
-                    <p class="member-desc">Bridges human charisma with technical logic. Expert in front-end engagement
-                        and on-screen presence.</p>
-                    <div class="member-socials">
-                        <a href="#" class="social-chip ig" target="_blank">
-                            <svg viewBox="0 0 24 24" fill="currentColor">
-                                <path
-                                    d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
-                            </svg>
-                            Instagram
-                        </a>
-                        <a href="#" class="social-chip tt" target="_blank">
-                            <svg viewBox="0 0 24 24" fill="currentColor">
-                                <path
-                                    d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.14 8.14 0 004.77 1.52V6.76a4.85 4.85 0 01-1-.07z" />
-                            </svg>
-                            TikTok
-                        </a>
-                        <a href="#" class="social-chip yt" target="_blank">
-                            <svg viewBox="0 0 24 24" fill="currentColor">
-                                <path
-                                    d="M23.495 6.205a3.007 3.007 0 00-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 00.527 6.205a31.247 31.247 0 00-.522 5.805 31.247 31.247 0 00.522 5.783 3.007 3.007 0 002.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 002.088-2.088 31.247 31.247 0 00.5-5.783 31.247 31.247 0 00-.5-5.805zM9.609 15.601V8.408l6.264 3.602z" />
-                            </svg>
-                            YouTube
-                        </a>
-                    </div>
-                </div>
-
-                <div class="member-card" data-index="03">
-                    <div class="member-num">03</div>
-                    <div class="member-emoji">🎬</div>
-                    <div class="member-title">The Visionary</div>
-                    <div class="member-tags">Videographer · Visual Tech Dev</div>
-                    <p class="member-desc">Cinematic aesthetics meet high-performance code. The lens through which GTB
-                        sees the world.</p>
-                    <div class="member-socials">
-                        <a href="#" class="social-chip ig" target="_blank"><svg viewBox="0 0 24 24" fill="currentColor">
-                                <path
-                                    d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
-                            </svg>Instagram</a>
-                        <a href="#" class="social-chip yt" target="_blank"><svg viewBox="0 0 24 24" fill="currentColor">
-                                <path
-                                    d="M23.495 6.205a3.007 3.007 0 00-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 00.527 6.205a31.247 31.247 0 00-.522 5.805 31.247 31.247 0 00.522 5.783 3.007 3.007 0 002.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 002.088-2.088 31.247 31.247 0 00.5-5.783 31.247 31.247 0 00-.5-5.805zM9.609 15.601V8.408l6.264 3.602z" />
-                            </svg>YouTube</a>
-                    </div>
-                </div>
-
-                <div class="member-card" data-index="04">
-                    <div class="member-num">04</div>
-                    <div class="member-emoji">💊</div>
-                    <div class="member-title">The Specialist</div>
-                    <div class="member-tags">Doctor · Gym Enthusiast</div>
-                    <p class="member-desc">Medical accuracy meets elite physical output. The gravity-defying health lead
-                        of GTB.</p>
-                    <div class="member-socials">
-                        <a href="#" class="social-chip ig" target="_blank"><svg viewBox="0 0 24 24" fill="currentColor">
-                                <path
-                                    d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
-                            </svg>Instagram</a>
-                        <a href="#" class="social-chip tt" target="_blank"><svg viewBox="0 0 24 24" fill="currentColor">
-                                <path
-                                    d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.14 8.14 0 004.77 1.52V6.76a4.85 4.85 0 01-1-.07z" />
-                            </svg>TikTok</a>
-                    </div>
-                </div>
-
-                <div class="member-card" data-index="05">
-                    <div class="member-num">05</div>
-                    <div class="member-emoji">🍽️</div>
-                    <div class="member-title">The Gastronomist</div>
-                    <div class="member-tags">Chef · Performance Nutrition</div>
-                    <p class="member-desc">Culinary arts for high-performance living. The fuel behind every GTB move.
-                    </p>
-                    <div class="member-socials">
-                        <a href="https://www.instagram.com/chef.kenah/" class="social-chip ig" target="_blank">
-                            <svg viewBox="0 0 24 24" fill="currentColor">
-                                <path
-                                    d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
-                            </svg>Instagram</a>
-                        <a href="https://www.tiktok.com/@chef_kenah" class="social-chip tt" target="_blank"><svg
-                                viewBox="0 0 24 24" fill="currentColor">
-                                <path
-                                    d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.14 8.14 0 004.77 1.52V6.76a4.85 4.85 0 01-1-.07z" />
-                            </svg>TikTok</a>
-                    </div>
-                </div>
-
-                <div class="member-card" data-index="06">
-                    <div class="member-num">06</div>
-                    <div class="member-emoji">🏗️</div>
-                    <div class="member-title">The Architect</div>
-                    <div class="member-tags">Lead Dev · Backend · APIs · Security</div>
-                    <p class="member-desc">The GTB foundation. Heavy-duty backend, API bridges, system security — and
-                        the builder of this very site.</p>
-                    <div class="member-socials">
-                        <a href="https://github.com/TrevonK-coder" class="social-chip gh" target="_blank">
-                            <svg viewBox="0 0 24 24" fill="currentColor">
-                                <path
-                                    d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z" />
-                            </svg>
-                            GitHub
-                        </a>
-                        <a href="https://trevonk-coder.github.io/myCV/" class="social-chip cv" target="_blank">
-                            <svg viewBox="0 0 24 24" fill="currentColor">
-                                <path
-                                    d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM6 20V4h5v7h7v9H6z" />
-                            </svg>
-                            View CV
-                        </a>
-                    </div>
-                </div>
-
-                <div class="member-card" data-index="07">
-                    <div class="member-num">07</div>
-                    <div class="member-emoji">🎵</div>
-                    <div class="member-title">The Artist</div>
-                    <div class="member-tags">Music · Creative Direction</div>
-                    <p class="member-desc">The sonic pulse of GTB. Experimental soundscapes and creative purity — the
-                        soul of the collective.</p>
-                    <div class="member-socials">
-                        <a href="#" class="social-chip ig" target="_blank"><svg viewBox="0 0 24 24" fill="currentColor">
-                                <path
-                                    d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
-                            </svg>Instagram</a>
-                        <a href="#" class="social-chip yt" target="_blank"><svg viewBox="0 0 24 24" fill="currentColor">
-                                <path
-                                    d="M23.495 6.205a3.007 3.007 0 00-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 00.527 6.205a31.247 31.247 0 00-.522 5.805 31.247 31.247 0 00.522 5.783 3.007 3.007 0 002.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 002.088-2.088 31.247 31.247 0 00.5-5.783 31.247 31.247 0 00-.5-5.805zM9.609 15.601V8.408l6.264 3.602z" />
-                            </svg>YouTube</a>
-                    </div>
-                </div>
-
-                <div class="member-card" data-index="08">
-                    <div class="member-num">08</div>
-                    <div class="member-emoji">⚙️</div>
-                    <div class="member-title">The Engineer</div>
-                    <div class="member-tags">Full-Stack · Deployment · Scaling</div>
-                    <p class="member-desc">Rapid deployment and scaling. The glue for all GTB digital properties —
-                        always shipping.</p>
-                    <div class="member-socials">
-                        <a href="#" class="social-chip ig" target="_blank"><svg viewBox="0 0 24 24" fill="currentColor">
-                                <path
-                                    d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
-                            </svg>Instagram</a>
-                        <a href="#" class="social-chip tt" target="_blank"><svg viewBox="0 0 24 24" fill="currentColor">
-                                <path
-                                    d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.14 8.14 0 004.77 1.52V6.76a4.85 4.85 0 01-1-.07z" />
-                            </svg>TikTok</a>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </section>
-
-    <!-- SOCIAL FEED STRIP -->
-    <section id="social">
-        <div class="section-wrap">
-            <div class="section-tag">// Live Feed</div>
-            <h2>Latest from <span class="accent">GTB</span></h2>
-            <p class="section-desc">Follow the collective across platforms. Real content, real dimensions.</p>
-
-            <div class="platform-tabs">
-                <button class="ptab active" data-feed="instagram">📸 Instagram</button>
-                <button class="ptab" data-feed="tiktok">🎵 TikTok</button>
-                <button class="ptab" data-feed="youtube">▶ YouTube</button>
-            </div>
-
-            <div class="feed-grid" id="feedGrid">
-                <!-- Feed cards generated by JS -->
-            </div>
-
-            <div class="feed-cta-wrap">
-                <a href="explore.html" class="btn btn-primary">Explore All Content →</a>
-            </div>
-        </div>
-    </section>
-
-    <!-- CAREERS & COLLABORATIONS -->
-    <section id="careers">
-        <div class="section-wrap">
-            <div class="section-tag">// Join The Dimension</div>
-            <h2>Careers & <span class="accent">Collaborations</span></h2>
-            <p class="section-desc">Operate above the ordinary. We are always looking for elite talent to collaborate
-                with the collective or join our digital infrastructure team.</p>
-
-            <div class="careers-grid">
-                <div class="career-card">
-                    <div class="c-icon">🤝</div>
-                    <h3>Brand Collaborations</h3>
-                    <p>Partner with GTB Collective for visionary media, design, or performance campaigns.</p>
-                    <a href="mailto:collaborations@gtb.co.ke" class="btn btn-ghost">Pitch Us →</a>
-                </div>
-                <div class="career-card">
-                    <div class="c-icon">⚡</div>
-                    <h3>Technical Infrastructure</h3>
-                    <p>Join The Architect in building scalable, high-performance systems and AI products.</p>
-                    <a href="mailto:careers@gtb.co.ke" class="btn btn-ghost">Apply Now →</a>
-                </div>
-                <div class="career-card">
-                    <div class="c-icon">🎨</div>
-                    <h3>Creative Roster</h3>
-                    <p>Are you an undeniable multi-hyphenate? The collective is expanding its creative dimensions.</p>
-                    <a href="mailto:roster@gtb.co.ke" class="btn btn-ghost">Submit Portfolio →</a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- GTB PROPERTIES -->
-    <section id="properties">
-        <div class="section-wrap">
-            <div class="section-tag">// GTB Digital Properties</div>
-            <h2>The <span class="accent">Ecosystem</span></h2>
-            <div class="props-grid">
-                <!-- PREMIER PROPERTY: PRODUCTION HOUSE -->
-                <a href="https://www.instagram.com/gladtobe.productions/" target="_blank"
-                    class="prop-card premier-prop">
-                    <div class="prop-icon">🎥</div>
-                    <div class="prop-name">Glad To Be Productions</div>
-                    <div class="prop-desc">The official digital production house and creative agency of GTB Collective.
-                        Unmatched visual storytelling.</div>
-                    <div class="prop-badge live">Live ↗</div>
-                </a>
-
-                <a href="https://trevonk-coder.github.io/vidacut/" target="_blank" class="prop-card">
-                    <div class="prop-icon">🎬</div>
-                    <div class="prop-name">VidaCut AI</div>
-                    <div class="prop-desc">AI video editor with beat-sync, color grading & pre-production suite</div>
-                    <div class="prop-badge">Live ↗</div>
-                </a>
-                <a href="https://trevonk-coder.github.io/myCV/" target="_blank" class="prop-card">
-                    <div class="prop-icon">🖥️</div>
-                    <div class="prop-name">Developer CV</div>
-                    <div class="prop-desc">Portfolio of The Architect — full-stack projects, skills & experience</div>
-                    <div class="prop-badge">Live ↗</div>
-                </a>
-                <a href="https://gladtobe.co.ke" target="_blank" class="prop-card">
-                    <div class="prop-icon">🛍️</div>
-                    <div class="prop-name">Glad To Be Merch</div>
-                    <div class="prop-desc">Official GTB Collective merchandise — rep the collective</div>
-                    <div class="prop-badge">Live ↗</div>
-                </a>
-                <div class="prop-card prop-coming">
-                    <div class="prop-icon">🏥</div>
-                    <div class="prop-name">GTB Health</div>
-                    <div class="prop-desc">Medical and fitness intel from The Specialist</div>
-                    <div class="prop-badge soon">Coming Soon</div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- FOOTER -->
-    <footer>
-        <div class="footer-inner">
-            <div class="footer-logo">
-                <img src="gtb-logo.png" alt="GTB" class="footer-logo-img">
-                <span>Glad To Be</span>
-            </div>
-            <div class="footer-links">
-                <a href="#members">Members</a>
-                <a href="explore.html">Explore</a>
-                <a href="#careers">Careers</a>
-                <a href="https://gladtobe.co.ke" target="_blank">Merch</a>
-                <a href="https://trevonk-coder.github.io/vidacut/" target="_blank">VidaCut</a>
-                <a href="https://trevonk-coder.github.io/myCV/" target="_blank">Dev CV</a>
-            </div>
-            <div class="footer-copy">© 2026 GTB Collective · Glad To Be</div>
-        </div>
-    </footer>
-
-    <!-- APP TOUR OVERLAY -->
-    <div id="tourOverlay" class="tour-overlay hidden">
-        <div class="tour-backdrop"></div>
-        <div id="tourBox" class="tour-box">
-            <div class="tour-header">
-                <span class="tour-tag">// System Guide</span>
-                <button id="tourClose" class="tour-close">×</button>
-            </div>
-            <h3 id="tourTitle" class="tour-title">Welcome</h3>
-            <p id="tourDesc" class="tour-desc">Tour initialized.</p>
-            <div class="tour-footer">
-                <div class="tour-progress"><span id="tourStep">1</span> / <span id="tourTotal">4</span></div>
-                <div class="tour-nav">
-                    <button id="tourPrev" class="btn btn-ghost btn-sm" disabled>Prev</button>
-                    <button id="tourNext" class="btn btn-primary btn-sm">Next</button>
-                </div>
-            </div>
+            <button class="btn btn-primary login-btn" id="loginBtn">Authenticate →</button>
+            <div class="login-error" id="loginError"></div>
         </div>
     </div>
 
-    <!-- SCRIPTS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script async src="https://www.tiktok.com/embed.js"></script>
     <script src="three-bg.js"></script>
     <script src="main.js"></script>
-</body>
+    
+    <script>
+        // Inline Login Logic
+        document.addEventListener('DOMContentLoaded', () => {
+            let sb;
+            try {
+                sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            } catch (e) {
+                console.error('Supabase init failed:', e);
+            }
 
+            // session check
+            if (sb) {
+                sb.auth.getSession().then(({ data: { session } }) => {
+                    if (session) {
+                        window.location.href = 'workspace.html';
+                    }
+                });
+            }
+
+            document.getElementById('loginBtn').addEventListener('click', async () => {
+                const email = document.getElementById('loginEmail').value.trim();
+                const pass = document.getElementById('loginPass').value;
+                const errEl = document.getElementById('loginError');
+                const btn = document.getElementById('loginBtn');
+
+                if (!email || !pass) { errEl.textContent = 'Please enter email and password.'; errEl.style.display = 'block'; return; }
+
+                btn.disabled = true;
+                btn.textContent = 'Authenticating...';
+                errEl.style.display = 'none';
+
+                try {
+                    const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+                    if (error) {
+                        if (error.message.includes('Invalid login')) {
+                            // Auto-register mock for ease of use in demo
+                            const { data: signUpData, error: signUpError } = await sb.auth.signUp({ email, password: pass });
+                            if (signUpError) throw signUpError;
+                            
+                            const { data: retryData, error: retryError } = await sb.auth.signInWithPassword({ email, password: pass });
+                            if (retryError) throw retryError;
+                        } else {
+                            throw error;
+                        }
+                    }
+                    // Success -> Dashboard
+                    window.location.href = 'workspace.html';
+                } catch (err) {
+                    errEl.textContent = err.message || 'Login failed.';
+                    errEl.style.display = 'block';
+                    btn.disabled = false;
+                    btn.textContent = 'Authenticate →';
+                }
+            });
+        });
+    </script>
+</body>
 </html>

@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GTB Intranet — Workspace</title>
+    <link rel="icon" type="image/png" href="gtb-logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="workspace.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+</head>
+<body>
+    <!-- CUSTOM CURSOR -->
+    <div id="cursor-dot"></div>
+    <div id="cursor-ring"></div>
+
+    <div class="workspace-layout">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <img src="gtb-logo.png" alt="GTB Logo" class="sidebar-logo">
+                <div class="sidebar-brand">
+                    <span>GTB</span> <span class="muted">Intranet</span>
+                </div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-target="dashboard">
+                    <span class="icon">📊</span>
+                    <span class="label">Dashboard</span>
+                </a>
+                <a href="#" class="nav-item" data-target="chat">
+                    <span class="icon">💬</span>
+                    <span class="label">Chat & Comms</span>
+                    <span class="badge" id="chatBadge">3</span>
+                </a>
+                <a href="#" class="nav-item" data-target="documents">
+                    <span class="icon">✍️</span>
+                    <span class="label">Documents</span>
+                    <span class="badge" id="docBadge">1</span>
+                </a>
+                <a href="#" class="nav-item" data-target="roles">
+                    <span class="icon">🎭</span>
+                    <span class="label">Directory & Roles</span>
+                </a>
+                <a href="#" class="nav-item" data-target="tools">
+                    <span class="icon">⚡</span>
+                    <span class="label">Automations</span>
+                </a>
+                <a href="#" class="nav-item" data-target="ethics">
+                    <span class="icon">🧘</span>
+                    <span class="label">Work Ethics</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="user-avatar" id="userAvatar">M</div>
+                    <div class="user-info">
+                        <div class="user-name" id="userName">Member</div>
+                        <div class="user-role mono" id="userRole">Connecting...</div>
+                    </div>
+                </div>
+                <button class="btn-logout" id="logoutBtn" aria-label="Sign Out">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                </button>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="content-area">
+            <header class="top-nav">
+                <h2 id="pageTitle">Dashboard</h2>
+                <div class="top-actions">
+                    <button class="btn-icon" id="notifToggle" aria-label="Notifications">
+                        🔔<span class="notif-dot"></span>
+                    </button>
+                    <!-- Notification Dropdown -->
+                    <div class="notif-dropdown hidden" id="notifDropdown">
+                        <div class="nd-header">Notifications <span class="mono pull-right">Enable <input type="checkbox" id="enablePush" checked></span></div>
+                        <div class="nd-list" id="notifList">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="views-container">
+                <!-- DASHBOARD VIEW -->
+                <div id="view-dashboard" class="view active">
+                    <div class="welcome-banner">
+                        <div class="wb-content">
+                            <h3>Welcome back, <span id="dashWelcomeName" class="accent">Member</span></h3>
+                            <p>Here is your daily overview and profit distribution metrics.</p>
+                        </div>
+                        <div class="wb-stats">
+                            <div class="stat-box">
+                                <div class="stat-label mono">YTD Revenue</div>
+                                <div class="stat-value">$142,500</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-label mono">Your Share (Est)</div>
+                                <div class="stat-value accent">$17,812</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>📈 Profit Distribution</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="distribution-chart">
+                                    <!-- A pure CSS mock chart for premium feel -->
+                                    <div class="bar-wrap"><div class="bar-label mono">Q1</div><div class="bar-track"><div class="bar-fill" style="width: 75%;"></div></div><div class="bar-val mono">$42k</div></div>
+                                    <div class="bar-wrap"><div class="bar-label mono">Q2</div><div class="bar-track"><div class="bar-fill" style="width: 85%;"></div></div><div class="bar-val mono">$51k</div></div>
+                                    <div class="bar-wrap"><div class="bar-label mono">Q3</div><div class="bar-track"><div class="bar-fill" style="width: 45%;"></div></div><div class="bar-val mono">$29k</div></div>
+                                    <div class="bar-wrap"><div class="bar-label mono">Q4</div><div class="bar-track"><div class="bar-fill accent-fill" style="width: 30%;"></div></div><div class="bar-val mono">$20k (Active)</div></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>⚡ Quick Actions & Pending</h3>
+                            </div>
+                            <div class="card-body">
+                                <ul class="action-list">
+                                    <li class="action-item" onclick="switchView('documents')">
+                                        <div class="ai-icon">✍️</div>
+                                        <div class="ai-text">
+                                            <strong>Sign Document</strong>
+                                            <span>Q4 Partner Agreement needs your signature.</span>
+                                        </div>
+                                        <div class="ai-badge red">Urgent</div>
+                                    </li>
+                                    <li class="action-item" onclick="switchView('chat')">
+                                        <div class="ai-icon">💬</div>
+                                        <div class="ai-text">
+                                            <strong>New Message</strong>
+                                            <span>The Architect mentioned you in General.</span>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CHAT VIEW -->
+                <div id="view-chat" class="view">
+                    <div class="chat-container">
+                        <div class="chat-sidebar">
+                            <div class="cs-header">Channels</div>
+                            <ul class="chat-channels">
+                                <li class="channel active"># general</li>
+                                <li class="channel"># profit-discussions</li>
+                                <li class="channel"># creative-sync</li>
+                            </ul>
+                            <div class="cs-header mt-4">Direct Messages</div>
+                            <ul class="chat-dms" id="dmList">
+                                <li class="dm-user"><span class="status-dot online"></span> The Architect</li>
+                                <li class="dm-user"><span class="status-dot offline"></span> The Visionary</li>
+                            </ul>
+                        </div>
+                        <div class="chat-main">
+                            <div class="chat-header">
+                                <h3># general</h3>
+                                <div class="mono text-muted">Company-wide announcements and chat</div>
+                            </div>
+                            <div class="chat-messages" id="chatArea">
+                                <!-- Messages injected by JS -->
+                            </div>
+                            <div class="chat-input-area">
+                                <form id="chatForm">
+                                    <input type="text" id="chatInput" placeholder="Send a message to #general..." autocomplete="off" required>
+                                    <button type="submit" class="btn btn-primary">Send ↗</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DOCUMENTS VIEW -->
+                <div id="view-documents" class="view">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>📑 Electronic Documents & Contracts</h3>
+                            <button class="btn btn-ghost btn-sm">Upload New</button>
+                        </div>
+                        <div class="card-body">
+                            <div class="doc-list" id="docList">
+                                <!-- Docs injected by JS -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Signature Modal overlay -->
+                    <div id="signModal" class="modal hidden">
+                        <div class="modal-content">
+                            <h3 id="signModalTitle">Sign Document</h3>
+                            <p class="mono text-muted mb-4">By signing, you agree to the terms outlined within the document.</p>
+                            <div class="signature-pad" id="sigPad">
+                                <span class="sig-placeholder">Type your full legal name to sign</span>
+                                <input type="text" id="sigInput" class="sig-input" placeholder="e.g. John Doe">
+                            </div>
+                            <div class="modal-actions">
+                                <button class="btn btn-ghost" id="cancelSign">Cancel</button>
+                                <button class="btn btn-primary" id="confirmSign">Sign Electronically</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DIRECTORY & ROLES VIEW -->
+                <div id="view-roles" class="view">
+                    <div class="directory-grid" id="directoryGrid">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- AUTOMATIONS & TOOLS VIEW -->
+                <div id="view-tools" class="view">
+                    <div class="grid-2">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>📋 Submit Request (Leave / Expense)</h3>
+                            </div>
+                            <div class="card-body">
+                                <form id="toolForm" class="styled-form">
+                                    <div class="field">
+                                        <label>REQUEST TYPE</label>
+                                        <select id="reqType">
+                                            <option value="expense">Expense Reimbursement</option>
+                                            <option value="leave">Time Off / Leave</option>
+                                            <option value="resource">Resource Requisition</option>
+                                        </select>
+                                    </div>
+                                    <div class="field">
+                                        <label>DETAILS</label>
+                                        <textarea rows="3" placeholder="Provide necessary specifics..." required></textarea>
+                                    </div>
+                                    <div class="field">
+                                        <label>AMOUNT (IF EXPENSE) $</label>
+                                        <input type="number" placeholder="0.00">
+                                    </div>
+                                    <button type="submit" class="btn btn-primary w-full mt-2">Submit Request</button>
+                                </form>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>Pending Requests</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="empty-state mono">No active requests.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- WORK ETHICS & WELLNESS VIEW -->
+                <div id="view-ethics" class="view">
+                    <div class="grid-2">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>🧘 Wellness Reminders</h3>
+                            </div>
+                            <div class="card-body wellness-list">
+                                <div class="checkbox-row">
+                                    <input type="checkbox" id="w1">
+                                    <label for="w1">
+                                        <strong>Hydration</strong> <br>
+                                        <span class="mono text-muted">Drink 1L of water by noon</span>
+                                    </label>
+                                </div>
+                                <div class="checkbox-row">
+                                    <input type="checkbox" id="w2">
+                                    <label for="w2">
+                                        <strong>Posture & Stretch</strong> <br>
+                                        <span class="mono text-muted">Complete 5 min desk stretching</span>
+                                    </label>
+                                </div>
+                                <div class="checkbox-row">
+                                    <input type="checkbox" id="w3">
+                                    <label for="w3">
+                                        <strong>Deep Work Block</strong> <br>
+                                        <span class="mono text-muted">90 mins uninterrupted focus</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>🛡️ Daily Ethics Log</h3>
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted mb-4" style="font-size:13px;line-height:1.5;">Accountability is key to the collective. Log your core deliverable for today.</p>
+                                <form id="ethicsForm" class="styled-form">
+                                    <div class="field">
+                                        <label>TODAY'S MAIN FOCUS</label>
+                                        <input type="text" placeholder="e.g. Shipped new landing page segment" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-ghost w-full">Log Progress</button>
+                                </form>
+                                <div id="ethicsLog" class="mt-4 doc-list"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <script src="workspace.js"></script>
+</body>
+</html>
