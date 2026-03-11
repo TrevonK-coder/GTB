@@ -62,6 +62,11 @@
                     <span class="label">Command Center</span>
                     <span class="badge" id="commandBadge">4</span>
                 </a>
+                <a href="#" class="nav-item" data-target="marketplace">
+                    <span class="icon">🛒</span>
+                    <span class="label">Roles Marketplace</span>
+                    <span class="badge" style="background:var(--green);" id="mktBadge">7</span>
+                </a>
             </nav>
 
             <div class="sidebar-footer">
@@ -423,6 +428,65 @@
                         </div>
                     </div>
 
+                </div>
+
+                <!-- ══ ROLES MARKETPLACE ══ -->
+                <div id="view-marketplace" class="view">
+
+                    <div class="welcome-banner" style="background: linear-gradient(135deg, rgba(34,212,122,0.1) 0%, rgba(124,111,255,0.06) 100%);">
+                        <div class="wb-content">
+                            <h3>Roles <span class="accent">Marketplace</span></h3>
+                            <p>Open revenue-generating positions within the collective. Claim a role, own the revenue stream.</p>
+                        </div>
+                        <div class="wb-stats">
+                            <div class="stat-box" style="border-color:rgba(34,212,122,0.2);">
+                                <div class="stat-label mono">Available Roles</div>
+                                <div class="stat-value" style="color:var(--green)" id="mktAvailCount">7</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-label mono">Revenue Potential</div>
+                                <div class="stat-value accent">$18k+/mo</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Filter Tabs -->
+                    <div class="mkt-filters" id="mktFilters">
+                        <button class="mkt-tab active" data-filter="all">All Roles</button>
+                        <button class="mkt-tab" data-filter="content">Content</button>
+                        <button class="mkt-tab" data-filter="sales">Sales</button>
+                        <button class="mkt-tab" data-filter="tech">Tech</button>
+                        <button class="mkt-tab" data-filter="ops">Operations</button>
+                        <button class="mkt-tab" data-filter="creative">Creative</button>
+                    </div>
+
+                    <!-- Role Cards Grid -->
+                    <div class="mkt-grid" id="mktGrid">
+                        <!-- Populated by workspace.js -->
+                    </div>
+
+                </div>
+
+                <!-- Apply Modal -->
+                <div id="applyModal" class="modal hidden">
+                    <div class="modal-content">
+                        <h3>Apply for Role</h3>
+                        <p class="mono text-muted mb-4" id="applyModalRoleName">Role Name</p>
+                        <div class="styled-form">
+                            <div class="field">
+                                <label>WHY THIS ROLE?</label>
+                                <textarea id="applyReason" rows="3" placeholder="Briefly describe how you'll drive revenue in this role..."></textarea>
+                            </div>
+                            <div class="field">
+                                <label>ESTIMATED WEEKLY COMMITMENT (HRS)</label>
+                                <input type="number" id="applyHours" placeholder="e.g. 10" min="1" max="40">
+                            </div>
+                        </div>
+                        <div class="modal-actions">
+                            <button class="btn btn-ghost" id="cancelApply">Cancel</button>
+                            <button class="btn btn-primary" id="confirmApply">Submit Application</button>
+                        </div>
+                    </div>
                 </div>
 
             </div>

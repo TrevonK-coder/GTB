@@ -35,6 +35,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         loadChatMock();
         loadDocsMock();
         loadLeadershipView();
+        loadMarketplace();
 
         // Architect-only: show Command Center
         if (currentMember.role === 'architect') {
@@ -495,3 +496,178 @@ function loadCommandCenter() {
             </div>`).join('');
     }
 }
+
+// ════════════════════════════════════
+// ROLES MARKETPLACE
+// ════════════════════════════════════
+const MARKETPLACE_ROLES = [
+    {
+        id: 'm1', icon: '📲', category: 'content',
+        title: 'Social Media Manager',
+        desc: 'Own all GTB social channels. Plan, schedule, and publish content across Instagram, TikTok, and YouTube. Drive engagement and follower growth.',
+        kpis: ['Post 5× per week per platform', 'Grow followers by 10% per quarter', 'Report weekly engagement metrics'],
+        revenue: '$1,200/mo', status: 'available'
+    },
+    {
+        id: 'm2', icon: '🤝', category: 'sales',
+        title: 'Brand Partnerships Lead',
+        desc: 'Prospect and close brand sponsorship deals for the collective. Manage relationships with sponsors and negotiate campaign terms.',
+        kpis: ['Close 2+ deals per month', 'Maintain sponsor CRM', 'Deliver post-campaign ROI reports'],
+        revenue: '$2,500/mo + 5% commission', status: 'available'
+    },
+    {
+        id: 'm3', icon: '📝', category: 'content',
+        title: 'Content Strategist',
+        desc: 'Build and maintain a content calendar for all GTB verticals. Ideate viral concepts aligned with each dimension\'s niche.',
+        kpis: ['Monthly content calendar', '1 viral concept pitch per week', 'Cross-dimension content synergy'],
+        revenue: '$900/mo', status: 'available'
+    },
+    {
+        id: 'm4', icon: '🎨', category: 'creative',
+        title: 'Graphic Designer',
+        desc: 'Design all visual assets — social graphics, merchandise layouts, presentations, and brand identity materials for GTB Collective.',
+        kpis: ['Deliver assets within 48hrs', 'Maintain brand style guide', 'Design 20+ assets per month'],
+        revenue: '$1,000/mo', status: 'available'
+    },
+    {
+        id: 'm5', icon: '📊', category: 'ops',
+        title: 'Operations Coordinator',
+        desc: 'Track project timelines, member deliverables, and internal communications. Ensure every dimension hits its weekly targets.',
+        kpis: ['Weekly progress reports', 'On-time project delivery rate >90%', 'Manage tool stack & subscriptions'],
+        revenue: '$800/mo', status: 'taken'
+    },
+    {
+        id: 'm6', icon: '🎥', category: 'content',
+        title: 'Video Editor',
+        desc: 'Edit all GTB YouTube videos, reels, and TikToks. Maintain consistent visual language; color grade, cut, and export at broadcast quality.',
+        kpis: ['Deliver edits within 72hrs of raw footage', 'Edit 12+ videos per month', 'Archive project files'],
+        revenue: '$1,500/mo', status: 'available'
+    },
+    {
+        id: 'm7', icon: '💼', category: 'sales',
+        title: 'Merch Sales Manager',
+        desc: 'Drive sales for gladtobe.co.ke — manage campaigns, flash sales, and promotions. Coordinate with the store and logistics.',
+        kpis: ['Hit monthly GMV target', 'Run 2+ promotions per month', 'Reduce cart abandonment rate'],
+        revenue: '$700/mo + 3% GMV', status: 'available'
+    },
+    {
+        id: 'm8', icon: '🌐', category: 'tech',
+        title: 'SEO & Growth Hacker',
+        desc: 'Optimize all GTB digital properties for search and organic growth. Run A/B tests and own the analytics stack.',
+        kpis: ['Improve organic traffic 15% per quarter', 'Monthly SEO audit', 'Own Google Analytics dashboards'],
+        revenue: '$1,100/mo', status: 'available'
+    },
+    {
+        id: 'm9', icon: '💡', category: 'creative',
+        title: 'Creative Director (Freelance)',
+        desc: 'Drive overarching creative vision for campaigns, events, and drops. Collaborate with The Visionary and The Artist on GTB brand directions.',
+        kpis: ['Deliver 1 campaign brief per month', 'Attend weekly creative syncs', 'Maintain moodboard & direction doc'],
+        revenue: '$1,800/mo', status: 'available'
+    },
+    {
+        id: 'm10', icon: '🤖', category: 'tech',
+        title: 'AI Tools Integrator',
+        desc: 'Research and implement AI automations across GTB workflows — content, analytics, and customer engagement. Work under The Architect.',
+        kpis: ['Integrate 1 new tool per month', 'Document all automation flows', 'Reduce manual work by 20%'],
+        revenue: '$1,300/mo', status: 'taken'
+    },
+    {
+        id: 'm11', icon: '📣', category: 'sales',
+        title: 'Affiliate & Influencer Manager',
+        desc: 'Recruit and manage affiliate partners and micro-influencers who promote GTB merch and content. Track conversions and commissions.',
+        kpis: ['Onboard 5+ affiliates per month', 'Track clicks & conversions', 'Payout affiliates on time'],
+        revenue: '$850/mo + 2% affiliate sales', status: 'available'
+    },
+    {
+        id: 'm12', icon: '📋', category: 'ops',
+        title: 'Finance & Invoicing Officer',
+        desc: 'Manage invoices, expense tracking, and profit distribution records. Prepare monthly financial summaries for The Architect review.',
+        kpis: ['Submit expense report by 5th of month', 'Zero overdue invoices', 'Maintain finance spreadsheet'],
+        revenue: '$750/mo', status: 'available'
+    }
+];
+
+let activeApplyId = null;
+
+function loadMarketplace() {
+    renderMarketplace('all');
+
+    // Filter tabs
+    document.querySelectorAll('.mkt-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.mkt-tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            renderMarketplace(tab.dataset.filter);
+        });
+    });
+
+    // Apply Modal events
+    document.getElementById('cancelApply').addEventListener('click', () => {
+        document.getElementById('applyModal').classList.add('hidden');
+    });
+
+    document.getElementById('confirmApply').addEventListener('click', () => {
+        const reason = document.getElementById('applyReason').value.trim();
+        const hours = document.getElementById('applyHours').value.trim();
+        if (!reason || !hours) {
+            alert('Please fill in all fields before submitting.');
+            return;
+        }
+        document.getElementById('applyModal').classList.add('hidden');
+        document.getElementById('applyReason').value = '';
+        document.getElementById('applyHours').value = '';
+        const t = document.getElementById('toast');
+        if (t) {
+            const role = MARKETPLACE_ROLES.find(r => r.id === activeApplyId);
+            t.textContent = `✓ Application for "${role ? role.title : 'Role'}" submitted! The Architect will review.`;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 4000);
+        }
+    });
+}
+
+function renderMarketplace(filter) {
+    const grid = document.getElementById('mktGrid');
+    if (!grid) return;
+
+    const filtered = filter === 'all' ? MARKETPLACE_ROLES : MARKETPLACE_ROLES.filter(r => r.category === filter);
+    const available = filtered.filter(r => r.status === 'available').length;
+
+    const countEl = document.getElementById('mktAvailCount');
+    const badgeEl = document.getElementById('mktBadge');
+    const totalAvail = MARKETPLACE_ROLES.filter(r => r.status === 'available').length;
+    if (countEl) countEl.textContent = filter === 'all' ? totalAvail : available;
+    if (badgeEl) badgeEl.textContent = totalAvail;
+
+    grid.innerHTML = filtered.map(r => `
+        <div class="mkt-card ${r.status === 'taken' ? 'taken' : ''}">
+            <div class="mkt-card-top">
+                <span class="mkt-icon">${r.icon}</span>
+                <span class="mkt-category ${r.category}">${r.category}</span>
+            </div>
+            <div>
+                <div class="mkt-role-title">${r.title}</div>
+                <div class="mkt-role-desc">${r.desc}</div>
+                <div class="mkt-kpis">
+                    ${r.kpis.map(k => `<div class="mkt-kpi-row">${k}</div>`).join('')}
+                </div>
+            </div>
+            <div class="mkt-card-footer">
+                <div class="mkt-revenue">
+                    <span class="rev-label">Revenue Potential</span>
+                    <span class="rev-val">${r.revenue}</span>
+                </div>
+                ${r.status === 'available'
+                    ? `<button class="btn btn-primary btn-sm" onclick="openApplyModal('${r.id}', '${r.title}')">Apply Now →</button>`
+                    : `<span class="mkt-status-taken">Filled</span>`}
+            </div>
+        </div>
+    `).join('');
+}
+
+window.openApplyModal = function(id, title) {
+    activeApplyId = id;
+    document.getElementById('applyModalRoleName').textContent = title;
+    document.getElementById('applyModal').classList.remove('hidden');
+    document.getElementById('applyReason').focus();
+};
