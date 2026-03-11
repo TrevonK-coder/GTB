@@ -34,6 +34,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         loadDirectory();
         loadChatMock();
         loadDocsMock();
+        loadDocumentSystem();
         loadLeadershipView();
         loadMarketplace();
         loadTreasury();
@@ -1331,4 +1332,535 @@ async function loadFanFund(topPerformer) {
             }
         });
     }
+}
+
+// ════════════════════════════════════
+// DOCUMENT SYSTEM — PDF, SIGNING, VIDEO, AI CHAT
+// ════════════════════════════════════
+
+// ── GTB Document Registry ─────────────────────────────────────
+const GTB_DOCS = [
+    {
+        id: 'gtb-member-agreement',
+        title: 'GTB Member Agreement',
+        type: 'Contract',
+        category: 'Legal',
+        status: 'needs-signature',
+        date: 'Mar 2026',
+        icon: '📜',
+        content: `
+            <h2>GTB Collective Member Agreement</h2>
+            <p><strong>Date:</strong> March 2026 &nbsp;|&nbsp; <strong>Version:</strong> 2.1</p>
+            <h3>1. Purpose</h3>
+            <p>This agreement governs the terms under which each member of Glad To Be (GTB) participates in the collective. By signing, you confirm your understanding and acceptance of all obligations herein.</p>
+            <div class="clause">Every member is required to contribute KES 3,000 per calendar month, due no later than the 5th of each month, to cover shared operational costs including but not limited to hosting, software licenses, and event reserves.</div>
+            <h3>2. Roles & Responsibilities</h3>
+            <p>Each member occupies a specific Dimension within the GTB collective. Members are expected to fulfil the responsibilities associated with their Dimension and contribute actively to the collective's KPIs.</p>
+            <h3>3. Investment Participation</h3>
+            <p>Members who participate in collective investment pools agree to a minimum 60-day lock-in period. Investment returns are distributed quarterly after a 20% reinvestment deduction.</p>
+            <h3>4. Confidentiality</h3>
+            <div class="clause">All internal financials, strategies, and member data are strictly confidential. Sharing this information outside the collective without written consent from The Architect constitutes a breach of this agreement.</div>
+            <h3>5. Exit Clause</h3>
+            <p>A departing member forfeits their investment share for the current quarter. All prior returns are retained. Notice of exit must be submitted in writing at least 30 days in advance.</p>
+        `
+    },
+    {
+        id: 'gtb-nda',
+        title: 'Non-Disclosure Agreement (NDA)',
+        type: 'NDA',
+        category: 'Legal',
+        status: 'signed',
+        date: 'Jan 2026',
+        icon: '🔒',
+        content: `
+            <h2>GTB Non-Disclosure Agreement</h2>
+            <p><strong>Date:</strong> January 2026 &nbsp;|&nbsp; <strong>Status:</strong> SIGNED</p>
+            <h3>1. Confidential Information</h3>
+            <p>For purposes of this Agreement, "Confidential Information" means any proprietary data, business strategies, financial information, or creative works developed by or shared within the GTB Collective.</p>
+            <div class="clause">The receiving party agrees not to disclose, publish, or otherwise reveal any Confidential Information received from the disclosing party to any other person or entity without prior written approval.</div>
+            <h3>2. Term</h3>
+            <p>This obligation shall remain in effect for 3 years following the termination of membership.</p>
+        `
+    },
+    {
+        id: 'gtb-investment-consent',
+        title: 'Q1 2026 Investment Consent Form',
+        type: 'Investment',
+        category: 'Finance',
+        status: 'needs-signature',
+        date: 'Mar 2026',
+        icon: '📈',
+        content: `
+            <h2>Q1 2026 Collective Investment Consent</h2>
+            <p><strong>Investment:</strong> Kenya Treasury Bills (91-Day) &nbsp;|&nbsp; <strong>Pool size:</strong> KES 120,000</p>
+            <h3>Terms</h3>
+            <p>Each consenting member authorizes the allocation of up to KES 15,000 from the treasury pool into Kenya Treasury Bills for a 91-day period at a projected interest rate of 14.5% per annum.</p>
+            <div class="clause">Returns will be distributed equally among consenting members after the 91-day maturity period, with 20% reinvested back into the pool as per GTB financial rules.</div>
+            <h3>Risk Acknowledgement</h3>
+            <p>I understand government securities carry minimal risk but are not guaranteed. I have read and understand the investment terms.</p>
+        `
+    },
+    {
+        id: 'gtb-role-sop',
+        title: 'Role SOP & KPI Agreement',
+        type: 'SOP',
+        category: 'Operations',
+        status: 'signed',
+        date: 'Feb 2026',
+        icon: '📋',
+        content: `
+            <h2>Standard Operating Procedure — Member Role KPIs</h2>
+            <p>This document outlines the expected Key Performance Indicators (KPIs) for your role Dimension at GTB.</p>
+            <div class="clause">Members are required to submit a weekly KPI report every Friday before 11:59 PM EAT. Failure to submit 3 consecutive reports will trigger a performance review with The Architect.</div>
+            <h3>Universal KPIs (All Members)</h3>
+            <p>1. Monthly contribution — paid by 5th<br>2. Weekly KPI report — submitted by Friday<br>3. Document signing — within 48hrs of issuance<br>4. Meeting attendance — min 75% per month</p>
+        `
+    },
+];
+
+// ── Document List UI ──────────────────────────────────────────
+function loadDocumentSystem() {
+    renderDocList();
+    initDocTabs();
+    initSignatureCanvas();
+    initVideoSystem();
+    initAIDocAssistant();
+
+    // Generate PDF button (generates the active/first doc)
+    const genPdfBtn = document.getElementById('genPdfBtn');
+    if (genPdfBtn) {
+        genPdfBtn.addEventListener('click', () => generateGTBPdf(GTB_DOCS[0]));
+    }
+}
+
+function renderDocList() {
+    const list = document.getElementById('docList');
+    if (!list) return;
+    list.innerHTML = GTB_DOCS.map(doc => {
+        const isSigned = doc.status === 'signed';
+        return `
+        <div class="doc-item">
+            <div class="doc-info">
+                <span style="font-size:22px;">${doc.icon}</span>
+                <div class="doc-meta">
+                    <span class="doc-title">${doc.title}</span>
+                    <span class="doc-date">${doc.category} &bull; ${doc.date}</span>
+                </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+                ${isSigned
+                    ? `<span class="tx-status confirmed">✓ Signed</span>`
+                    : `<span class="tx-status pending">⚠ Needs Signature</span>`}
+                <button class="btn btn-ghost btn-sm" onclick="openDocViewer('${doc.id}')">View</button>
+                <button class="btn btn-ghost btn-sm" onclick="generateGTBPdf('${doc.id}')">⬇️ PDF</button>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+window.openDocViewer = function(docId) {
+    const doc = GTB_DOCS.find(d => d.id === docId);
+    if (!doc) return;
+    document.getElementById('signModalTitle').textContent = doc.title;
+    document.getElementById('docPreviewArea').innerHTML = doc.content;
+    document.getElementById('signModal').classList.remove('hidden');
+
+    // Clear canvas for fresh signing
+    const canvas = document.getElementById('sigCanvas');
+    if (canvas) {
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const hint = canvas.parentElement.querySelector('.sig-canvas-hint');
+        if (hint) hint.style.opacity = '1';
+    }
+
+    // Wire PDF download inside modal
+    const dlBtn = document.getElementById('downloadPdfBtn');
+    if (dlBtn) {
+        dlBtn.onclick = () => generateGTBPdf(docId);
+    }
+};
+
+// ── PDF Generation ────────────────────────────────────────────
+window.generateGTBPdf = function(docOrId) {
+    const doc = typeof docOrId === 'string'
+        ? GTB_DOCS.find(d => d.id === docOrId)
+        : docOrId;
+    if (!doc) return;
+
+    const { jsPDF } = window.jspdf || {};
+    if (!jsPDF) { alert('PDF library not loaded. Check your internet connection.'); return; }
+
+    const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+
+    // Header
+    pdf.setFillColor(6, 6, 9);
+    pdf.rect(0, 0, 210, 40, 'F');
+    pdf.setTextColor(255, 255, 255);
+    pdf.setFontSize(20);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('GTB COLLECTIVE', 20, 20);
+    pdf.setFontSize(11);
+    pdf.setFont('helvetica', 'normal');
+    pdf.setTextColor(160, 160, 180);
+    pdf.text(`${doc.type} — ${doc.category}`, 20, 30);
+
+    // Document title block
+    pdf.setTextColor(30, 30, 30);
+    pdf.setFontSize(16);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text(doc.title, 20, 58);
+
+    pdf.setFontSize(10);
+    pdf.setFont('helvetica', 'normal');
+    pdf.setTextColor(100, 100, 120);
+    pdf.text(`Document ID: ${doc.id}  |  Date: ${doc.date}  |  Status: ${doc.status.toUpperCase()}`, 20, 68);
+
+    // Strip HTML for PDF content
+    const parser = new DOMParser();
+    const parsed = parser.parseFromString(doc.content, 'text/html');
+    const plainText = parsed.body.innerText || parsed.body.textContent || '';
+    const lines = pdf.splitTextToSize(plainText.trim(), 170);
+
+    pdf.setTextColor(40, 40, 50);
+    pdf.setFontSize(11);
+    pdf.setFont('helvetica', 'normal');
+    let y = 82;
+    lines.forEach(line => {
+        if (y > 265) { pdf.addPage(); y = 20; }
+        pdf.text(line, 20, y);
+        y += 6;
+    });
+
+    // Signature block
+    y = Math.max(y + 16, 220);
+    pdf.setDrawColor(200, 200, 220);
+    pdf.line(20, y, 100, y);
+    pdf.line(120, y, 190, y);
+    pdf.setFontSize(9);
+    pdf.setTextColor(120, 120, 140);
+    pdf.text('Member Signature', 20, y + 6);
+    pdf.text('Date', 120, y + 6);
+
+    // Footer
+    pdf.setFillColor(6, 6, 9);
+    pdf.rect(0, 285, 210, 12, 'F');
+    pdf.setTextColor(100, 100, 120);
+    pdf.setFontSize(8);
+    pdf.text(`Generated by GTB Intranet  |  ${new Date().toLocaleDateString('en-KE', { dateStyle: 'long' })}  |  CONFIDENTIAL`, 20, 292);
+
+    pdf.save(`GTB_${doc.id}_${new Date().toISOString().split('T')[0]}.pdf`);
+    showToast(`✓ PDF for "${doc.title}" downloaded.`);
+};
+
+// ── Signature Canvas ──────────────────────────────────────────
+let sigStrokes = [];
+let isDrawing = false;
+
+function initSignatureCanvas() {
+    const canvas = document.getElementById('sigCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    ctx.strokeStyle = '#7c6fff';
+    ctx.lineWidth = 2.5;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+
+    function getPos(e) {
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        return { x: (clientX - rect.left) * scaleX, y: (clientY - rect.top) * scaleY };
+    }
+
+    function startDraw(e) {
+        e.preventDefault();
+        isDrawing = true;
+        const pos = getPos(e);
+        ctx.beginPath();
+        ctx.moveTo(pos.x, pos.y);
+        sigStrokes.push([pos]);
+        const hint = canvas.parentElement.querySelector('.sig-canvas-hint');
+        if (hint) hint.style.opacity = '0';
+    }
+    function draw(e) {
+        if (!isDrawing) return;
+        e.preventDefault();
+        const pos = getPos(e);
+        ctx.lineTo(pos.x, pos.y);
+        ctx.stroke();
+        sigStrokes[sigStrokes.length - 1].push(pos);
+    }
+    function endDraw() { isDrawing = false; }
+
+    canvas.addEventListener('mousedown', startDraw);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', endDraw);
+    canvas.addEventListener('touchstart', startDraw, { passive: false });
+    canvas.addEventListener('touchmove', draw, { passive: false });
+    canvas.addEventListener('touchend', endDraw);
+
+    // Clear button
+    document.getElementById('sigClear')?.addEventListener('click', () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        sigStrokes = [];
+        const hint = canvas.parentElement.querySelector('.sig-canvas-hint');
+        if (hint) hint.style.opacity = '1';
+    });
+
+    // Undo last stroke
+    document.getElementById('sigUndo')?.addEventListener('click', () => {
+        sigStrokes.pop();
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.beginPath();
+        sigStrokes.forEach(stroke => {
+            stroke.forEach((pt, i) => {
+                if (i === 0) { ctx.beginPath(); ctx.moveTo(pt.x, pt.y); }
+                else { ctx.lineTo(pt.x, pt.y); ctx.stroke(); }
+            });
+        });
+        if (sigStrokes.length === 0) {
+            const hint = canvas.parentElement.querySelector('.sig-canvas-hint');
+            if (hint) hint.style.opacity = '1';
+        }
+    });
+
+    // Draw / Type toggle
+    document.getElementById('sigDrawTab')?.addEventListener('click', () => {
+        document.getElementById('sigDrawPanel').style.display = '';
+        document.getElementById('sigTypePanel').style.display = 'none';
+        document.getElementById('sigDrawTab').classList.add('active');
+        document.getElementById('sigTypeTab').classList.remove('active');
+    });
+    document.getElementById('sigTypeTab')?.addEventListener('click', () => {
+        document.getElementById('sigDrawPanel').style.display = 'none';
+        document.getElementById('sigTypePanel').style.display = '';
+        document.getElementById('sigTypeTab').classList.add('active');
+        document.getElementById('sigDrawTab').classList.remove('active');
+    });
+
+    // Live type preview
+    document.getElementById('sigInput')?.addEventListener('input', (e) => {
+        const preview = document.getElementById('sigPreviewText');
+        if (preview) preview.textContent = e.target.value;
+    });
+
+    // Confirm signing
+    document.getElementById('confirmSign')?.addEventListener('click', () => {
+        const hasDrawnSig = sigStrokes.length > 0;
+        const typedSig = document.getElementById('sigInput')?.value?.trim();
+        if (!hasDrawnSig && !typedSig) {
+            showToast('⚠ Please draw or type your signature to proceed.');
+            return;
+        }
+        const title = document.getElementById('signModalTitle')?.textContent;
+        showToast(`✅ "${title}" signed & certified!`);
+        document.getElementById('signModal').classList.add('hidden');
+        // Mark document as signed in the registry
+        const doc = GTB_DOCS.find(d => d.title === title);
+        if (doc) { doc.status = 'signed'; renderDocList(); }
+    });
+}
+
+// ── Doc Tab Switcher ──────────────────────────────────────────
+function initDocTabs() {
+    document.querySelectorAll('[data-tab]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const target = btn.getAttribute('data-tab');
+            document.querySelectorAll('.doc-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.doc-tab-content').forEach(c => c.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById(target)?.classList.add('active');
+        });
+    });
+}
+
+// ── Video System ──────────────────────────────────────────────
+const VIDEO_FEED_MOCK = [
+    { id: 1, title: 'March KPI Progress — Architecture Update', member: 'The Architect', category: 'Progress Update', date: 'Mar 9, 2026', desc: 'Overview of current system deployment, Q2 feature roadmap, and team assignments for next sprint.', reactions: { '👍': 4, '🔥': 2, '💡': 1 } },
+    { id: 2, title: 'GTB Brand Shoot BTS — Episode 3 Prep', member: 'The Visionary', category: 'Review Request', date: 'Mar 8, 2026', desc: 'Behind-the-scenes footage from the Episode 3 location scouting. Reviewing color grade options — feedback needed!', reactions: { '❤️': 5, '🔥': 3, '✅': 2 } },
+    { id: 3, title: 'Social Media Strategy Q2 Walkthrough', member: 'The Performer', category: 'Announcement', date: 'Mar 7, 2026', desc: 'Presenting the updated content calendar and platform strategy for Q2. New reels format and engagement targets covered.', reactions: { '👍': 6, '💡': 4 } },
+    { id: 4, title: 'Nutrition & Wellness Plan Presentation', member: 'The Specialist', category: 'Training', date: 'Mar 6, 2026', desc: 'Walk-through of the new member wellness guide including recommended nutrition plans and exercise schedules.', reactions: { '❤️': 3, '💚': 5 } },
+];
+
+function initVideoSystem() {
+    renderVideoFeed(VIDEO_FEED_MOCK);
+
+    document.getElementById('pickVideoBtn')?.addEventListener('click', () => {
+        document.getElementById('videoFileInput')?.click();
+    });
+
+    document.getElementById('videoFileInput')?.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const url = URL.createObjectURL(file);
+        const preview = document.getElementById('videoPreview');
+        preview.src = url;
+        document.getElementById('videoDropZone').style.display = 'none';
+        document.getElementById('videoPreviewWrap').style.display = '';
+    });
+
+    document.getElementById('cancelVideoBtn')?.addEventListener('click', () => {
+        document.getElementById('videoDropZone').style.display = '';
+        document.getElementById('videoPreviewWrap').style.display = 'none';
+        document.getElementById('videoFileInput').value = '';
+    });
+
+    document.getElementById('shareVideoBtn')?.addEventListener('click', () => {
+        const title = document.getElementById('videoTitle')?.value || 'Untitled Update';
+        const desc = document.getElementById('videoDesc')?.value || '';
+        const cat = document.getElementById('videoCat')?.value || 'Progress Update';
+        const member = currentMember ? currentMember.title : 'A Member';
+
+        const newVideo = {
+            id: Date.now(), title, member, category: cat,
+            date: new Date().toLocaleDateString('en-KE', { month: 'short', day: 'numeric', year: 'numeric' }),
+            desc, reactions: { '👍': 0 },
+            blobUrl: document.getElementById('videoPreview')?.src || ''
+        };
+
+        VIDEO_FEED_MOCK.unshift(newVideo);
+        renderVideoFeed(VIDEO_FEED_MOCK);
+
+        document.getElementById('videoDropZone').style.display = '';
+        document.getElementById('videoPreviewWrap').style.display = 'none';
+        document.getElementById('videoFileInput').value = '';
+        document.getElementById('videoTitle').value = '';
+        document.getElementById('videoDesc').value = '';
+        showToast(`🚀 Your video "${title}" has been shared with the team!`);
+    });
+
+    // Category filter
+    document.getElementById('videoFilter')?.addEventListener('change', (e) => {
+        const val = e.target.value;
+        const filtered = val === 'all' ? VIDEO_FEED_MOCK : VIDEO_FEED_MOCK.filter(v => v.category === val);
+        renderVideoFeed(filtered);
+    });
+
+    // Drag & drop
+    const dropZone = document.getElementById('videoDropZone');
+    dropZone?.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragging'); });
+    dropZone?.addEventListener('dragleave', () => dropZone.classList.remove('dragging'));
+    dropZone?.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('dragging');
+        const file = e.dataTransfer.files[0];
+        if (!file || !file.type.startsWith('video/')) return;
+        const url = URL.createObjectURL(file);
+        document.getElementById('videoPreview').src = url;
+        dropZone.style.display = 'none';
+        document.getElementById('videoPreviewWrap').style.display = '';
+    });
+}
+
+function renderVideoFeed(videos) {
+    const feed = document.getElementById('videoFeed');
+    if (!feed) return;
+    if (videos.length === 0) { feed.innerHTML = `<div class="empty-state mono" style="grid-column:1/-1;">No videos found for this category.</div>`; return; }
+    feed.innerHTML = videos.map(v => `
+        <div class="video-card">
+            <div class="video-thumb" id="vthumb-${v.id}">
+                ${v.blobUrl
+                    ? `<video src="${v.blobUrl}" preload="metadata"></video>`
+                    : `<span style="font-size:48px;opacity:0.3;">🎬</span>`}
+                <div class="video-play-overlay">▶️</div>
+            </div>
+            <div class="video-card-body">
+                <span class="video-cat-tag">${v.category}</span>
+                <div class="video-card-title" style="margin-top:8px;">${v.title}</div>
+                <div class="video-card-meta"><span>${v.member}</span><span>${v.date}</span></div>
+                <div class="video-card-desc">${v.desc}</div>
+            </div>
+            <div class="video-review-bar">
+                ${Object.entries(v.reactions).map(([emoji, count]) =>
+                    `<button class="video-reaction" onclick="reactToVideo(${v.id},'${emoji}')">${emoji} ${count}</button>`
+                ).join('')}
+                <input class="video-comment-input" placeholder="Leave a comment..." onkeydown="if(event.key==='Enter'){showToast('💬 Comment posted!');this.value='';}">
+            </div>
+        </div>
+    `).join('');
+}
+
+window.reactToVideo = function(id, emoji) {
+    const v = VIDEO_FEED_MOCK.find(v => v.id === id);
+    if (v) { v.reactions[emoji] = (v.reactions[emoji] || 0) + 1; renderVideoFeed(VIDEO_FEED_MOCK); }
+};
+
+// ── AI Document Assistant ─────────────────────────────────────
+const AI_KNOWLEDGE_BASE = {
+    'sign': (role) => `You currently have ${GTB_DOCS.filter(d => d.status === 'needs-signature').length} documents awaiting your signature:\n${GTB_DOCS.filter(d => d.status === 'needs-signature').map(d => `• ${d.title} (${d.type})`).join('\n')}\n\nClick "View" next to each one on the Documents tab and draw or type your signature to sign.`,
+    'contribution': () => `**GTB Monthly Contribution Rules:**\n• Amount: KES 3,000 per member per month\n• Due date: 5th of each month\n• Late payment penalty: KES 300\n• Payment method: M-Pesa Paybill 522522, Account: GTB-[Your Name]\n• Arrears beyond 2 months trigger a formal compliance review`,
+    'exit': () => `**GTB Exit Clause:**\nA departing member forfeits their investment share for the current quarter. All previously distributed returns are retained. You must provide written notice of exit at least 30 days in advance to The Architect.`,
+    'investment': () => `**GTB Investment Rules:**\n• Minimum lock-in: 60 days\n• Returns distributed quarterly\n• 20% reinvested back into the pool\n• Each member receives 12.5% of net returns\n• Investments require majority member consent before activation`,
+    'nda': () => `**Your NDA Summary:**\nYou are bound by a 3-year confidentiality obligation covering all GTB financials, strategies, member data, and creative works. Violations can result in expulsion from the collective and civil liability.`,
+    'role': (role) => `**Your Role Agreement (${role || 'Member'} Dimension):**\n• Submit KPI report every Friday before 11:59 PM EAT\n• Attend a minimum of 75% of monthly meetings\n• Sign all issued documents within 48 hours\n• Pay monthly contribution by the 5th\n• Deliver Dimension-specific KPIs as agreed with The Architect`,
+    'summary': (role) => `**Your Document Status Summary:**\n${GTB_DOCS.map(d => `• ${d.icon} ${d.title} — ${d.status === 'signed' ? '✅ Signed' : '⚠️ Needs your signature'}`).join('\n')}`,
+    'default': (q) => `I understand you're asking about: "${q}". Based on GTB's documents, all members are bound by the Member Agreement, NDA, and Role SOP. For specific clause interpretations, consult The Architect directly. You can also view any document in the Documents tab and I'll help explain it.`,
+};
+
+function getAIResponse(question, role) {
+    const q = question.toLowerCase();
+    if (q.includes('sign') || q.includes('signature') || q.includes('need to sign')) return AI_KNOWLEDGE_BASE['sign'](role);
+    if (q.includes('contribution') || q.includes('3000') || q.includes('payment') || q.includes('mpesa')) return AI_KNOWLEDGE_BASE['contribution']();
+    if (q.includes('exit') || q.includes('leave') || q.includes('quit')) return AI_KNOWLEDGE_BASE['exit']();
+    if (q.includes('invest')) return AI_KNOWLEDGE_BASE['investment']();
+    if (q.includes('nda') || q.includes('confiden')) return AI_KNOWLEDGE_BASE['nda']();
+    if (q.includes('role') || q.includes('sop') || q.includes('kpi') || q.includes('summary of my role')) return AI_KNOWLEDGE_BASE['role'](role);
+    if (q.includes('summary') || q.includes('status') || q.includes('overview')) return AI_KNOWLEDGE_BASE['summary'](role);
+    return AI_KNOWLEDGE_BASE['default'](question);
+}
+
+function initAIDocAssistant() {
+    const input = document.getElementById('aiChatInput');
+    const sendBtn = document.getElementById('aiChatSend');
+    const messagesEl = document.getElementById('aiChatMessages');
+
+    function sendMessage(text) {
+        if (!text.trim()) return;
+        appendAIMsg(text, 'user');
+        input && (input.value = '');
+
+        // Show typing indicator
+        const typingId = 'typing-' + Date.now();
+        appendAIMsg('...', 'ai', typingId);
+
+        setTimeout(() => {
+            const role = currentMember ? currentMember.title : 'Member';
+            const response = getAIResponse(text, role);
+            // Remove typing
+            document.getElementById(typingId)?.remove();
+            appendAIMsg(response, 'ai');
+        }, 900 + Math.random() * 600);
+    }
+
+    function appendAIMsg(text, sender, id) {
+        if (!messagesEl) return;
+        const div = document.createElement('div');
+        div.className = `ai-msg ${sender}`;
+        if (id) div.id = id;
+        div.innerHTML = `
+            <span class="ai-avatar">${sender === 'ai' ? '🤖' : '👤'}</span>
+            <div class="ai-bubble">${text.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/•/g, '&bull;')}</div>
+        `;
+        messagesEl.appendChild(div);
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    sendBtn?.addEventListener('click', () => sendMessage(input?.value || ''));
+    input?.addEventListener('keydown', (e) => { if (e.key === 'Enter') sendMessage(input.value); });
+
+    // Quick prompts
+    document.querySelectorAll('.ai-prompt-btn').forEach(btn => {
+        btn.addEventListener('click', () => sendMessage(btn.getAttribute('data-q')));
+    });
+}
+
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    if (!t) return;
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3500);
 }
