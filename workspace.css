@@ -243,3 +243,46 @@ body { background: var(--bg); color: var(--text); font-family: 'Syne', sans-seri
 .mkt-revenue .rev-label { font-size: 10px; color: var(--muted); display: block; margin-bottom: 2px; font-family: 'DM Mono', monospace; }
 .mkt-revenue .rev-val { font-size: 20px; font-weight: 800; color: var(--green); }
 .mkt-status-taken { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); border: 1px solid var(--border); padding: 6px 14px; border-radius: 8px; }
+
+/* ── Treasury & Investments ── */
+/* Investment Cards Grid */
+.invest-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+.invest-card { background: var(--bg); border: 1px solid var(--border); border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 14px; transition: all 0.2s; }
+.invest-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+.invest-card-header { display: flex; justify-content: space-between; align-items: center; }
+.invest-card-title { font-weight: 800; font-size: 15px; }
+.invest-tag { font-family: 'DM Mono', monospace; font-size: 10px; padding: 3px 10px; border-radius: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+.invest-tag.active { color: var(--green); border: 1px solid rgba(34,212,122,0.3); background: rgba(34,212,122,0.07); }
+.invest-tag.proposed { color: var(--yellow); border: 1px solid rgba(251,191,36,0.3); background: rgba(251,191,36,0.07); }
+.invest-tag.completed { color: var(--muted); border: 1px solid var(--border); background: transparent; }
+.invest-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+.invest-meta { display: flex; justify-content: space-between; align-items: flex-end; }
+.invest-amount-label { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); display: block; margin-bottom: 3px; }
+.invest-amount { font-size: 20px; font-weight: 800; color: var(--text); }
+.invest-roi { text-align: right; }
+.invest-roi span:first-child { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); display: block; margin-bottom: 3px; }
+.invest-roi strong { font-size: 16px; color: var(--green); }
+
+/* Progress Bar (Fundraisers) */
+.progress-track { height: 6px; background: rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden; margin-top: 8px; }
+.progress-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--accent), var(--green)); transition: width 0.6s ease; }
+.fundraiser-meta { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; }
+.fundraiser-meta span { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); }
+.fundraiser-meta strong { font-size: 12px; color: var(--text); }
+
+/* Contribution Row overrides */
+.contrib-paid { color: var(--green); }
+.contrib-pending { color: var(--yellow); }
+.contrib-late { color: var(--red); }
+
+/* Financial Rules */
+.rules-list { display: flex; flex-direction: column; gap: 20px; }
+.rule-item { display: flex; gap: 24px; align-items: flex-start; border-bottom: 1px solid var(--border); padding-bottom: 20px; }
+.rule-item:last-child { border-bottom: none; padding-bottom: 0; }
+.rule-num { font-family: 'DM Mono', monospace; font-size: 28px; font-weight: 800; color: var(--accent); opacity: 0.5; line-height: 1; min-width: 36px; }
+.rule-item strong { display: block; font-size: 14px; margin-bottom: 6px; }
+.rule-item p { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+/* Toast notification */
+#toast { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 14px 28px; border-radius: 12px; font-size: 13px; font-weight: 600; opacity: 0; transition: all 0.3s; z-index: 9999; pointer-events: none; white-space: nowrap; }
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }

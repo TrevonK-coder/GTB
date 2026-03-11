@@ -67,6 +67,10 @@
                     <span class="label">Roles Marketplace</span>
                     <span class="badge" style="background:var(--green);" id="mktBadge">7</span>
                 </a>
+                <a href="#" class="nav-item" data-target="treasury">
+                    <span class="icon">🏦</span>
+                    <span class="label">Treasury & Invest</span>
+                </a>
             </nav>
 
             <div class="sidebar-footer">
@@ -489,10 +493,134 @@
                     </div>
                 </div>
 
+                <!-- ══ TREASURY & INVESTMENTS ══ -->
+                <div id="view-treasury" class="view">
+
+                    <!-- Stats Banner -->
+                    <div class="welcome-banner" style="background: linear-gradient(135deg, rgba(251,191,36,0.1) 0%, rgba(34,212,122,0.05) 100%);">
+                        <div class="wb-content">
+                            <h3>🏦 GTB <span class="accent">Treasury</span></h3>
+                            <p>Monthly contributions, fundraisers, event planning, and collective investment strategies.</p>
+                        </div>
+                        <div class="wb-stats">
+                            <div class="stat-box" style="border-color:rgba(34,212,122,0.3);">
+                                <div class="stat-label mono">Treasury Balance</div>
+                                <div class="stat-value" style="color:var(--green)" id="treasuryBalance">KES 0</div>
+                            </div>
+                            <div class="stat-box" style="border-color:rgba(251,191,36,0.2);">
+                                <div class="stat-label mono">Members Paid</div>
+                                <div class="stat-value" style="color:var(--yellow)" id="membersPaidCount">0/8</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-label mono">Invested (Total)</div>
+                                <div class="stat-value accent" id="totalInvested">KES 0</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid-2">
+
+                        <!-- MONTHLY CONTRIBUTION TRACKER -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>💳 Monthly Contributions (3,000 KES)</h3>
+                                <span class="mono" style="font-size:11px;color:var(--muted);" id="contribMonth"></span>
+                            </div>
+                            <div class="card-body">
+                                <div class="doc-list" id="contributionList">
+                                    <!-- Injected by JS -->
+                                </div>
+                                <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+                                    <span class="mono" style="font-size:12px;color:var(--muted);">My contribution status:</span>
+                                    <button class="btn btn-primary btn-sm" id="payContribBtn">💸 Pay 3,000 KES</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- FUNDRAISERS -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>🎉 Fundraisers & Events</h3>
+                                <button class="btn btn-ghost btn-sm" id="newFundraiserBtn">+ New</button>
+                            </div>
+                            <div class="card-body">
+                                <div class="doc-list" id="fundraiserList">
+                                    <!-- Injected by JS -->
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- INVESTMENT STRATEGIES -->
+                    <div class="card" style="margin-top:24px;">
+                        <div class="card-header">
+                            <h3>📈 Investment Strategies & Plans</h3>
+                            <button class="btn btn-ghost btn-sm" id="proposeInvestBtn">+ Propose</button>
+                        </div>
+                        <div class="card-body">
+                            <div class="invest-grid" id="investGrid">
+                                <!-- Injected by JS -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MONEY RETENTION RULES -->
+                    <div class="card" style="margin-top:24px;">
+                        <div class="card-header">
+                            <h3>🛡️ Financial Rules & Agreements</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="rules-list">
+                                <div class="rule-item"><span class="rule-num">01</span><div><strong>Monthly Contribution</strong><p>Every member contributes KES 3,000 by the 5th of each month. Late payments incur a KES 300 penalty.</p></div></div>
+                                <div class="rule-item"><span class="rule-num">02</span><div><strong>Investment Lock-In</strong><p>All collective investments require a minimum 60-day lock-in period before withdrawal discussions.</p></div></div>
+                                <div class="rule-item"><span class="rule-num">03</span><div><strong>Event Reserve</strong><p>15% of the treasury balance is reserved for events and emergencies. Not accessible for investments.</p></div></div>
+                                <div class="rule-item"><span class="rule-num">04</span><div><strong>Profit Sharing</strong><p>Investment returns are distributed equally (12.5% per member) quarterly, after reinvesting 20% back into the pool.</p></div></div>
+                                <div class="rule-item"><span class="rule-num">05</span><div><strong>Exit Clause</strong><p>A departing member forfeits their investment share for the current quarter. Past returns are retained.</p></div></div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Fundraiser / Invest Modals -->
+                <div id="fundraiserModal" class="modal hidden">
+                    <div class="modal-content">
+                        <h3>New Fundraiser</h3>
+                        <div class="styled-form">
+                            <div class="field"><label>FUNDRAISER NAME</label><input type="text" id="frName" placeholder="e.g. GTB Pop-Up Event 2026"></div>
+                            <div class="field"><label>TARGET AMOUNT (KES)</label><input type="number" id="frTarget" placeholder="e.g. 50000"></div>
+                            <div class="field"><label>DEADLINE</label><input type="date" id="frDeadline"></div>
+                            <div class="field"><label>DESCRIPTION</label><textarea id="frDesc" rows="2" placeholder="What will this fund be used for?"></textarea></div>
+                        </div>
+                        <div class="modal-actions">
+                            <button class="btn btn-ghost" onclick="document.getElementById('fundraiserModal').classList.add('hidden')">Cancel</button>
+                            <button class="btn btn-primary" id="saveFundraiserBtn">Create Fundraiser</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="investModal" class="modal hidden">
+                    <div class="modal-content">
+                        <h3>Propose Investment</h3>
+                        <div class="styled-form">
+                            <div class="field"><label>INVESTMENT NAME</label><input type="text" id="invName" placeholder="e.g. Treasury Bill T-Bills 91-day"></div>
+                            <div class="field"><label>AMOUNT TO INVEST (KES)</label><input type="number" id="invAmount" placeholder="e.g. 20000"></div>
+                            <div class="field"><label>EXPECTED ROI</label><input type="text" id="invROI" placeholder="e.g. 12% per annum"></div>
+                            <div class="field"><label>STRATEGY / RATIONALE</label><textarea id="invRationale" rows="2" placeholder="Why is this a good investment for GTB?"></textarea></div>
+                        </div>
+                        <div class="modal-actions">
+                            <button class="btn btn-ghost" onclick="document.getElementById('investModal').classList.add('hidden')">Cancel</button>
+                            <button class="btn btn-primary" id="saveInvestBtn">Submit Proposal</button>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </main>
     </div>
 
+    <div id="toast"></div>
     <script src="workspace.js"></script>
 </body>
 </html>

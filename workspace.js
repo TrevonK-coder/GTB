@@ -36,6 +36,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         loadDocsMock();
         loadLeadershipView();
         loadMarketplace();
+        loadTreasury();
 
         // Architect-only: show Command Center
         if (currentMember.role === 'architect') {
@@ -671,3 +672,187 @@ window.openApplyModal = function(id, title) {
     document.getElementById('applyModal').classList.remove('hidden');
     document.getElementById('applyReason').focus();
 };
+
+// ════════════════════════════════════
+// TREASURY & INVESTMENTS
+// ════════════════════════════════════
+function loadTreasury() {
+    const CONTRIB_AMOUNT = 3000;
+    const now = new Date();
+    const monthLabel = now.toLocaleString('default', { month: 'long', year: 'numeric' });
+
+    // Set month label
+    const monthEl = document.getElementById('contribMonth');
+    if (monthEl) monthEl.textContent = monthLabel;
+
+    // ── Member Contribution Status ──
+    const members = [
+        { name: 'The Architect', em: '🏗️', status: 'paid' },
+        { name: 'The Performer', em: '🎭', status: 'paid' },
+        { name: 'The Visionary', em: '🎬', status: 'pending' },
+        { name: 'The Specialist', em: '💊', status: 'paid' },
+        { name: 'The Gastronomist', em: '🍽️', status: 'late' },
+        { name: 'The Polymath', em: '🎙️', status: 'pending' },
+        { name: 'The Artist', em: '🎵', status: 'paid' },
+        { name: 'The Engineer', em: '⚙️', status: 'paid' },
+    ];
+
+    const paidCount = members.filter(m => m.status === 'paid').length;
+    const treasuryRaw = paidCount * CONTRIB_AMOUNT;
+
+    // Update banner stats
+    const balEl = document.getElementById('treasuryBalance');
+    const paidEl = document.getElementById('membersPaidCount');
+    const invEl = document.getElementById('totalInvested');
+    if (balEl) balEl.textContent = `KES ${treasuryRaw.toLocaleString()}`;
+    if (paidEl) paidEl.textContent = `${paidCount}/8`;
+    if (invEl) invEl.textContent = 'KES 20,000';
+
+    // Render contribution list
+    const list = document.getElementById('contributionList');
+    if (list) {
+        list.innerHTML = members.map(m => {
+            const statusMap = { paid: { label: 'PAID', cls: 'contrib-paid' }, pending: { label: 'PENDING', cls: 'contrib-pending' }, late: { label: 'LATE', cls: 'contrib-late' } };
+            const s = statusMap[m.status];
+            return `<div class="doc-item">
+                <div class="doc-info">
+                    <span style="font-size:20px;min-width:28px;">${m.em}</span>
+                    <div class="doc-meta">
+                        <span class="doc-title">${m.name}</span>
+                        <span class="doc-date">KES 3,000 &bull; ${monthLabel}</span>
+                    </div>
+                </div>
+                <span class="${s.cls}" style="font-family:'DM Mono',monospace;font-size:11px;font-weight:800;">${s.label}</span>
+            </div>`;
+        }).join('');
+    }
+
+    // Pay button (marks current member as paid)
+    const payBtn = document.getElementById('payContribBtn');
+    if (payBtn) {
+        const myMember = currentMember ? members.find(m => m.name === currentMember.title) : null;
+        if (myMember && myMember.status === 'paid') {
+            payBtn.textContent = '✓ Contributed This Month';
+            payBtn.disabled = true;
+            payBtn.style.opacity = '0.5';
+        }
+        payBtn.addEventListener('click', () => {
+            if (myMember) myMember.status = 'paid';
+            loadTreasury();
+            const t = document.getElementById('toast');
+            if (t) { t.textContent = '✓ KES 3,000 contribution recorded! Thank you.'; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3500); }
+        });
+    }
+
+    // ── Fundraisers ──
+    let fundraisers = [
+        { name: 'GTB Annual Meetup 2026', target: 50000, raised: 18000, deadline: '2026-06-01', desc: 'Venue, catering & production for our first in-person collective event.' },
+        { name: 'Equipment Upgrade Fund', target: 30000, raised: 30000, deadline: '2026-03-31', desc: 'Camera, audio, and lighting upgrades for The Visionary & The Artist.' },
+        { name: 'Marketing Campaign Q2', target: 25000, raised: 4500, deadline: '2026-04-30', desc: 'Paid ads and influencer campaigns for GTB merch launch.' },
+    ];
+
+    function renderFundraisers() {
+        const fr = document.getElementById('fundraiserList');
+        if (!fr) return;
+        fr.innerHTML = fundraisers.map((f, i) => {
+            const pct = Math.min(100, Math.round((f.raised / f.target) * 100));
+            const done = pct >= 100;
+            return `<div class="doc-item" style="flex-direction:column;align-items:stretch;gap:10px;">
+                <div style="display:flex;align-items:center;gap:14px;">
+                    <span style="font-size:22px;">${done ? '✅' : '🎉'}</span>
+                    <div style="flex:1;">
+                        <span class="doc-title">${f.name}</span>
+                        <span class="doc-date">Deadline: ${f.deadline} &bull; ${f.desc}</span>
+                    </div>
+                    <button class="btn btn-ghost btn-sm" onclick="contributeToFundraiser(${i})">+ Contribute</button>
+                </div>
+                <div>
+                    <div class="progress-track"><div class="progress-fill" style="width:${pct}%;"></div></div>
+                    <div class="fundraiser-meta">
+                        <span>KES ${f.raised.toLocaleString()} raised</span>
+                        <strong>KES ${f.target.toLocaleString()} goal &bull; ${pct}%</strong>
+                    </div>
+                </div>
+            </div>`;
+        }).join('');
+    }
+    renderFundraisers();
+
+    window.contributeToFundraiser = function(i) {
+        const amount = parseInt(prompt('Enter your contribution amount (KES):'));
+        if (!amount || isNaN(amount) || amount <= 0) return;
+        fundraisers[i].raised = Math.min(fundraisers[i].target, fundraisers[i].raised + amount);
+        renderFundraisers();
+        const t = document.getElementById('toast');
+        if (t) { t.textContent = `✓ KES ${amount.toLocaleString()} added to "${fundraisers[i].name}"!`; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3500); }
+    };
+
+    document.getElementById('newFundraiserBtn').addEventListener('click', () => {
+        document.getElementById('fundraiserModal').classList.remove('hidden');
+    });
+    document.getElementById('saveFundraiserBtn').addEventListener('click', () => {
+        const name = document.getElementById('frName').value.trim();
+        const target = parseInt(document.getElementById('frTarget').value);
+        const deadline = document.getElementById('frDeadline').value;
+        const desc = document.getElementById('frDesc').value.trim();
+        if (!name || !target || !deadline) { alert('Please fill in all required fields.'); return; }
+        fundraisers.unshift({ name, target, raised: 0, deadline, desc });
+        renderFundraisers();
+        document.getElementById('fundraiserModal').classList.add('hidden');
+        ['frName','frTarget','frDeadline','frDesc'].forEach(id => document.getElementById(id).value = '');
+        const t = document.getElementById('toast');
+        if (t) { t.textContent = `✓ Fundraiser "${name}" created!`; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3500); }
+    });
+
+    // ── Investment Strategies ──
+    let investments = [
+        { title: 'Kenya Treasury Bills (91-Day)', tag: 'active', desc: 'Low-risk government-backed instrument. Rolling 91-day reinvestment for steady liquidity.', amount: 20000, roi: '14.5% p.a.' },
+        { title: 'Money Market Fund (Sanlam)', tag: 'active', desc: 'Liquid savings vehicle with daily interest. Flexibility for emergency withdrawals after 60 days.', amount: 15000, roi: '11% p.a.' },
+        { title: 'GTB Merch Pre-Production', tag: 'proposed', desc: 'Invest in bulk inventory production for the next GTB merch drop. Expected 60% margin.', amount: 30000, roi: '40-60% per drop' },
+        { title: 'Content Studio Equipment', tag: 'proposed', desc: 'Capital equipment investment: mirrorless camera + lens kit for content monetisation.', amount: 45000, roi: 'Long-term revenue' },
+        { title: 'Crypto Blue-Chips (BTC/ETH)', tag: 'proposed', desc: 'Hold 10% of treasury in BTC and ETH for mid-term growth. High risk, high reward.', amount: 5000, roi: 'Variable' },
+        { title: 'Chama SACCO Deposit', tag: 'completed', desc: 'Q4 2025 SACCO contribution fully disbursed. Returns distributed to members in January 2026.', amount: 24000, roi: '9% (Paid)' },
+    ];
+
+    function renderInvestments() {
+        const grid = document.getElementById('investGrid');
+        if (!grid) return;
+        grid.innerHTML = investments.map((inv, i) => `
+            <div class="invest-card">
+                <div class="invest-card-header">
+                    <span class="invest-card-title">${inv.title}</span>
+                    <span class="invest-tag ${inv.tag}">${inv.tag}</span>
+                </div>
+                <p class="invest-desc">${inv.desc}</p>
+                <div class="invest-meta">
+                    <div>
+                        <span class="invest-amount-label">Capital Allocated</span>
+                        <span class="invest-amount">KES ${inv.amount.toLocaleString()}</span>
+                    </div>
+                    <div class="invest-roi">
+                        <span>Expected ROI</span>
+                        <strong>${inv.roi}</strong>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+    renderInvestments();
+
+    document.getElementById('proposeInvestBtn').addEventListener('click', () => {
+        document.getElementById('investModal').classList.remove('hidden');
+    });
+    document.getElementById('saveInvestBtn').addEventListener('click', () => {
+        const name = document.getElementById('invName').value.trim();
+        const amount = parseInt(document.getElementById('invAmount').value);
+        const roi = document.getElementById('invROI').value.trim();
+        const rat = document.getElementById('invRationale').value.trim();
+        if (!name || !amount || !roi) { alert('Please fill all required fields.'); return; }
+        investments.unshift({ title: name, tag: 'proposed', desc: rat || 'No rationale provided.', amount, roi });
+        renderInvestments();
+        document.getElementById('investModal').classList.add('hidden');
+        ['invName','invAmount','invROI','invRationale'].forEach(id => document.getElementById(id).value = '');
+        const t = document.getElementById('toast');
+        if (t) { t.textContent = `✓ Investment proposal "${name}" submitted for review.`; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3500); }
+    });
+}
