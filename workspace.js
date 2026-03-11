@@ -37,6 +37,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         loadLeadershipView();
         loadMarketplace();
         loadTreasury();
+        loadWorkspace();
+        initAssistant();
 
         // Architect-only: show Command Center
         if (currentMember.role === 'architect') {
@@ -854,5 +856,309 @@ function loadTreasury() {
         ['invName','invAmount','invROI','invRationale'].forEach(id => document.getElementById(id).value = '');
         const t = document.getElementById('toast');
         if (t) { t.textContent = `✓ Investment proposal "${name}" submitted for review.`; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3500); }
+    });
+}
+
+// ════════════════════════════════════
+// ROLE WORKSPACE PANEL
+// ════════════════════════════════════
+const ROLE_WORKSPACE_DATA = {
+    architect: {
+        tasks: [
+            { text: 'Review pending member requests in Command Center', due: 'Today', urgent: true },
+            { text: 'Verify cloud deployment pipeline is green', due: 'Today', urgent: false },
+            { text: 'Sign Q4 Partner Agreement', due: 'Mar 15', urgent: true },
+            { text: 'Approve Q2 investment proposals', due: 'Mar 20', urgent: false },
+            { text: 'Update system outage protocol', due: 'Mar 31', urgent: false },
+        ],
+        files: [
+            { name: 'GTB System Architecture', type: 'PDF', icon: '📄' },
+            { name: 'Server Access Credentials', type: 'Encrypted Doc', icon: '🔐' },
+            { name: 'Cloud Cost Report Q1', type: 'Sheet', icon: '📊' },
+        ],
+    },
+    performer: {
+        tasks: [
+            { text: 'Post 3 short-form reels this week', due: 'Fri', urgent: false },
+            { text: 'Film the GTB behind-the-scenes vlog', due: 'Mar 14', urgent: true },
+            { text: 'Submit expense claim for Adobe CC', due: 'Mar 15', urgent: true },
+            { text: 'Engage with 50 targeted accounts', due: 'Daily', urgent: false },
+        ],
+        files: [
+            { name: 'Content Calendar Q1', type: 'Sheet', icon: '📅' },
+            { name: 'Brand Guidelines', type: 'PDF', icon: '🎨' },
+            { name: 'Script Template', type: 'Doc', icon: '📝' },
+        ],
+    },
+    visionary: {
+        tasks: [
+            { text: 'Edit and export Episode 3 footage', due: 'Mar 14', urgent: true },
+            { text: 'Submit leave application for Mar 15-17', due: 'Today', urgent: true },
+            { text: 'Grade color for GTB launch teaser', due: 'Mar 18', urgent: false },
+            { text: 'Upload raw footage to shared drive', due: 'Mar 13', urgent: false },
+        ],
+        files: [
+            { name: 'GTB Brand Moodboard', type: 'Image', icon: '🖼️' },
+            { name: 'Shoot Schedule', type: 'Sheet', icon: '📊' },
+            { name: 'Episode 3 Brief', type: 'Doc', icon: '📝' },
+        ],
+    },
+    specialist: {
+        tasks: [
+            { text: 'Submit medical conference reimbursement', due: 'Today', urgent: true },
+            { text: 'Publish weekly health tip for GTB feed', due: 'Wed', urgent: false },
+            { text: 'Complete hydration tracker review', due: 'Fri', urgent: false },
+            { text: 'Prepare wellness protocol document', due: 'Mar 20', urgent: false },
+        ],
+        files: [
+            { name: 'Health Protocol SOP', type: 'PDF', icon: '📚' },
+            { name: 'Member Wellness Data', type: 'Sheet', icon: '📊' },
+            { name: 'GTB Diet Plan Template', type: 'Doc', icon: '🍎' },
+        ],
+    },
+    gastronomist: {
+        tasks: [
+            { text: 'Submit leave request for catering event', due: 'Today', urgent: true },
+            { text: 'Pay monthly contribution (KES 3,000)', due: 'Mar 5', urgent: true },
+            { text: 'Plan menu for GTB Annual Meetup', due: 'Apr 01', urgent: false },
+        ],
+        files: [
+            { name: 'Event Catering Brief', type: 'Doc', icon: '🍽️' },
+            { name: 'GTB Nutrition Guide', type: 'PDF', icon: '🍏' },
+            { name: 'Budget Sheet Q2', type: 'Sheet', icon: '📊' },
+        ],
+    },
+    polymath: {
+        tasks: [
+            { text: 'Pay monthly contribution (KES 3,000)', due: 'Mar 5', urgent: true },
+            { text: 'Draft press release for Q2 launch', due: 'Mar 16', urgent: false },
+            { text: 'Record 2 podcast segments this week', due: 'Fri', urgent: false },
+        ],
+        files: [
+            { name: 'Press Kit 2026', type: 'PDF', icon: '📄' },
+            { name: 'Episode Script Archive', type: 'Doc', icon: '🎙️' },
+            { name: 'GTB Style Guide', type: 'PDF', icon: '🎨' },
+        ],
+    },
+    artist: {
+        tasks: [
+            { text: 'Produce 2 beats for GTB intro library', due: 'Mar 18', urgent: false },
+            { text: 'Submit monthly contribution (KES 3,000)', due: 'Mar 5', urgent: false },
+            { text: 'Create GTB sonic identity document', due: 'Mar 30', urgent: false },
+        ],
+        files: [
+            { name: 'GTB Sound Library', type: 'Folder', icon: '🎵' },
+            { name: 'Branding Brief', type: 'PDF', icon: '🎨' },
+            { name: 'Licensing Template', type: 'Doc', icon: '📝' },
+        ],
+    },
+    engineer: {
+        tasks: [
+            { text: 'Deploy latest build to staging server', due: 'Today', urgent: true },
+            { text: 'Review CI/CD pipeline configuration', due: 'Mar 14', urgent: false },
+            { text: 'Fix broken API endpoint on portal', due: 'Today', urgent: true },
+            { text: 'Submit contribution (KES 3,000)', due: 'Mar 5', urgent: false },
+        ],
+        files: [
+            { name: 'GTB API Docs', type: 'Doc', icon: '⚙️' },
+            { name: 'Deployment Checklist', type: 'PDF', icon: '📄' },
+            { name: 'Environment Variables', type: 'Encrypted', icon: '🔐' },
+        ],
+    }
+};
+
+const GLOBAL_REMINDERS = [
+    { text: 'KES 3,000 contribution due by the 5th', type: 'critical', icon: '💳' },
+    { text: 'Weekly KPI report must be submitted by Friday', type: 'warning', icon: '📊' },
+    { text: 'All documents pending signature need urgent attention', type: 'critical', icon: '✍️' },
+    { text: 'New open roles available in the Marketplace', type: 'info', icon: '🛒' },
+    { text: 'Fundraiser: GTB Annual Meetup — 64% goal remaining', type: 'warning', icon: '🎉' },
+];
+
+function loadWorkspace() {
+    const role = currentMember ? currentMember.role : null;
+    const data = ROLE_WORKSPACE_DATA[role] || ROLE_WORKSPACE_DATA['architect'];
+    const labelEl = document.getElementById('workspaceRoleLabel');
+    if (labelEl && currentMember) {
+        labelEl.textContent = `${currentMember.title.toUpperCase()} — ${currentMember.role.toUpperCase()} DIMENSION`;
+    }
+
+    // Tasks
+    const taskList = document.getElementById('wsTaskList');
+    if (taskList && data.tasks) {
+        taskList.innerHTML = data.tasks.map((t, i) => `
+            <li class="ws-task" id="wst-${i}">
+                <input type="checkbox" id="wstck-${i}" onchange="toggleWsTask(${i})">
+                <div class="task-meta">
+                    <span>${t.text}</span>
+                    <span class="task-due ${t.urgent ? 'urgent' : ''}">Due: ${t.due}${t.urgent ? ' 🔴' : ''}</span>
+                </div>
+            </li>
+        `).join('');
+    }
+
+    window.toggleWsTask = function(i) {
+        const li = document.getElementById(`wst-${i}`);
+        if (li) li.classList.toggle('done');
+    };
+
+    // Pin file button (quick demo)
+    document.getElementById('addTaskBtn').addEventListener('click', () => {
+        const name = prompt('Enter new task:');
+        if (!name) return;
+        const li = document.createElement('li');
+        li.className = 'ws-task';
+        li.innerHTML = `<input type="checkbox"><div class="task-meta"><span>${name}</span><span class="task-due">Due: TBD</span></div>`;
+        taskList.prepend(li);
+    });
+
+    // Files
+    const fileList = document.getElementById('wsFileList');
+    if (fileList && data.files) {
+        fileList.innerHTML = data.files.map(f => `
+            <div class="ws-file-item">
+                <span class="fi-icon">${f.icon}</span>
+                <div class="ws-file-meta">
+                    <span class="ws-file-name">${f.name}</span>
+                    <span class="ws-file-type">${f.type}</span>
+                </div>
+                <span style="font-size:12px;color:var(--muted);">Open →</span>
+            </div>
+        `).join('');
+    }
+
+    document.getElementById('addFileBtn').addEventListener('click', () => {
+        const name = prompt('Pin file name:');
+        if (!name) return;
+        const div = document.createElement('div');
+        div.className = 'ws-file-item';
+        div.innerHTML = `<span class="fi-icon">📎</span><div class="ws-file-meta"><span class="ws-file-name">${name}</span><span class="ws-file-type">Pinned</span></div>`;
+        fileList.prepend(div);
+    });
+
+    // Reminders
+    const remList = document.getElementById('wsReminderList');
+    if (remList) {
+        remList.innerHTML = GLOBAL_REMINDERS.map(r => `
+            <div class="ws-reminder ${r.type}">
+                <span class="rem-icon">${r.icon}</span>
+                <span>${r.text}</span>
+            </div>
+        `).join('');
+    }
+}
+
+// ════════════════════════════════════
+// GTB ASSISTANT (8-HOUR REMINDER)
+// ════════════════════════════════════
+function initAssistant() {
+    const INTERVAL_MS = 8 * 60 * 60 * 1000; // 8 hours
+    const LS_KEY = 'gtb_assistant_last_shown';
+    const overlay = document.getElementById('gtbAssistant');
+    const fab = document.getElementById('assistantFab');
+    const fabNotif = document.getElementById('fabNotif');
+
+    function getUrgentTasks() {
+        const role = currentMember ? currentMember.role : 'architect';
+        const data = ROLE_WORKSPACE_DATA[role] || ROLE_WORKSPACE_DATA['architect'];
+        const urgent = (data.tasks || []).filter(t => t.urgent);
+        return urgent;
+    }
+
+    function buildAssistantContent() {
+        const hour = new Date().getHours();
+        let greeting;
+        if (hour < 12) greeting = 'Good morning';
+        else if (hour < 17) greeting = 'Good afternoon';
+        else greeting = 'Good evening';
+
+        const name = currentMember ? currentMember.title : 'Member';
+        const greetEl = document.getElementById('assistantGreeting');
+        const timeEl = document.getElementById('assistantTime');
+        if (greetEl) greetEl.textContent = `${greeting}, ${name}. Here are your open action items that require attention right now:`;
+        if (timeEl) timeEl.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute:'2-digit' });
+
+        const urgentTasks = getUrgentTasks();
+        const allReminders = [
+            ...urgentTasks.map(t => ({ icon: '🔴', text: t.text, sub: `Due: ${t.due}`, level: 'critical' })),
+            { icon: '💳', text: 'Monthly KES 3,000 contribution', sub: 'Due: 5th of every month — check your status', level: 'warning' },
+            { icon: '✍️', text: 'Unsigned documents awaiting you', sub: 'Navigate to Documents → Sign Now', level: 'warning' },
+            { icon: '📊', text: 'Submit weekly KPI report', sub: 'Required by all dimensions every Friday', level: 'normal' },
+        ];
+
+        const tasksEl = document.getElementById('assistantTasks');
+        if (tasksEl) {
+            tasksEl.innerHTML = allReminders.map(r => `
+                <div class="assist-task ${r.level}">
+                    <span class="at-icon">${r.icon}</span>
+                    <div class="at-body">
+                        <strong>${r.text}</strong>
+                        <span>${r.sub}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+    }
+
+    function showAssistant() {
+        buildAssistantContent();
+        overlay.classList.remove('hidden');
+        fabNotif.classList.remove('show');
+        localStorage.setItem(LS_KEY, Date.now().toString());
+    }
+
+    function hideAssistant() {
+        overlay.classList.add('hidden');
+    }
+
+    function shouldShow() {
+        const last = parseInt(localStorage.getItem(LS_KEY) || '0');
+        return Date.now() - last >= INTERVAL_MS;
+    }
+
+    // Check on load — show after 3s if 8hr elapsed
+    setTimeout(() => {
+        if (shouldShow()) {
+            showAssistant();
+        } else {
+            // Show FAB notification dot
+            fabNotif.classList.add('show');
+        }
+    }, 3000);
+
+    // Periodic interval check
+    setInterval(() => {
+        if (shouldShow()) {
+            fabNotif.classList.add('show');
+            showAssistant();
+        }
+    }, 60 * 1000); // check every minute
+
+    // FAB click
+    fab.addEventListener('click', () => {
+        if (overlay.classList.contains('hidden')) {
+            showAssistant();
+        } else {
+            hideAssistant();
+        }
+    });
+
+    // Close button
+    document.getElementById('assistantClose').addEventListener('click', hideAssistant);
+
+    // Dismiss
+    document.getElementById('assistantDismiss').addEventListener('click', () => {
+        hideAssistant();
+        const t = document.getElementById('toast');
+        if (t) { t.textContent = '✓ Great! Your next check-in is in 8 hours.'; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); }
+    });
+
+    // Snooze 2 hours
+    document.getElementById('assistantSnooze').addEventListener('click', () => {
+        hideAssistant();
+        const snoozeTime = Date.now() - INTERVAL_MS + (2 * 60 * 60 * 1000);
+        localStorage.setItem(LS_KEY, snoozeTime.toString());
+        const t = document.getElementById('toast');
+        if (t) { t.textContent = '⏰ Snoozed 2 hours. I\'ll remind you again soon.'; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); }
     });
 }

@@ -166,6 +166,46 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- ROLE WORKSPACE PANEL -->
+                    <div class="card" style="margin-top:24px;" id="workspacePanel">
+                        <div class="card-header">
+                            <div>
+                                <h3>🗂️ My Workspace</h3>
+                                <span class="mono" style="font-size:11px;color:var(--muted);" id="workspaceRoleLabel">Loading your role tasks...</span>
+                            </div>
+                            <div style="display:flex;gap:10px;">
+                                <button class="btn btn-ghost btn-sm" id="addTaskBtn">+ Task</button>
+                                <button class="btn btn-ghost btn-sm" id="addFileBtn">📎 Pin File</button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="workspace-split">
+                                <!-- Tasks Column -->
+                                <div class="ws-col">
+                                    <div class="ws-col-title mono">ROLE TASKS</div>
+                                    <ul class="ws-task-list" id="wsTaskList">
+                                        <!-- Injected by JS -->
+                                    </ul>
+                                </div>
+                                <!-- Files Column -->
+                                <div class="ws-col">
+                                    <div class="ws-col-title mono">PINNED FILES & RESOURCES</div>
+                                    <div class="ws-file-list" id="wsFileList">
+                                        <!-- Injected by JS -->
+                                    </div>
+                                </div>
+                                <!-- Reminders Column -->
+                                <div class="ws-col">
+                                    <div class="ws-col-title mono">⏰ UPCOMING REMINDERS</div>
+                                    <div class="ws-reminder-list" id="wsReminderList">
+                                        <!-- Injected by JS -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
 
                 <!-- CHAT VIEW -->
@@ -619,6 +659,39 @@
             </div>
         </main>
     </div>
+
+    <!-- GTB ASSISTANT OVERLAY -->
+    <div id="gtbAssistant" class="assistant-overlay hidden">
+        <div class="assistant-card">
+            <div class="assistant-header">
+                <div class="assistant-avatar">
+                    <div class="av-ring"></div>
+                    <span class="av-emoji">🤖</span>
+                </div>
+                <div class="assistant-title">
+                    <strong>GTB Assistant</strong>
+                    <span class="mono" id="assistantTime"></span>
+                </div>
+                <button class="assist-close" id="assistantClose">✕</button>
+            </div>
+            <div class="assistant-body">
+                <p class="assistant-greeting" id="assistantGreeting"></p>
+                <div class="assistant-tasks" id="assistantTasks">
+                    <!-- Injected by JS -->
+                </div>
+            </div>
+            <div class="assistant-footer">
+                <button class="btn btn-ghost btn-sm" id="assistantSnooze">⏰ Snooze 2hrs</button>
+                <button class="btn btn-primary btn-sm" id="assistantDismiss">Got it, working on it →</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating trigger button -->
+    <button class="assistant-fab" id="assistantFab" title="GTB Assistant">
+        <span>🤖</span>
+        <span class="fab-notif" id="fabNotif"></span>
+    </button>
 
     <div id="toast"></div>
     <script src="workspace.js"></script>
