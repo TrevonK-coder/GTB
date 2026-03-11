@@ -35,6 +35,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         loadChatMock();
         loadDocsMock();
         loadLeadershipView();
+
+        // Architect-only: show Command Center
+        if (currentMember.role === 'architect') {
+            const cmdNav = document.getElementById('commandNavItem');
+            if (cmdNav) cmdNav.style.display = 'flex';
+            loadCommandCenter();
+        }
     } else {
         document.getElementById('userName').textContent = "Unknown User";
     }
@@ -368,5 +375,123 @@ function loadLeadershipView() {
                 </div>
             </div>
         `;
+    }
+}
+
+// ════════════════════════════════════
+// ARCHITECT COMMAND CENTER
+// ════════════════════════════════════
+function loadCommandCenter() {
+    const mockRequests = [
+        { id: 'r1', member: 'The Performer', type: 'Expense', detail: 'Adobe Creative Cloud subscription — $55/mo', status: 'pending' },
+        { id: 'r2', member: 'The Gastronomist', type: 'Leave', detail: '3-day leave: Mar 15–17 for catering event', status: 'pending' },
+        { id: 'r3', member: 'The Visionary', type: 'Resource', detail: 'RODE Wireless GO II microphone — $299', status: 'pending' },
+        { id: 'r4', member: 'The Specialist', type: 'Expense', detail: 'Medical conference registration — $120', status: 'pending' },
+    ];
+
+    const queue = document.getElementById('requestQueue');
+    if (!queue) return;
+
+    function renderQueue(requests) {
+        const pending = requests.filter(r => r.status === 'pending');
+        const decided = requests.filter(r => r.status !== 'pending');
+        const badge = document.getElementById('commandBadge');
+        const countEl = document.getElementById('cmdPendingCount');
+        if (badge) badge.textContent = pending.length;
+        if (countEl) countEl.textContent = pending.length;
+
+        const all = [...pending, ...decided];
+        queue.innerHTML = all.map(r => {
+            const isPending = r.status === 'pending';
+            const sColor = r.status === 'approved' ? 'var(--green)' : r.status === 'declined' ? 'var(--red)' : 'var(--yellow)';
+            const icon = r.type === 'Expense' ? '💳' : r.type === 'Leave' ? '📅' : '📦';
+            return `<li class="action-item" style="flex-direction:column;align-items:flex-start;gap:12px;">
+                <div style="display:flex;align-items:center;gap:12px;width:100%;">
+                    <div class="ai-icon">${icon}</div>
+                    <div class="ai-text" style="flex:1;">
+                        <strong>${r.member}</strong>
+                        <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);text-transform:uppercase;margin:0 8px;">${r.type}</span>
+                        <span>${r.detail}</span>
+                    </div>
+                    <span style="font-family:'DM Mono',monospace;font-size:10px;color:${sColor};border:1px solid ${sColor};padding:3px 10px;border-radius:8px;opacity:0.85;">${r.status.toUpperCase()}</span>
+                </div>
+                ${isPending ? `<div style="display:flex;gap:10px;align-self:flex-end;">
+                    <button class="btn btn-sm" style="border-color:var(--green);color:var(--green);background:rgba(34,212,122,0.07);" onclick="decideRequest('${r.id}','approved')">✓ Approve</button>
+                    <button class="btn btn-sm" style="border-color:var(--red);color:var(--red);background:rgba(255,92,92,0.07);" onclick="decideRequest('${r.id}','declined')">✕ Decline</button>
+                </div>` : ''}
+            </li>`;
+        }).join('');
+    }
+
+    renderQueue(mockRequests);
+
+    window.decideRequest = function(id, decision) {
+        const req = mockRequests.find(r => r.id === id);
+        if (!req) return;
+        req.status = decision;
+        renderQueue(mockRequests);
+        const t = document.getElementById('toast');
+        if (t) {
+            t.textContent = `✓ Request from ${req.member} ${decision}.`;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
+        }
+    };
+
+    // Team Data Snapshot
+    const teamPanel = document.getElementById('teamDataPanel');
+    if (teamPanel) {
+        const members = [
+            {em:'🏗️', name:'The Architect'}, {em:'🎭', name:'The Performer'}, {em:'🎬', name:'The Visionary'},
+            {em:'💊', name:'The Specialist'}, {em:'🍽️', name:'The Gastronomist'}, {em:'🎙️', name:'The Polymath'},
+            {em:'🎵', name:'The Artist'}, {em:'⚙️', name:'The Engineer'}
+        ];
+        teamPanel.innerHTML = `<div class="doc-list">${members.map((m, i) => {
+            const submitted = i % 2 === 0;
+            const color = submitted ? 'var(--green)' : 'var(--yellow)';
+            const border = submitted ? 'rgba(34,212,122,0.3)' : 'rgba(251,191,36,0.3)';
+            return `<div class="doc-item">
+                <div class="doc-info">
+                    <span style="font-size:20px;min-width:28px;">${m.em}</span>
+                    <div class="doc-meta">
+                        <span class="doc-title">${m.name}</span>
+                        <span class="doc-date">KPI submitted: ${submitted ? 'Today' : 'Pending'}</span>
+                    </div>
+                </div>
+                <span style="font-family:'DM Mono',monospace;font-size:10px;color:${color};border:1px solid ${border};padding:3px 10px;border-radius:8px;">${submitted ? 'SUBMITTED' : 'PENDING'}</span>
+            </div>`;
+        }).join('')}</div>`;
+
+        document.getElementById('refreshTeamData').addEventListener('click', () => {
+            teamPanel.innerHTML = '<p class="mono" style="color:var(--muted);font-size:12px;padding:8px;">Fetching latest team data...</p>';
+            setTimeout(() => loadCommandCenter(), 1200);
+        });
+    }
+
+    // Offers & Partnerships
+    const offers = document.getElementById('offersList');
+    if (offers) {
+        const mockOffers = [
+            { company: 'Nairobi Fashion Week 2026', detail: 'Official media & content team. 3-day shoot.', val: '$2,400' },
+            { company: 'Gym Nation Kenya', detail: 'Wellness content sponsorship with The Specialist.', val: '$800/mo' },
+            { company: 'WeBrief Agency', detail: 'Ghost-writing retainer for The Polymath. 8 articles/mo.', val: '$1,200/mo' },
+        ];
+        offers.innerHTML = mockOffers.map(o => `
+            <div class="doc-item">
+                <div class="doc-info">
+                    <span class="doc-icon">🤝</span>
+                    <div class="doc-meta">
+                        <span class="doc-title">${o.company}</span>
+                        <span class="doc-date">${o.detail}</span>
+                    </div>
+                </div>
+                <div class="doc-actions" style="gap:8px;">
+                    <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--accent);">${o.val}</span>
+                    <button class="btn btn-sm" style="border-color:var(--green);color:var(--green);background:rgba(34,212,122,0.07);"
+                        onclick="this.textContent='Accepted';this.disabled=true;this.style.opacity='0.5'">✓ Accept</button>
+                    <button class="btn btn-sm" style="border-color:var(--red);color:var(--red);background:rgba(255,92,92,0.07);"
+                        onclick="this.closest('.doc-item').style.opacity='0.4';this.disabled=true">✕ Decline</button>
+                </div>
+            </div>`).join('');
     }
 }

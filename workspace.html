@@ -56,6 +56,12 @@
                     <span class="icon">👑</span>
                     <span class="label">Leadership & SOPs</span>
                 </a>
+                <!-- ARCHITECT-ONLY NAV ITEM: shown via JS -->
+                <a href="#" class="nav-item architect-only" data-target="command" id="commandNavItem" style="display:none;">
+                    <span class="icon">🏗️</span>
+                    <span class="label">Command Center</span>
+                    <span class="badge" id="commandBadge">4</span>
+                </a>
             </nav>
 
             <div class="sidebar-footer">
@@ -351,6 +357,72 @@
                             </div>
                         </div>
                     </div>
+                </div>
+
+                <!-- ══ ARCHITECT COMMAND CENTER (architect-only) ══ -->
+                <div id="view-command" class="view">
+
+                    <!-- Top stats bar -->
+                    <div class="welcome-banner" style="background: linear-gradient(135deg, rgba(124,111,255,0.12) 0%, rgba(6,6,9,0) 100%); margin-bottom: 24px;">
+                        <div class="wb-content">
+                            <h3>🏗️ Command Center<br><span class="accent">Architect & COO Panel</span></h3>
+                            <p>Review and action all member requests. Pull live team data and approve offers.</p>
+                        </div>
+                        <div class="wb-stats">
+                            <div class="stat-box">
+                                <div class="stat-label mono">Pending Requests</div>
+                                <div class="stat-value" style="color:var(--yellow)" id="cmdPendingCount">4</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-label mono">System Uptime</div>
+                                <div class="stat-value" style="color:var(--green)">99.8%</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-label mono">Total Approved</div>
+                                <div class="stat-value">18</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid-2">
+                        <!-- REQUESTS QUEUE -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>📥 Member Requests Queue</h3>
+                                <span class="mono" style="font-size:11px;color:var(--muted);">Approve or decline below</span>
+                            </div>
+                            <div class="card-body">
+                                <ul class="action-list" id="requestQueue">
+                                    <!-- Injected by workspace.js -->
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- TEAM DATA FETCH -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>📊 Team Data Snapshot</h3>
+                                <button class="btn btn-ghost btn-sm" id="refreshTeamData">↻ Refresh</button>
+                            </div>
+                            <div class="card-body" id="teamDataPanel">
+                                <!-- Injected by workspace.js -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- OFFERS / PARTNERSHIPS -->
+                    <div class="card" style="margin-top:24px;">
+                        <div class="card-header">
+                            <h3>🤝 Incoming Offers & Partnerships</h3>
+                            <span class="mono" style="font-size:11px;color:var(--muted);">Review before accepting</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="doc-list" id="offersList">
+                                <!-- Injected by workspace.js -->
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
 
             </div>
