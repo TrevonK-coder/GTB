@@ -52,6 +52,10 @@
                     <span class="icon">🧘</span>
                     <span class="label">Work Ethics</span>
                 </a>
+                <a href="#" class="nav-item" data-target="leadership">
+                    <span class="icon">👑</span>
+                    <span class="label">Leadership & SOPs</span>
+                </a>
             </nav>
 
             <div class="sidebar-footer">
@@ -308,6 +312,42 @@
                                     <button type="submit" class="btn btn-ghost w-full">Log Progress</button>
                                 </form>
                                 <div id="ethicsLog" class="mt-4 doc-list"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LEADERSHIP & SOPs VIEW -->
+                <div id="view-leadership" class="view">
+                    <div class="welcome-banner" style="background: linear-gradient(135deg, rgba(34, 212, 122, 0.1) 0%, rgba(6, 6, 9, 0) 100%);">
+                        <div class="wb-content">
+                            <h3>Director Command,<br> <span class="accent">Operations Overview</span></h3>
+                            <p>Manage your Standard Operating Procedures, outstanding tasks, and core KPIs.</p>
+                        </div>
+                        <div class="wb-stats" id="leadKpiStats">
+                            <!-- Injected by JS -->
+                        </div>
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>✅ Actionable To-Do List</h3>
+                                <button class="btn btn-ghost btn-sm">Add Task</button>
+                            </div>
+                            <div class="card-body">
+                                <ul class="action-list" id="leadershipTodoList">
+                                    <!-- Injected by JS -->
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>📖 SOPs & Team Data Needed</h3>
+                            </div>
+                            <div class="card-body" id="leadershipSopList">
+                                <!-- Injected by JS -->
                             </div>
                         </div>
                     </div>

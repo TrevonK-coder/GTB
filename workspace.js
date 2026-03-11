@@ -34,6 +34,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         loadDirectory();
         loadChatMock();
         loadDocsMock();
+        loadLeadershipView();
     } else {
         document.getElementById('userName').textContent = "Unknown User";
     }
@@ -279,4 +280,93 @@ function loadDocsMock() {
         `;
     });
     list.innerHTML = html;
+}
+
+function loadLeadershipView() {
+    const statsContainer = document.getElementById('leadKpiStats');
+    if (statsContainer) {
+        statsContainer.innerHTML = `
+            <div class="stat-box" style="background: rgba(34, 212, 122, 0.05); border-color: rgba(34, 212, 122, 0.2);">
+                <div class="stat-label mono">Team Velocity</div>
+                <div class="stat-value" style="color: var(--green);">94%</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label mono">Team Data Pending</div>
+                <div class="stat-value accent">3 Reports</div>
+            </div>
+        `;
+    }
+
+    const todoList = document.getElementById('leadershipTodoList');
+    if (todoList) {
+        todoList.innerHTML = `
+            <li class="action-item">
+                <input type="checkbox" style="width:18px;height:18px;margin-right:12px;accent-color:var(--accent);cursor:pointer;">
+                <div class="ai-text">
+                    <strong>Review Q1 Merch Budget</strong>
+                    <span>Awaiting your final sign-off before production.</span>
+                </div>
+                <div class="ai-badge red">Urgent</div>
+            </li>
+            <li class="action-item">
+                <input type="checkbox" style="width:18px;height:18px;margin-right:12px;accent-color:var(--accent);cursor:pointer;">
+                <div class="ai-text">
+                    <strong>Update Onboarding SOP</strong>
+                    <span>Add new security protocols for all new dimension members.</span>
+                </div>
+            </li>
+            <li class="action-item">
+                <input type="checkbox" style="width:18px;height:18px;margin-right:12px;accent-color:var(--accent);cursor:pointer;">
+                <div class="ai-text">
+                    <strong>Approve Profit Splits</strong>
+                    <span>Verify the distribution chart for this quarter's payout.</span>
+                </div>
+            </li>
+        `;
+    }
+
+    const sopList = document.getElementById('leadershipSopList');
+    if (sopList) {
+        sopList.innerHTML = `
+            <p class="text-muted mb-4 pt-2" style="font-size:13px;line-height:1.5;">Standard Operating Procedures and required data tracking from all dimensions.</p>
+            <div class="doc-list">
+                <div class="doc-item">
+                    <div class="doc-info">
+                        <span class="doc-icon">📘</span>
+                        <div class="doc-meta">
+                            <span class="doc-title">Project Initiation SOP</span>
+                            <span class="doc-date">Updated: Jan 12, 2026</span>
+                        </div>
+                    </div>
+                    <div class="doc-actions">
+                        <button class="btn btn-ghost btn-sm">View Manual</button>
+                    </div>
+                </div>
+                <div class="doc-item">
+                    <div class="doc-info">
+                        <span class="doc-icon">📊</span>
+                        <div class="doc-meta">
+                            <span class="doc-title">Weekly KPI Reporting Standard</span>
+                            <span class="doc-date">Required by all dimensions (Fridays)</span>
+                        </div>
+                    </div>
+                    <div class="doc-actions">
+                        <button class="btn btn-primary btn-sm">Request Data Update</button>
+                    </div>
+                </div>
+                <div class="doc-item">
+                    <div class="doc-info">
+                        <span class="doc-icon">⚙️</span>
+                        <div class="doc-meta">
+                            <span class="doc-title">System Outage Protocol</span>
+                            <span class="doc-date">Maintained by The Architect</span>
+                        </div>
+                    </div>
+                    <div class="doc-actions">
+                        <button class="btn btn-ghost btn-sm">View Protocol</button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
 }
