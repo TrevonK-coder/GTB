@@ -77,58 +77,51 @@
     <script src="main.js"></script>
     
     <script>
-        // Inline Login Logic
+        // Inline Login Logic (Bypassing Supabase for immediate demo access)
         document.addEventListener('DOMContentLoaded', () => {
-            let sb;
-            try {
-                sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-            } catch (e) {
-                console.error('Supabase init failed:', e);
-            }
-
             // session check
-            if (sb) {
-                sb.auth.getSession().then(({ data: { session } }) => {
-                    if (session) {
-                        window.location.href = 'workspace.html';
-                    }
-                });
+            const savedUser = localStorage.getItem('gtb_user');
+            if (savedUser) {
+                window.location.href = 'workspace.html';
+                return;
             }
 
-            document.getElementById('loginBtn').addEventListener('click', async () => {
-                const email = document.getElementById('loginEmail').value.trim();
+            document.getElementById('loginBtn').addEventListener('click', () => {
+                const email = document.getElementById('loginEmail').value.trim().toLowerCase();
                 const pass = document.getElementById('loginPass').value;
                 const errEl = document.getElementById('loginError');
                 const btn = document.getElementById('loginBtn');
 
-                if (!email || !pass) { errEl.textContent = 'Please enter email and password.'; errEl.style.display = 'block'; return; }
+                if (!email || !pass) {
+                    errEl.textContent = 'Please enter email and password.';
+                    errEl.style.display = 'block';
+                    return;
+                }
 
+                // Validate against local known members
+                const knownMember = MEMBER_ACCOUNTS.find(m => m.email.toLowerCase() === email);
+                if (!knownMember) {
+                    errEl.textContent = 'Email not recognized as a GTB member.';
+                    errEl.style.display = 'block';
+                    return;
+                }
+
+                if (knownMember.pass !== pass) {
+                    errEl.textContent = 'Invalid credentials. Hint: use [role]123';
+                    errEl.style.display = 'block';
+                    return;
+                }
+
+                // Success
                 btn.disabled = true;
                 btn.textContent = 'Authenticating...';
                 errEl.style.display = 'none';
 
-                try {
-                    const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
-                    if (error) {
-                        if (error.message.includes('Invalid login')) {
-                            // Auto-register mock for ease of use in demo
-                            const { data: signUpData, error: signUpError } = await sb.auth.signUp({ email, password: pass });
-                            if (signUpError) throw signUpError;
-                            
-                            const { data: retryData, error: retryError } = await sb.auth.signInWithPassword({ email, password: pass });
-                            if (retryError) throw retryError;
-                        } else {
-                            throw error;
-                        }
-                    }
-                    // Success -> Dashboard
+                // Save session locally and redirect
+                localStorage.setItem('gtb_user', JSON.stringify(knownMember));
+                setTimeout(() => {
                     window.location.href = 'workspace.html';
-                } catch (err) {
-                    errEl.textContent = err.message || 'Login failed.';
-                    errEl.style.display = 'block';
-                    btn.disabled = false;
-                    btn.textContent = 'Authenticate →';
-                }
+                }, 500);
             });
         });
     </script>

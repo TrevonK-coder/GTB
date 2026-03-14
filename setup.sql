@@ -82,3 +82,33 @@ VALUES
   ('artist',       'The Artist',       '🎵', 'Music · Creative Direction',           'The sonic pulse of GTB. Experimental soundscapes and creative purity.', 'https://www.instagram.com/gtbemzee/', 'https://www.tiktok.com/@gtbemzee', 'https://www.youtube.com/@gtbemzee'),
   ('engineer',     'The Engineer',     '⚙️', 'Full-Stack · Deployment · Scaling',   'Rapid deployment and scaling. The glue for all GTB digital properties.', '', '', '')
 ON CONFLICT (id) DO NOTHING;
+
+-- ═══════════════════════════════════════════════════
+-- 4. ROLE APPLICATIONS TABLE
+-- ═══════════════════════════════════════════════════
+CREATE TABLE IF NOT EXISTS role_applications (
+  id          UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  member_id   TEXT,                        -- applicant email
+  role_id     TEXT,                        -- marketplace role ID (e.g. m1, m2)
+  role_title  TEXT,                        -- human-readable role name
+  reason      TEXT,                        -- why they want the role
+  hours       INTEGER,                     -- weekly hour commitment
+  status      TEXT DEFAULT 'pending',      -- pending | approved | rejected
+  created_at  TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Enable RLS
+ALTER TABLE role_applications ENABLE ROW LEVEL SECURITY;
+
+-- Authenticated users can submit applications
+CREATE POLICY "Auth users can apply" ON role_applications
+  FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+
+-- Authenticated users can read all applications (architect reviews them)
+CREATE POLICY "Auth users read applications" ON role_applications
+  FOR SELECT USING (auth.role() = 'authenticated');
+
+-- Authenticated users (architect) can update status
+CREATE POLICY "Auth users update applications" ON role_applications
+  FOR UPDATE USING (auth.role() = 'authenticated');
+

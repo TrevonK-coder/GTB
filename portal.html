@@ -711,15 +711,17 @@
                     if (error.message.includes('Invalid login')) {
                         const { data: signUpData, error: signUpError } = await sb.auth.signUp({ email, password: pass });
                         if (signUpError) throw signUpError;
-                        // Auto-confirm: try signing in again
-                        const { data: retryData, error: retryError } = await sb.auth.signInWithPassword({ email, password: pass });
-                        if (retryError) {
+                        
+                        if (signUpData.session) {
+                            // Email confirmation is OFF in Supabase, we get a session immediately
+                            currentUser = signUpData.user;
+                        } else {
+                            // Email confirmation is ON, session is null until confirmed
                             showToast('Account created! Check your email to confirm, then sign in again.');
                             btn.disabled = false;
                             btn.textContent = 'Sign In →';
                             return;
                         }
-                        currentUser = retryData.user;
                     } else {
                         throw error;
                     }

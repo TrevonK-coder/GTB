@@ -701,10 +701,17 @@
                 const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
                 if (error) {
                     if (error.message.includes('Invalid login')) {
-                        const { error: sErr } = await sb.auth.signUp({ email, password: pass });
+                        const { data: signUpData, error: sErr } = await sb.auth.signUp({ email, password: pass });
                         if (sErr) throw sErr;
-                        const { error: rErr } = await sb.auth.signInWithPassword({ email, password: pass });
-                        if (rErr) { showToast('Account created — check email to confirm, then sign in again.'); btn.disabled = false; btn.textContent = 'Sign In →'; return; }
+                        
+                        if (signUpData.session) {
+                            // Email confirmation is OFF
+                        } else {
+                            showToast('Account created — check email to confirm, then sign in again.'); 
+                            btn.disabled = false; 
+                            btn.textContent = 'Sign In →'; 
+                            return;
+                        }
                     } else { throw error; }
                 }
                 showAdmin();
