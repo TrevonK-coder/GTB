@@ -201,9 +201,12 @@ app.post('/api/fanfund/distribute', (req, res) => {
 });
 
 // ────────────────────────────────────────────────────────────────
-// Fallback: serve index.html for SPA navigation
+// Fallback: serve workspace.html for SPA navigation, but 404 for assets
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
+    if (req.path.match(/\.(js|css|png|jpg|jpeg|gif|ico|svg)$/)) {
+        return res.status(404).send('Not found');
+    }
+    res.sendFile(path.join(__dirname, 'workspace.html'));
 });
 
 const PORT = process.env.PORT || 8080;
