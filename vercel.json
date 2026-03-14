@@ -1,11 +1,6 @@
 {
-  "buildCommand": "echo ''",
-  "outputDirectory": ".",
+  "version": 2,
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/$1" },
-    { "source": "/(.*\\.js)", "destination": "/$1" },
-    { "source": "/(.*\\.css)", "destination": "/$1" },
-    { "source": "/(.*\\.png)", "destination": "/$1" },
-    { "source": "/(.*)", "destination": "/$1" }
+    { "source": "/api/(.*)", "destination": "/server.js" }
   ]
 }
