@@ -3,127 +3,1243 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GTB Intranet | Secure Login</title>
+    <title>GTB Intranet — Workspace</title>
     <link rel="icon" type="image/png" href="gtb-logo.png">
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="workspace.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="supabase-config.js"></script>
-    <style>
-        /* Specific overrides for login portal */
-        body { overflow: hidden; }
-        .login-wrapper {
-            position: relative;
-            z-index: 10;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            width: 100vw;
-        }
-        .login-box {
-            background: rgba(14, 14, 22, 0.85);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--border);
-            padding: 48px;
-            border-radius: 20px;
-            width: 100%;
-            max-width: 420px;
-            text-align: center;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
-        }
-        .login-logo { width: 50px; margin-bottom: 24px; }
-        .login-box h1 { font-size: 32px; font-weight: 800; letter-spacing: -1px; margin-bottom: 8px; }
-        .login-box .sub { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--muted); margin-bottom: 32px; }
-        
-        .field { text-align: left; margin-bottom: 20px; }
-        .field label { display: block; font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); margin-bottom: 8px; letter-spacing: 1px; }
-        .field input { width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 14px; border-radius: 10px; font-family: 'Syne', sans-serif; font-size: 14px; outline: none; transition: all 0.2s; }
-        .field input:focus { border-color: var(--accent); }
-        
-        .login-btn { width: 100%; font-size: 14px; padding: 14px; margin-top: 8px; }
-        .login-error { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--red); margin-top: 16px; display: none; }
-    </style>
 </head>
 <body>
-    <!-- 3D LUXURY BACKGROUND -->
-    <canvas id="bg-canvas"></canvas>
-
     <!-- CUSTOM CURSOR -->
     <div id="cursor-dot"></div>
     <div id="cursor-ring"></div>
 
-    <div class="login-wrapper">
-        <div class="login-box">
-            <img src="gtb-logo.png" alt="GTB" class="login-logo">
-            <h1>GTB <span class="accent">Intranet</span></h1>
-            <p class="sub">Secure portal for the collective.</p>
+    <div class="workspace-layout">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <img src="gtb-logo.png" alt="GTB Logo" class="sidebar-logo">
+                <div class="sidebar-brand">
+                    <span>GTB</span> <span class="muted">Intranet</span>
+                </div>
+            </div>
             
-            <div class="field">
-                <label>EMAIL</label>
-                <input type="email" id="loginEmail" placeholder="member@gtb.co.ke" autocomplete="email">
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-target="dashboard">
+                    <span class="icon">📊</span>
+                    <span class="label">Dashboard</span>
+                </a>
+                <a href="#" class="nav-item" data-target="chat">
+                    <span class="icon">💬</span>
+                    <span class="label">Chat & Comms</span>
+                    <span class="badge" id="chatBadge">3</span>
+                </a>
+                <a href="#" class="nav-item" data-target="documents">
+                    <span class="icon">✍️</span>
+                    <span class="label">Documents</span>
+                    <span class="badge" id="docBadge">1</span>
+                </a>
+                <a href="#" class="nav-item" data-target="roles">
+                    <span class="icon">🎭</span>
+                    <span class="label">Directory & Roles</span>
+                </a>
+                <a href="#" class="nav-item" data-target="tools">
+                    <span class="icon">⚡</span>
+                    <span class="label">Automations</span>
+                </a>
+                <a href="#" class="nav-item" data-target="ethics">
+                    <span class="icon">🧘</span>
+                    <span class="label">Work Ethics</span>
+                </a>
+                <a href="#" class="nav-item" data-target="leadership">
+                    <span class="icon">👑</span>
+                    <span class="label">Leadership & SOPs</span>
+                </a>
+                <!-- ARCHITECT-ONLY NAV ITEM: shown via JS -->
+                <a href="#" class="nav-item architect-only" data-target="command" id="commandNavItem" style="display:none;">
+                    <span class="icon">🏗️</span>
+                    <span class="label">Command Center</span>
+                    <span class="badge" id="commandBadge">4</span>
+                </a>
+                <a href="#" class="nav-item" data-target="marketplace">
+                    <span class="icon">🛒</span>
+                    <span class="label">Roles Marketplace</span>
+                    <span class="badge" style="background:var(--green);" id="mktBadge">7</span>
+                </a>
+                <a href="#" class="nav-item" data-target="shares">
+                    <span class="icon">📊</span>
+                    <span class="label">Shares &amp; Equity</span>
+                </a>
+                <a href="#" class="nav-item" data-target="templates">
+                    <span class="icon">📁</span>
+                    <span class="label">Doc Templates</span>
+                </a>
+                <a href="#" class="nav-item" data-target="treasury">
+                    <span class="icon">🏦</span>
+                    <span class="label">Treasury & Invest</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="user-avatar" id="userAvatar">M</div>
+                    <div class="user-info">
+                        <div class="user-name" id="userName">Member</div>
+                        <div class="user-role mono" id="userRole">Connecting...</div>
+                    </div>
+                </div>
+                <button class="btn-logout" id="logoutBtn" aria-label="Sign Out">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                </button>
             </div>
-            <div class="field">
-                <label>PASSWORD</label>
-                <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password">
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="content-area">
+            <header class="top-nav">
+                <h2 id="pageTitle">Dashboard</h2>
+                <div class="top-actions">
+                    <button class="btn-icon" id="notifToggle" aria-label="Notifications">
+                        🔔<span class="notif-dot"></span>
+                    </button>
+                    <!-- Notification Dropdown -->
+                    <div class="notif-dropdown hidden" id="notifDropdown">
+                        <div class="nd-header">Notifications <span class="mono pull-right">Enable <input type="checkbox" id="enablePush" checked></span></div>
+                        <div class="nd-list" id="notifList">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="views-container">
+                <!-- DASHBOARD VIEW -->
+                <div id="view-dashboard" class="view active">
+                    <div class="welcome-banner">
+                        <div class="wb-content">
+                            <h3>Welcome back, <span id="dashWelcomeName" class="accent">Member</span></h3>
+                            <p>Here is your daily overview and profit distribution metrics.</p>
+                        </div>
+                        <div class="wb-stats">
+                            <div class="stat-box">
+                                <div class="stat-label mono">YTD Revenue</div>
+                                <div class="stat-value">$142,500</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-label mono">Your Share (Est)</div>
+                                <div class="stat-value accent">$17,812</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>📈 Profit Distribution</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="distribution-chart">
+                                    <!-- A pure CSS mock chart for premium feel -->
+                                    <div class="bar-wrap"><div class="bar-label mono">Q1</div><div class="bar-track"><div class="bar-fill" style="width: 75%;"></div></div><div class="bar-val mono">$42k</div></div>
+                                    <div class="bar-wrap"><div class="bar-label mono">Q2</div><div class="bar-track"><div class="bar-fill" style="width: 85%;"></div></div><div class="bar-val mono">$51k</div></div>
+                                    <div class="bar-wrap"><div class="bar-label mono">Q3</div><div class="bar-track"><div class="bar-fill" style="width: 45%;"></div></div><div class="bar-val mono">$29k</div></div>
+                                    <div class="bar-wrap"><div class="bar-label mono">Q4</div><div class="bar-track"><div class="bar-fill accent-fill" style="width: 30%;"></div></div><div class="bar-val mono">$20k (Active)</div></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>⚡ Quick Actions & Pending</h3>
+                            </div>
+                            <div class="card-body">
+                                <ul class="action-list">
+                                    <li class="action-item" onclick="switchView('documents')">
+                                        <div class="ai-icon">✍️</div>
+                                        <div class="ai-text">
+                                            <strong>Sign Document</strong>
+                                            <span>Q4 Partner Agreement needs your signature.</span>
+                                        </div>
+                                        <div class="ai-badge red">Urgent</div>
+                                    </li>
+                                    <li class="action-item" onclick="switchView('chat')">
+                                        <div class="ai-icon">💬</div>
+                                        <div class="ai-text">
+                                            <strong>New Message</strong>
+                                            <span>The Architect mentioned you in General.</span>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ROLE WORKSPACE PANEL -->
+                    <div class="card" style="margin-top:24px;" id="workspacePanel">
+                        <div class="card-header">
+                            <div>
+                                <h3>🗂️ My Workspace</h3>
+                                <span class="mono" style="font-size:11px;color:var(--muted);" id="workspaceRoleLabel">Loading your role tasks...</span>
+                            </div>
+                            <div style="display:flex;gap:10px;">
+                                <button class="btn btn-ghost btn-sm" id="addTaskBtn">+ Task</button>
+                                <button class="btn btn-ghost btn-sm" id="addFileBtn">📎 Pin File</button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="workspace-split">
+                                <!-- Tasks Column -->
+                                <div class="ws-col">
+                                    <div class="ws-col-title mono">ROLE TASKS</div>
+                                    <ul class="ws-task-list" id="wsTaskList">
+                                        <!-- Injected by JS -->
+                                    </ul>
+                                </div>
+                                <!-- Files Column -->
+                                <div class="ws-col">
+                                    <div class="ws-col-title mono">PINNED FILES & RESOURCES</div>
+                                    <div class="ws-file-list" id="wsFileList">
+                                        <!-- Injected by JS -->
+                                    </div>
+                                </div>
+                                <!-- Reminders Column -->
+                                <div class="ws-col">
+                                    <div class="ws-col-title mono">⏰ UPCOMING REMINDERS</div>
+                                    <div class="ws-reminder-list" id="wsReminderList">
+                                        <!-- Injected by JS -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- CHAT VIEW -->
+                <div id="view-chat" class="view">
+                    <div class="chat-container">
+                        <div class="chat-sidebar">
+                            <div class="cs-header">Channels</div>
+                            <ul class="chat-channels">
+                                <li class="channel active"># general</li>
+                                <li class="channel"># profit-discussions</li>
+                                <li class="channel"># creative-sync</li>
+                            </ul>
+                            <div class="cs-header mt-4">Direct Messages</div>
+                            <ul class="chat-dms" id="dmList">
+                                <li class="dm-user"><span class="status-dot online"></span> The Architect</li>
+                                <li class="dm-user"><span class="status-dot offline"></span> The Visionary</li>
+                            </ul>
+                        </div>
+                        <div class="chat-main">
+                            <div class="chat-header">
+                                <h3># general</h3>
+                                <div class="mono text-muted">Company-wide announcements and chat</div>
+                            </div>
+                            <div class="chat-messages" id="chatArea">
+                                <!-- Messages injected by JS -->
+                            </div>
+                            <div class="chat-input-area">
+                                <form id="chatForm">
+                                    <input type="text" id="chatInput" placeholder="Send a message to #general..." autocomplete="off" required>
+                                    <button type="submit" class="btn btn-primary">Send ↗</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                                     <!-- DOCUMENTS VIEW -->
+                <div id="view-documents" class="view">
+
+                    <!-- Doc View Tabs -->
+                    <div class="doc-tabs" id="docTabs">
+                        <button class="doc-tab active" data-tab="tab-docs">📑 Documents</button>
+                        <button class="doc-tab" data-tab="tab-videos">🎬 Video Updates</button>
+                        <button class="doc-tab" data-tab="tab-ai">🤖 AI Assistant</button>
+                    </div>
+
+                    <!-- ── TAB 1: DOCUMENTS ── -->
+                    <div id="tab-docs" class="doc-tab-content active">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>📑 Electronic Documents &amp; Contracts</h3>
+                                <div style="display:flex;gap:8px;">
+                                    <button class="btn btn-ghost btn-sm" id="genPdfBtn">⬇️ Generate PDF</button>
+                                    <button class="btn btn-primary btn-sm" id="uploadDocBtn">+ Upload</button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="doc-list" id="docList">
+                                    <!-- Docs injected by JS -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ── TAB 2: VIDEO UPDATES ── -->
+                    <div id="tab-videos" class="doc-tab-content">
+
+                        <!-- Upload / Record Card -->
+                        <div class="card" style="margin-bottom:24px;">
+                            <div class="card-header">
+                                <h3>🎬 Share a Video Update</h3>
+                                <span class="mono" style="font-size:11px;color:var(--muted);">Visible to all team members</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="video-upload-area" id="videoDropZone">
+                                    <div class="vup-icon">🎥</div>
+                                    <p>Drag &amp; drop a video, or</p>
+                                    <div style="display:flex;gap:10px;margin-top:12px;justify-content:center;">
+                                        <button class="btn btn-ghost" id="pickVideoBtn">📁 Choose File</button>
+                                        <button class="btn btn-ghost" id="recordVideoBtn">🔴 Record Now</button>
+                                    </div>
+                                    <input type="file" id="videoFileInput" accept="video/*" style="display:none;">
+                                </div>
+                                <div id="videoPreviewWrap" style="display:none;margin-top:16px;">
+                                    <video id="videoPreview" controls style="width:100%;border-radius:12px;max-height:280px;background:#000;"></video>
+                                    <div class="styled-form" style="margin-top:16px;">
+                                        <div class="field"><label>VIDEO TITLE</label><input type="text" id="videoTitle" placeholder="e.g. March Progress Update"></div>
+                                        <div class="field"><label>DESCRIPTION</label><textarea id="videoDesc" rows="2" placeholder="What's this update about?"></textarea></div>
+                                        <div class="field"><label>CATEGORY</label>
+                                            <select id="videoCat">
+                                                <option>Progress Update</option>
+                                                <option>Review Request</option>
+                                                <option>Announcement</option>
+                                                <option>Training</option>
+                                                <option>Team Meeting Recording</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div style="display:flex;gap:10px;margin-top:8px;">
+                                        <button class="btn btn-ghost" id="cancelVideoBtn">Cancel</button>
+                                        <button class="btn btn-primary" id="shareVideoBtn">🚀 Share with Team</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Team Video Feed -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>📺 Team Video Feed</h3>
+                                <div style="display:flex;gap:8px;">
+                                    <select id="videoFilter" class="btn btn-ghost btn-sm" style="cursor:pointer;">
+                                        <option value="all">All Categories</option>
+                                        <option value="Progress Update">Progress Updates</option>
+                                        <option value="Review Request">Review Requests</option>
+                                        <option value="Announcement">Announcements</option>
+                                        <option value="Training">Training</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="video-feed" id="videoFeed">
+                                    <!-- Injected by JS -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ── TAB 3: AI ASSISTANT ── -->
+                    <div id="tab-ai" class="doc-tab-content">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>🤖 GTB Document Assistant</h3>
+                                <span class="mono" style="font-size:11px;color:var(--accent);">AI-POWERED</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="ai-chat-wrap">
+                                    <div class="ai-chat-messages" id="aiChatMessages">
+                                        <div class="ai-msg ai">
+                                            <span class="ai-avatar">🤖</span>
+                                            <div class="ai-bubble">Hello! I'm your GTB Document Assistant. I can help you:
+                                                <ul style="margin:8px 0 0 16px;line-height:2;">
+                                                    <li>Explain clauses in any GTB document</li>
+                                                    <li>Remind you which documents need your signature</li>
+                                                    <li>Draft contract summaries or agreement notes</li>
+                                                    <li>Answer questions about GTB financial terms &amp; rules</li>
+                                                </ul>
+                                                Ask me anything about your documents!
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="ai-quick-prompts" id="aiQuickPrompts">
+                                        <button class="ai-prompt-btn" data-q="Which documents do I need to sign?">📋 Documents I need to sign</button>
+                                        <button class="ai-prompt-btn" data-q="Explain the GTB contribution rules">💳 Explain contribution rules</button>
+                                        <button class="ai-prompt-btn" data-q="What is the exit clause in the GTB agreement?">🚪 What's the exit clause?</button>
+                                        <button class="ai-prompt-btn" data-q="Generate a summary of my role agreement">📄 Summarize my role agreement</button>
+                                    </div>
+                                    <div class="ai-chat-input">
+                                        <input type="text" id="aiChatInput" placeholder="Ask about any GTB document...">
+                                        <button id="aiChatSend" class="btn btn-primary">↗</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- DOCUMENT VIEWER + SIGNATURE MODAL -->
+                <div id="signModal" class="modal hidden">
+                    <div class="modal-content" style="max-width:700px;width:95vw;">
+                        <div class="doc-viewer-header">
+                            <h3 id="signModalTitle">Document Viewer</h3>
+                            <div style="display:flex;gap:8px;">
+                                <button class="btn btn-ghost btn-sm" id="downloadPdfBtn">⬇️ Download PDF</button>
+                                <button class="btn btn-ghost btn-sm" id="closeDocViewer" onclick="document.getElementById('signModal').classList.add('hidden')">✕ Close</button>
+                            </div>
+                        </div>
+
+                        <!-- Document content preview -->
+                        <div class="doc-preview-area" id="docPreviewArea">
+                            <!-- Doc HTML rendered here -->
+                        </div>
+
+                        <!-- Signature Section -->
+                        <div class="sig-section">
+                            <div class="sig-section-title mono">ELECTRONIC SIGNATURE</div>
+                            <p style="font-size:12px;color:var(--muted);margin-bottom:12px;">Draw your signature below or type your full legal name. By signing you agree to the terms of this document.</p>
+                            <div class="sig-options">
+                                <button class="sig-tab-btn active" id="sigDrawTab">✍️ Draw</button>
+                                <button class="sig-tab-btn" id="sigTypeTab">⌨️ Type</button>
+                            </div>
+
+                            <!-- Draw signature canvas -->
+                            <div id="sigDrawPanel">
+                                <div class="sig-canvas-wrap">
+                                    <canvas id="sigCanvas" width="640" height="140"></canvas>
+                                    <span class="sig-canvas-hint">Draw your signature here</span>
+                                </div>
+                                <div style="display:flex;gap:8px;margin-top:8px;">
+                                    <button class="btn btn-ghost btn-sm" id="sigClear">🗑️ Clear</button>
+                                    <button class="btn btn-ghost btn-sm" id="sigUndo">↩ Undo</button>
+                                </div>
+                            </div>
+
+                            <!-- Type signature -->
+                            <div id="sigTypePanel" style="display:none;">
+                                <input type="text" id="sigInput" class="sig-input" placeholder="Type your full legal name...">
+                                <div class="sig-preview-text" id="sigPreviewText"></div>
+                            </div>
+
+                            <div class="modal-actions" style="margin-top:20px;">
+                                <button class="btn btn-ghost" onclick="document.getElementById('signModal').classList.add('hidden')">Cancel</button>
+                                <button class="btn btn-primary" id="confirmSign">✍️ Sign &amp; Certify Document</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DIRECTORY & ROLES VIEW -->
+                <div id="view-roles" class="view">
+                    <div class="directory-grid" id="directoryGrid">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- AUTOMATIONS & TOOLS VIEW -->
+                <div id="view-tools" class="view">
+                    <div class="grid-2">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>📋 Submit Request (Leave / Expense)</h3>
+                            </div>
+                            <div class="card-body">
+                                <form id="toolForm" class="styled-form">
+                                    <div class="field">
+                                        <label>REQUEST TYPE</label>
+                                        <select id="reqType">
+                                            <option value="expense">Expense Reimbursement</option>
+                                            <option value="leave">Time Off / Leave</option>
+                                            <option value="resource">Resource Requisition</option>
+                                        </select>
+                                    </div>
+                                    <div class="field">
+                                        <label>DETAILS</label>
+                                        <textarea rows="3" placeholder="Provide necessary specifics..." required></textarea>
+                                    </div>
+                                    <div class="field">
+                                        <label>AMOUNT (IF EXPENSE) $</label>
+                                        <input type="number" placeholder="0.00">
+                                    </div>
+                                    <button type="submit" class="btn btn-primary w-full mt-2">Submit Request</button>
+                                </form>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>Pending Requests</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="empty-state mono">No active requests.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- WORK ETHICS & WELLNESS VIEW -->
+                <div id="view-ethics" class="view">
+                    <div class="grid-2">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>🧘 Wellness Reminders</h3>
+                            </div>
+                            <div class="card-body wellness-list">
+                                <div class="checkbox-row">
+                                    <input type="checkbox" id="w1">
+                                    <label for="w1">
+                                        <strong>Hydration</strong> <br>
+                                        <span class="mono text-muted">Drink 1L of water by noon</span>
+                                    </label>
+                                </div>
+                                <div class="checkbox-row">
+                                    <input type="checkbox" id="w2">
+                                    <label for="w2">
+                                        <strong>Posture & Stretch</strong> <br>
+                                        <span class="mono text-muted">Complete 5 min desk stretching</span>
+                                    </label>
+                                </div>
+                                <div class="checkbox-row">
+                                    <input type="checkbox" id="w3">
+                                    <label for="w3">
+                                        <strong>Deep Work Block</strong> <br>
+                                        <span class="mono text-muted">90 mins uninterrupted focus</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>🛡️ Daily Ethics Log</h3>
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted mb-4" style="font-size:13px;line-height:1.5;">Accountability is key to the collective. Log your core deliverable for today.</p>
+                                <form id="ethicsForm" class="styled-form">
+                                    <div class="field">
+                                        <label>TODAY'S MAIN FOCUS</label>
+                                        <input type="text" placeholder="e.g. Shipped new landing page segment" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-ghost w-full">Log Progress</button>
+                                </form>
+                                <div id="ethicsLog" class="mt-4 doc-list"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LEADERSHIP & SOPs VIEW -->
+                <div id="view-leadership" class="view">
+                    <div class="welcome-banner" style="background: linear-gradient(135deg, rgba(34, 212, 122, 0.1) 0%, rgba(6, 6, 9, 0) 100%);">
+                        <div class="wb-content">
+                            <h3>Director Command,<br> <span class="accent">Operations Overview</span></h3>
+                            <p>Manage your Standard Operating Procedures, outstanding tasks, and core KPIs.</p>
+                        </div>
+                        <div class="wb-stats" id="leadKpiStats">
+                            <!-- Injected by JS -->
+                        </div>
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>✅ Actionable To-Do List</h3>
+                                <button class="btn btn-ghost btn-sm">Add Task</button>
+                            </div>
+                            <div class="card-body">
+                                <ul class="action-list" id="leadershipTodoList">
+                                    <!-- Injected by JS -->
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>📖 SOPs & Team Data Needed</h3>
+                            </div>
+                            <div class="card-body" id="leadershipSopList">
+                                <!-- Injected by JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ══ ARCHITECT COMMAND CENTER (architect-only) ══ -->
+                <div id="view-command" class="view">
+
+                    <!-- Top stats bar -->
+                    <div class="welcome-banner" style="background: linear-gradient(135deg, rgba(124,111,255,0.12) 0%, rgba(6,6,9,0) 100%); margin-bottom: 24px;">
+                        <div class="wb-content">
+                            <h3>🏗️ Command Center<br><span class="accent">Architect & COO Panel</span></h3>
+                            <p>Review and action all member requests. Pull live team data and approve offers.</p>
+                        </div>
+                        <div class="wb-stats">
+                            <div class="stat-box">
+                                <div class="stat-label mono">Pending Requests</div>
+                                <div class="stat-value" style="color:var(--yellow)" id="cmdPendingCount">4</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-label mono">System Uptime</div>
+                                <div class="stat-value" style="color:var(--green)">99.8%</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-label mono">Total Approved</div>
+                                <div class="stat-value">18</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid-2">
+                        <!-- REQUESTS QUEUE -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>📥 Member Requests Queue</h3>
+                                <span class="mono" style="font-size:11px;color:var(--muted);">Approve or decline below</span>
+                            </div>
+                            <div class="card-body">
+                                <ul class="action-list" id="requestQueue">
+                                    <!-- Injected by workspace.js -->
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- TEAM DATA FETCH -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>📊 Team Data Snapshot</h3>
+                                <button class="btn btn-ghost btn-sm" id="refreshTeamData">↻ Refresh</button>
+                            </div>
+                            <div class="card-body" id="teamDataPanel">
+                                <!-- Injected by workspace.js -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- OFFERS / PARTNERSHIPS -->
+                    <div class="card" style="margin-top:24px;">
+                        <div class="card-header">
+                            <h3>🤝 Incoming Offers & Partnerships</h3>
+                            <span class="mono" style="font-size:11px;color:var(--muted);">Review before accepting</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="doc-list" id="offersList">
+                                <!-- Injected by workspace.js -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PERFORMANCE LEADERBOARD -->
+                    <div class="card" style="margin-top:24px;">
+                        <div class="card-header">
+                            <h3>📊 Member Performance Rankings</h3>
+                            <button class="btn btn-ghost btn-sm" id="refreshPerfBtn">↻ Refresh Scores</button>
+                        </div>
+                        <div class="card-body" style="padding:0;">
+                            <div class="tx-table-wrap">
+                                <table class="tx-table">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Member</th>
+                                            <th>Total Score</th>
+                                            <th>Tier</th>
+                                            <th>Contribution</th>
+                                            <th>KPI</th>
+                                            <th>Tasks</th>
+                                            <th>Engagement</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="perfTableBody">
+                                        <!-- Injected by JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECRET FAN FUND — ARCHITECT ONLY -->
+                    <div class="card fan-fund-card" style="margin-top:24px;">
+                        <div class="card-header">
+                            <div>
+                                <h3>🌍 Secret Fan Fund <span class="mono" style="font-size:11px;background:rgba(251,191,36,0.15);color:var(--yellow);padding:3px 10px;border-radius:8px;border:1px solid rgba(251,191,36,0.3);">ARCHITECT EYES ONLY</span></h3>
+                                <span style="font-size:12px;color:var(--muted);">Anonymous contributions from fans and friends worldwide.</span>
+                            </div>
+                            <button class="btn btn-primary btn-sm" id="distributeFundBtn">🏆 Distribute Reward</button>
+                        </div>
+                        <div class="card-body">
+                            <div class="fan-fund-split">
+                                <!-- Left: Stats + Donor Feed -->
+                                <div>
+                                    <div class="fan-fund-stats" id="fanFundStats">
+                                        <!-- Injected by JS -->
+                                    </div>
+                                    <div class="ws-col-title mono" style="margin:20px 0 10px;">RECENT DONORS</div>
+                                    <div class="doc-list" id="fanDonorList">
+                                        <!-- Injected by JS -->
+                                    </div>
+                                </div>
+                                <!-- Right: Reward History -->
+                                <div>
+                                    <div class="ws-col-title mono" style="margin-bottom:10px;">🏆 REWARD HISTORY</div>
+                                    <div class="doc-list" id="fanRewardHistory">
+                                        <!-- Injected by JS -->
+                                    </div>
+                                    <div class="ws-col-title mono" style="margin:20px 0 10px;">NEXT REWARD RECIPIENT (ALGORITHM)</div>
+                                    <div id="nextRewardPreview" class="fan-next-winner">
+                                        <!-- Injected by JS -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- ══ ROLES MARKETPLACE ══ -->
+                <div id="view-marketplace" class="view">
+
+                    <div class="welcome-banner" style="background: linear-gradient(135deg, rgba(34,212,122,0.1) 0%, rgba(124,111,255,0.06) 100%);">
+                        <div class="wb-content">
+                            <h3>Roles <span class="accent">Marketplace</span></h3>
+                            <p>Open revenue-generating positions within the collective. Claim a role, own the revenue stream.</p>
+                        </div>
+                        <div class="wb-stats">
+                            <div class="stat-box" style="border-color:rgba(34,212,122,0.2);">
+                                <div class="stat-label mono">Available Roles</div>
+                                <div class="stat-value" style="color:var(--green)" id="mktAvailCount">7</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-label mono">Revenue Potential</div>
+                                <div class="stat-value accent">$18k+/mo</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Filter Tabs -->
+                    <div class="mkt-filters" id="mktFilters">
+                        <button class="mkt-tab active" data-filter="all">All Roles</button>
+                        <button class="mkt-tab" data-filter="content">Content</button>
+                        <button class="mkt-tab" data-filter="sales">Sales</button>
+                        <button class="mkt-tab" data-filter="tech">Tech</button>
+                        <button class="mkt-tab" data-filter="ops">Operations</button>
+                        <button class="mkt-tab" data-filter="creative">Creative</button>
+                    </div>
+
+                    <!-- Role Cards Grid -->
+                    <div class="mkt-grid" id="mktGrid">
+                        <!-- Populated by workspace.js -->
+                    </div>
+
+                </div>
+
+                <!-- Apply Modal -->
+                <div id="applyModal" class="modal hidden">
+                    <div class="modal-content">
+                        <h3>Apply for Role</h3>
+                        <p class="mono text-muted mb-4" id="applyModalRoleName">Role Name</p>
+                        <div class="styled-form">
+                            <div class="field">
+                                <label>WHY THIS ROLE?</label>
+                                <textarea id="applyReason" rows="3" placeholder="Briefly describe how you'll drive revenue in this role..."></textarea>
+                            </div>
+                            <div class="field">
+                                <label>ESTIMATED WEEKLY COMMITMENT (HRS)</label>
+                                <input type="number" id="applyHours" placeholder="e.g. 10" min="1" max="40">
+                            </div>
+                        </div>
+                        <div class="modal-actions">
+                            <button class="btn btn-ghost" id="cancelApply">Cancel</button>
+                            <button class="btn btn-primary" id="confirmApply">Submit Application</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ══ TREASURY & INVESTMENTS ══ -->
+                <div id="view-treasury" class="view">
+
+                    <!-- Stats Banner -->
+                    <div class="welcome-banner" style="background: linear-gradient(135deg, rgba(251,191,36,0.1) 0%, rgba(34,212,122,0.05) 100%);">
+                        <div class="wb-content">
+                            <h3>🏦 GTB <span class="accent">Treasury</span></h3>
+                            <p>Monthly contributions, fundraisers, event planning, and collective investment strategies.</p>
+                        </div>
+                        <div class="wb-stats">
+                            <div class="stat-box" style="border-color:rgba(34,212,122,0.3);">
+                                <div class="stat-label mono">Treasury Balance</div>
+                                <div class="stat-value" style="color:var(--green)" id="treasuryBalance">KES 0</div>
+                            </div>
+                            <div class="stat-box" style="border-color:rgba(251,191,36,0.2);">
+                                <div class="stat-label mono">Members Paid</div>
+                                <div class="stat-value" style="color:var(--yellow)" id="membersPaidCount">0/8</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-label mono">Invested (Total)</div>
+                                <div class="stat-value accent" id="totalInvested">KES 0</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid-2">
+
+                        <!-- MONTHLY CONTRIBUTION TRACKER -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>💳 Monthly Contributions (3,000 KES)</h3>
+                                <span class="mono" style="font-size:11px;color:var(--muted);" id="contribMonth"></span>
+                            </div>
+                            <div class="card-body">
+                                <div class="doc-list" id="contributionList">
+                                    <!-- Injected by JS -->
+                                </div>
+                                <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+                                    <span class="mono" style="font-size:12px;color:var(--muted);">My contribution status:</span>
+                                    <button class="btn btn-primary btn-sm" id="payContribBtn">💸 Pay 3,000 KES</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- FUNDRAISERS -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>🎉 Fundraisers & Events</h3>
+                                <button class="btn btn-ghost btn-sm" id="newFundraiserBtn">+ New</button>
+                            </div>
+                            <div class="card-body">
+                                <div class="doc-list" id="fundraiserList">
+                                    <!-- Injected by JS -->
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- INVESTMENT STRATEGIES -->
+                    <div class="card" style="margin-top:24px;">
+                        <div class="card-header">
+                            <h3>📈 Investment Strategies & Plans</h3>
+                            <button class="btn btn-ghost btn-sm" id="proposeInvestBtn">+ Propose</button>
+                        </div>
+                        <div class="card-body">
+                            <div class="invest-grid" id="investGrid">
+                                <!-- Injected by JS -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MONEY RETENTION RULES -->
+                    <div class="card" style="margin-top:24px;">
+                        <div class="card-header">
+                            <h3>🛡️ Financial Rules & Agreements</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="rules-list">
+                                <div class="rule-item"><span class="rule-num">01</span><div><strong>Monthly Contribution</strong><p>Every member contributes KES 3,000 by the 5th of each month. Late payments incur a KES 300 penalty.</p></div></div>
+                                <div class="rule-item"><span class="rule-num">02</span><div><strong>Investment Lock-In</strong><p>All collective investments require a minimum 60-day lock-in period before withdrawal discussions.</p></div></div>
+                                <div class="rule-item"><span class="rule-num">03</span><div><strong>Event Reserve</strong><p>15% of the treasury balance is reserved for events and emergencies. Not accessible for investments.</p></div></div>
+                                <div class="rule-item"><span class="rule-num">04</span><div><strong>Profit Sharing</strong><p>Investment returns are distributed equally (12.5% per member) quarterly, after reinvesting 20% back into the pool.</p></div></div>
+                                <div class="rule-item"><span class="rule-num">05</span><div><strong>Exit Clause</strong><p>A departing member forfeits their investment share for the current quarter. Past returns are retained.</p></div></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- M-PESA PAYMENT PANEL -->
+                    <div class="card" style="margin-top:24px;">
+                        <div class="card-header">
+                            <h3>📱 M-Pesa Payments</h3>
+                            <span class="mono" style="font-size:11px;color:var(--green);">LIVE • Safaricom</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="mpesa-panel">
+                                <!-- Paybill Card -->
+                                <div class="mpesa-paybill-card">
+                                    <div class="mpb-logo">📳 M-Pesa</div>
+                                    <div class="mpb-label">GTB COLLECTIVE PAYBILL</div>
+                                    <div class="mpb-number">522522</div>
+                                    <div class="mpb-account-hint">Account No: <strong>GTB-[Your Name]</strong></div>
+                                    <div class="mpb-divider"></div>
+                                    <div class="mpb-label">OR TILL NUMBER (BUY GOODS)</div>
+                                    <div class="mpb-number" style="font-size:28px;">5312847</div>
+                                </div>
+
+                                <!-- Quick-Pay Tiles -->
+                                <div class="mpesa-quick">
+                                    <div class="mpq-title mono">QUICK PAY</div>
+                                    <div class="mpq-grid">
+                                        <button class="mpq-tile" onclick="openMpesa('Monthly Contribution','3000','GTB-Monthly')">
+                                            <span>💳</span>
+                                            <strong>Monthly Contribution</strong>
+                                            <span class="mpq-amount">KES 3,000</span>
+                                        </button>
+                                        <button class="mpq-tile" onclick="openMpesa('Annual Meetup Fund','2000','GTB-Meetup')">
+                                            <span>🎉</span>
+                                            <strong>Annual Meetup Fund</strong>
+                                            <span class="mpq-amount">KES 2,000</span>
+                                        </button>
+                                        <button class="mpq-tile" onclick="openMpesa('Equipment Fund','1000','GTB-Equipment')">
+                                            <span>📷</span>
+                                            <strong>Equipment Fund</strong>
+                                            <span class="mpq-amount">KES 1,000</span>
+                                        </button>
+                                        <button class="mpq-tile" onclick="openMpesa('Custom Amount','','GTB-General')">
+                                            <span>➕</span>
+                                            <strong>Custom Amount</strong>
+                                            <span class="mpq-amount">Enter amount</span>
+                                        </button>
+                                    </div>
+                                    <button class="btn btn-primary w-full" style="margin-top:16px;" onclick="openMpesa('','','')">📱 Send M-Pesa STK Push</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TRANSACTION HISTORY -->
+                    <div class="card" style="margin-top:24px;">
+                        <div class="card-header">
+                            <h3>📜 Transaction History</h3>
+                            <button class="btn btn-ghost btn-sm" id="refreshTxBtn">↻ Refresh</button>
+                        </div>
+                        <div class="card-body" style="padding:0;">
+                            <div class="tx-table-wrap">
+                                <table class="tx-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Member</th>
+                                            <th>Reference</th>
+                                            <th>Purpose</th>
+                                            <th>Amount</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="txTableBody">
+                                        <!-- Injected by JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Fundraiser / Invest Modals -->
+                <div id="fundraiserModal" class="modal hidden">
+                    <div class="modal-content">
+                        <h3>New Fundraiser</h3>
+                        <div class="styled-form">
+                            <div class="field"><label>FUNDRAISER NAME</label><input type="text" id="frName" placeholder="e.g. GTB Pop-Up Event 2026"></div>
+                            <div class="field"><label>TARGET AMOUNT (KES)</label><input type="number" id="frTarget" placeholder="e.g. 50000"></div>
+                            <div class="field"><label>DEADLINE</label><input type="date" id="frDeadline"></div>
+                            <div class="field"><label>DESCRIPTION</label><textarea id="frDesc" rows="2" placeholder="What will this fund be used for?"></textarea></div>
+                        </div>
+                        <div class="modal-actions">
+                            <button class="btn btn-ghost" onclick="document.getElementById('fundraiserModal').classList.add('hidden')">Cancel</button>
+                            <button class="btn btn-primary" id="saveFundraiserBtn">Create Fundraiser</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="investModal" class="modal hidden">
+                    <div class="modal-content">
+                        <h3>Propose Investment</h3>
+                        <div class="styled-form">
+                            <div class="field"><label>INVESTMENT NAME</label><input type="text" id="invName" placeholder="e.g. Treasury Bill T-Bills 91-day"></div>
+                            <div class="field"><label>AMOUNT TO INVEST (KES)</label><input type="number" id="invAmount" placeholder="e.g. 20000"></div>
+                            <div class="field"><label>EXPECTED ROI</label><input type="text" id="invROI" placeholder="e.g. 12% per annum"></div>
+                            <div class="field"><label>STRATEGY / RATIONALE</label><textarea id="invRationale" rows="2" placeholder="Why is this a good investment for GTB?"></textarea></div>
+                        </div>
+                        <div class="modal-actions">
+                            <button class="btn btn-ghost" onclick="document.getElementById('investModal').classList.add('hidden')">Cancel</button>
+                            <button class="btn btn-primary" id="saveInvestBtn">Submit Proposal</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- M-PESA STK PUSH MODAL -->
+                <div id="mpesaModal" class="modal hidden">
+                    <div class="modal-content" style="max-width:440px;">
+                        <!-- Step 1: Form -->
+                        <div id="mpStep1">
+                            <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+                                <span style="font-size:32px;">📱</span>
+                                <div>
+                                    <h3 style="margin-bottom:4px;">M-Pesa Payment</h3>
+                                    <p class="mono" style="font-size:11px;color:var(--muted);">Paybill: <strong style="color:var(--green);">522522</strong></p>
+                                </div>
+                            </div>
+                            <div class="styled-form">
+                                <div class="field">
+                                    <label>SAFARICOM PHONE NUMBER</label>
+                                    <input type="tel" id="mpPhone" placeholder="e.g. 0712345678" maxlength="10">
+                                </div>
+                                <div class="field">
+                                    <label>AMOUNT (KES)</label>
+                                    <input type="number" id="mpAmount" placeholder="e.g. 3000" min="1">
+                                </div>
+                                <div class="field">
+                                    <label>ACCOUNT NUMBER / REFERENCE</label>
+                                    <input type="text" id="mpAccount" placeholder="e.g. GTB-Architect">
+                                </div>
+                                <div class="field">
+                                    <label>PURPOSE</label>
+                                    <select id="mpPurpose">
+                                        <option value="Monthly Contribution">Monthly Contribution</option>
+                                        <option value="Fundraiser">Fundraiser Contribution</option>
+                                        <option value="Investment">Investment Pool</option>
+                                        <option value="Site Costs">Site Costs</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="modal-actions">
+                                <button class="btn btn-ghost" onclick="document.getElementById('mpesaModal').classList.add('hidden')">Cancel</button>
+                                <button class="btn btn-primary" id="sendStkBtn">📱 Send STK Push</button>
+                            </div>
+                        </div>
+
+                        <!-- Step 2: Waiting for payment -->
+                        <div id="mpStep2" style="display:none;text-align:center;padding:20px 0;">
+                            <div class="stk-spinner">⧗</div>
+                            <h3 style="margin:16px 0 8px;">STK Push Sent!</h3>
+                            <p style="color:var(--muted);font-size:13px;line-height:1.6;">Check your phone <strong id="mpPhoneDisplay"></strong> for the M-Pesa prompt. Enter your M-Pesa PIN to complete the payment.</p>
+                            <div class="stk-timer" id="stkTimer">Waiting... 60s</div>
+                            <button class="btn btn-ghost btn-sm" style="margin-top:16px;" id="stkCancelWait">Cancel</button>
+                        </div>
+
+                        <!-- Step 3: Success -->
+                        <div id="mpStep3" style="display:none;text-align:center;padding:20px 0;">
+                            <div style="font-size:48px;margin-bottom:16px;">✅</div>
+                            <h3 style="margin-bottom:8px;">Payment Confirmed!</h3>
+                            <p class="mono" style="font-size:12px;color:var(--green);" id="mpConfirmMsg"></p>
+                            <button class="btn btn-primary" style="margin-top:20px;" onclick="document.getElementById('mpesaModal').classList.add('hidden');resetMpesa();">Done</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ══ SHARES & EQUITY VIEW ══ -->
+                <div id="view-shares" class="view">
+                    <div class="welcome-banner" style="background: linear-gradient(135deg, rgba(251,191,36,0.10) 0%, rgba(124,111,255,0.05) 100%);">
+                        <div class="wb-content">
+                            <h3>📊 Shares &amp; <span class="accent">Equity</span></h3>
+                            <p>Company ownership structure, personal investment portfolios, and strategy tools.</p>
+                        </div>
+                        <div class="wb-stats" id="sharesStats">
+                            <!-- Injected by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Company Registration Status -->
+                    <div class="card" style="margin-bottom:24px;">
+                        <div class="card-header">
+                            <h3>🏛️ Company Registration</h3>
+                            <span class="mono" style="font-size:11px;background:rgba(251,191,36,0.12);color:var(--yellow);padding:3px 10px;border-radius:8px;border:1px solid rgba(251,191,36,0.25);">IN PROGRESS</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="reg-timeline" id="regTimeline">
+                                <!-- Injected by JS -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid-2" style="margin-bottom:24px;">
+                        <!-- Equity Breakdown -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>🥧 Equity Distribution</h3>
+                                <button class="btn btn-ghost btn-sm" id="viewCapTableBtn">📋 Full Cap Table</button>
+                            </div>
+                            <div class="card-body">
+                                <div class="equity-chart-wrap">
+                                    <canvas id="equityCanvas" width="220" height="220"></canvas>
+                                    <div class="equity-legend" id="equityLegend">
+                                        <!-- Injected by JS -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- My Share Summary -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>💼 My Shareholding</h3>
+                                <span class="mono" style="font-size:11px;color:var(--muted);" id="myShareRole">Loading...</span>
+                            </div>
+                            <div class="card-body">
+                                <div id="myShareCard">
+                                    <!-- Injected by JS -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Full Capitalization Table -->
+                    <div class="card" style="margin-bottom:24px;">
+                        <div class="card-header">
+                            <h3>📋 Capitalization Table</h3>
+                            <button class="btn btn-ghost btn-sm" id="exportCapTableBtn">⬇️ Export PDF</button>
+                        </div>
+                        <div class="card-body" style="padding:0;">
+                            <div class="tx-table-wrap">
+                                <table class="tx-table" id="capTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Member</th>
+                                            <th>Type</th>
+                                            <th>Shares</th>
+                                            <th>% Ownership</th>
+                                            <th>Investment Value</th>
+                                            <th>Voting Rights</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="capTableBody">
+                                        <!-- Injected by JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Personal Investment Portfolio -->
+                    <div class="card" style="margin-bottom:24px;">
+                        <div class="card-header">
+                            <h3>📈 Personal Investment Portfolio</h3>
+                            <button class="btn btn-primary btn-sm" id="addPersonalInvestBtn">+ Add Investment</button>
+                        </div>
+                        <div class="card-body">
+                            <div class="portfolio-stats" id="portfolioStats">
+                                <!-- Injected by JS -->
+                            </div>
+                            <div class="invest-grid" id="personalInvestGrid" style="margin-top:20px;">
+                                <!-- Injected by JS -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Investment Strategy Builder -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>🧠 Investment Strategy Builder</h3>
+                            <span class="mono" style="font-size:11px;color:var(--accent);">COLLECTIVE</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="strategy-grid" id="strategyGrid">
+                                <!-- Injected by JS -->
+                            </div>
+                            <div class="card" style="margin-top:24px;background:rgba(124,111,255,0.04);border-color:rgba(124,111,255,0.2);">
+                                <div class="card-header">
+                                    <h3 style="font-size:13px;">➕ Propose New Strategy</h3>
+                                </div>
+                                <div class="card-body">
+                                    <div class="styled-form">
+                                        <div class="field"><label>STRATEGY NAME</label><input type="text" id="stratName" placeholder="e.g. Treasury Bills — 91 Day"></div>
+                                        <div class="grid-2" style="gap:12px;">
+                                            <div class="field"><label>VEHICLE</label>
+                                                <select id="stratVehicle">
+                                                    <option>Kenya T-Bills</option>
+                                                    <option>Money Market Fund</option>
+                                                    <option>Real Estate (REIT)</option>
+                                                    <option>Nairobi Stock Exchange</option>
+                                                    <option>SACCO Savings</option>
+                                                    <option>Forex Trading</option>
+                                                    <option>Crypto (BTC/ETH)</option>
+                                                    <option>Business Venture</option>
+                                                    <option>Other</option>
+                                                </select>
+                                            </div>
+                                            <div class="field"><label>TARGET AMOUNT (KES)</label><input type="number" id="stratAmount" placeholder="120000"></div>
+                                        </div>
+                                        <div class="grid-2" style="gap:12px;">
+                                            <div class="field"><label>HORIZON</label>
+                                                <select id="stratHorizon">
+                                                    <option>30 days</option>
+                                                    <option>91 days</option>
+                                                    <option>6 months</option>
+                                                    <option>1 year</option>
+                                                    <option>3+ years</option>
+                                                </select>
+                                            </div>
+                                            <div class="field"><label>EXPECTED RETURN %</label><input type="number" id="stratReturn" placeholder="14.5"></div>
+                                        </div>
+                                        <div class="field"><label>RATIONALE</label><textarea id="stratRationale" rows="2" placeholder="Why should the collective consider this investment?"></textarea></div>
+                                        <button class="btn btn-primary" id="submitStrategyBtn">🚀 Submit for Vote</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ══ DOC TEMPLATES VIEW ══ -->
+                <div id="view-templates" class="view">
+                    <div class="welcome-banner" style="background: linear-gradient(135deg, rgba(34,212,122,0.08) 0%, rgba(124,111,255,0.05) 100%);">
+                        <div class="wb-content">
+                            <h3>📁 Document <span class="accent">Templates</span></h3>
+                            <p>Official GTB templates for all roles. Download, customize, sign, and file.</p>
+                        </div>
+                        <div class="wb-stats">
+                            <div class="stat-box"><div class="stat-label mono">Total Templates</div><div class="stat-value accent" id="tmplCount">—</div></div>
+                            <div class="stat-box"><div class="stat-label mono">Your Role Templates</div><div class="stat-value" style="color:var(--green);" id="myTmplCount">—</div></div>
+                        </div>
+                    </div>
+
+                    <!-- Filter Tabs -->
+                    <div class="doc-tabs" id="tmplTabs" style="margin-bottom:20px;">
+                        <button class="doc-tab active" data-tmpl-cat="all">All Templates</button>
+                        <button class="doc-tab" data-tmpl-cat="universal">🌐 Universal</button>
+                        <button class="doc-tab" data-tmpl-cat="legal">⚖️ Legal</button>
+                        <button class="doc-tab" data-tmpl-cat="finance">💳 Finance</button>
+                        <button class="doc-tab" data-tmpl-cat="operations">⚙️ Operations</button>
+                        <button class="doc-tab" data-tmpl-cat="myrole">⭐ My Role</button>
+                    </div>
+
+                    <div class="tmpl-grid" id="tmplGrid">
+                        <!-- Injected by JS -->
+                    </div>
+                </div>
+
             </div>
-            <button class="btn btn-primary login-btn" id="loginBtn">Authenticate →</button>
-            <div class="login-error" id="loginError"></div>
+        </main>
+    </div>
+
+    <!-- GTB ASSISTANT OVERLAY -->
+    <div id="gtbAssistant" class="assistant-overlay hidden">
+        <div class="assistant-card">
+            <div class="assistant-header">
+                <div class="assistant-avatar">
+                    <div class="av-ring"></div>
+                    <span class="av-emoji">🤖</span>
+                </div>
+                <div class="assistant-title">
+                    <strong>GTB Assistant</strong>
+                    <span class="mono" id="assistantTime"></span>
+                </div>
+                <button class="assist-close" id="assistantClose">✕</button>
+            </div>
+            <div class="assistant-body">
+                <p class="assistant-greeting" id="assistantGreeting"></p>
+                <div class="assistant-tasks" id="assistantTasks">
+                    <!-- Injected by JS -->
+                </div>
+            </div>
+            <div class="assistant-footer">
+                <button class="btn btn-ghost btn-sm" id="assistantSnooze">⏰ Snooze 2hrs</button>
+                <button class="btn btn-primary btn-sm" id="assistantDismiss">Got it, working on it →</button>
+            </div>
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="three-bg.js"></script>
-    <script src="main.js"></script>
-    
-    <script>
-        // Inline Login Logic (Bypassing Supabase for immediate demo access)
-        document.addEventListener('DOMContentLoaded', () => {
-            // session check
-            const savedUser = localStorage.getItem('gtb_user');
-            if (savedUser) {
-                window.location.href = 'workspace.html';
-                return;
-            }
+    <!-- Floating trigger button -->
+    <button class="assistant-fab" id="assistantFab" title="GTB Assistant">
+        <span>🤖</span>
+        <span class="fab-notif" id="fabNotif"></span>
+    </button>
 
-            document.getElementById('loginBtn').addEventListener('click', () => {
-                const email = document.getElementById('loginEmail').value.trim().toLowerCase();
-                const pass = document.getElementById('loginPass').value;
-                const errEl = document.getElementById('loginError');
-                const btn = document.getElementById('loginBtn');
-
-                if (!email || !pass) {
-                    errEl.textContent = 'Please enter email and password.';
-                    errEl.style.display = 'block';
-                    return;
-                }
-
-                // Validate against local known members
-                const knownMember = MEMBER_ACCOUNTS.find(m => m.email.toLowerCase() === email);
-                if (!knownMember) {
-                    errEl.textContent = 'Email not recognized as a GTB member.';
-                    errEl.style.display = 'block';
-                    return;
-                }
-
-                if (knownMember.password !== pass) {
-                    errEl.textContent = 'Invalid credentials. Hint: use GTB[role]2026!';
-                    errEl.style.display = 'block';
-                    return;
-                }
-
-                // Success
-                btn.disabled = true;
-                btn.textContent = 'Authenticating...';
-                errEl.style.display = 'none';
-
-                // Save session locally and redirect
-                localStorage.setItem('gtb_user', JSON.stringify(knownMember));
-                setTimeout(() => {
-                    window.location.href = 'workspace.html';
-                }, 500);
-            });
-        });
-    </script>
+    <div id="toast"></div>
+    <script src="workspace.js"></script>
 </body>
 </html>

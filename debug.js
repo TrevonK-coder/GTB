@@ -13,7 +13,7 @@ const puppeteer = require('puppeteer');
   });
 
   try {
-    await page.goto('http://127.0.0.1:8080/workspace.html', { waitUntil: 'networkidle0' });
+    await page.goto('http://127.0.0.1:8080/index.html', { waitUntil: 'networkidle0' });
   } catch (err) {
     console.log('GOTO ERROR:', err.message);
   }

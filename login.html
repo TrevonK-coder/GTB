@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GTB Intranet | Secure Login</title>
+    <link rel="icon" type="image/png" href="gtb-logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <style>
+        /* Specific overrides for login portal */
+        body { overflow: hidden; }
+        .login-wrapper {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            width: 100vw;
+        }
+        .login-box {
+            background: rgba(14, 14, 22, 0.85);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            padding: 48px;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+        }
+        .login-logo { width: 50px; margin-bottom: 24px; }
+        .login-box h1 { font-size: 32px; font-weight: 800; letter-spacing: -1px; margin-bottom: 8px; }
+        .login-box .sub { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--muted); margin-bottom: 32px; }
+        
+        .field { text-align: left; margin-bottom: 20px; }
+        .field label { display: block; font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); margin-bottom: 8px; letter-spacing: 1px; }
+        .field input { width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 14px; border-radius: 10px; font-family: 'Syne', sans-serif; font-size: 14px; outline: none; transition: all 0.2s; }
+        .field input:focus { border-color: var(--accent); }
+        
+        .login-btn { width: 100%; font-size: 14px; padding: 14px; margin-top: 8px; }
+        .login-error { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--red); margin-top: 16px; display: none; }
+    </style>
+</head>
+<body>
+    <!-- 3D LUXURY BACKGROUND -->
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- CUSTOM CURSOR -->
+    <div id="cursor-dot"></div>
+    <div id="cursor-ring"></div>
+
+    <div class="login-wrapper">
+        <div class="login-box">
+            <img src="gtb-logo.png" alt="GTB" class="login-logo">
+            <h1>GTB <span class="accent">Intranet</span></h1>
+            <p class="sub">Secure portal for the collective.</p>
+            
+            <div class="field">
+                <label>EMAIL</label>
+                <input type="email" id="loginEmail" placeholder="member@gtb.co.ke" autocomplete="email">
+            </div>
+            <div class="field">
+                <label>PASSWORD</label>
+                <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password">
+            </div>
+            <button class="btn btn-primary login-btn" id="loginBtn">Authenticate →</button>
+            <div class="login-error" id="loginError"></div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="three-bg.js"></script>
+    <script src="main.js"></script>
+    
+    <script>
+        // Inline Login Logic (Bypassing Supabase for immediate demo access)
+        document.addEventListener('DOMContentLoaded', () => {
+            // session check
+            const savedUser = localStorage.getItem('gtb_user');
+            if (savedUser) {
+                window.location.href = 'workspace.html';
+                return;
+            }
+
+            document.getElementById('loginBtn').addEventListener('click', () => {
+                const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+                const pass = document.getElementById('loginPass').value;
+                const errEl = document.getElementById('loginError');
+                const btn = document.getElementById('loginBtn');
+
+                if (!email || !pass) {
+                    errEl.textContent = 'Please enter email and password.';
+                    errEl.style.display = 'block';
+                    return;
+                }
+
+                // Validate against local known members
+                const knownMember = MEMBER_ACCOUNTS.find(m => m.email.toLowerCase() === email);
+                if (!knownMember) {
+                    errEl.textContent = 'Email not recognized as a GTB member.';
+                    errEl.style.display = 'block';
+                    return;
+                }
+
+                if (knownMember.password !== pass) {
+                    errEl.textContent = 'Invalid credentials. Hint: use GTB[role]2026!';
+                    errEl.style.display = 'block';
+                    return;
+                }
+
+                // Success
+                btn.disabled = true;
+                btn.textContent = 'Authenticating...';
+                errEl.style.display = 'none';
+
+                // Save session locally and redirect
+                localStorage.setItem('gtb_user', JSON.stringify(knownMember));
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 500);
+            });
+        });
+    </script>
+</body>
+</html>

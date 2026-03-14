@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 1. Check Session (Bypassing Supabase for immediate demo access)
     const savedUser = localStorage.getItem('gtb_user');
     if (!savedUser) {
-        window.location.href = 'index.html'; // Redirect to login
+        window.location.href = 'login.html'; // Redirect to login
         return;
     }
 
@@ -104,7 +104,7 @@ function setupNavigation() {
     if (logoutBtn) {
         logoutBtn.addEventListener('click', () => {
             localStorage.removeItem('gtb_user');
-            window.location.href = 'index.html';
+            window.location.href = 'login.html';
         });
     }
 }
