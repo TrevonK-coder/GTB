@@ -11,13 +11,12 @@ const cors = require('cors');
 const axios = require('axios');
 const path = require('path');
 
-const { scoreMember, rankMembers, MEMBERS } = require('./api/performance');
-const { processFanContribution, getRewardBalance, distributeReward } = require('./api/fanfund');
+const { scoreMember, rankMembers, MEMBERS } = require('./performance');
+const { processFanContribution, getRewardBalance, distributeReward } = require('./fanfund');
 
 const app = express();
 app.use(express.json());
 app.use(cors());
-app.use(express.static(path.join(__dirname)));
 
 // ════════════════════════════════════════════════════════════════
 // M-PESA DARAJA API CONFIG
@@ -198,15 +197,6 @@ app.post('/api/fanfund/distribute', (req, res) => {
     }
     const result = distributeReward();
     res.json({ success: true, result });
-});
-
-// ────────────────────────────────────────────────────────────────
-// Fallback: serve workspace.html for SPA navigation, but 404 for assets
-app.get('*', (req, res) => {
-    if (req.path.match(/\.(js|css|png|jpg|jpeg|gif|ico|svg)$/)) {
-        return res.status(404).send('Not found');
-    }
-    res.sendFile(path.join(__dirname, 'workspace.html'));
 });
 
 const PORT = process.env.PORT || 8080;

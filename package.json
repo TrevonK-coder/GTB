@@ -4,8 +4,7 @@
   "description": "GTB Collective Internal Platform — Backend API",
   "main": "server.js",
   "scripts": {
-    "local-start": "node server.js",
-    "dev": "nodemon server.js"
+    "dev": "nodemon api/index.js"
   },
   "dependencies": {
     "axios": "^1.6.7",
